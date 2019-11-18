@@ -1,8 +1,6 @@
 package game
 
 import (
-	"landlord/mconst/direction"
-	"landlord/mconst/roomType"
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
 	"sync"
@@ -87,33 +85,33 @@ func DealPlayerEnterExpField(session *melody.Session, playerInfo PlayerInfo) {
 	if len(ExpFieldWaitUser.WaitUsers) <= 0 {
 		AddExpFieldWaitUser(session, playerInfo)
 	} else {
-		wp := ExpFieldWaitUser.WaitUsers[0]
-		wPlayerInfo := wp.Player
-
-		// 置空等待队列
-		EmptyExpFieldWaitUser(session, wPlayerInfo)
-		//wSession := wp.Session
-		var wPlayer Player
-		wPlayer.PlayerInfo = &wPlayerInfo
-		wPlayer.Session = wp.Session
-		wPlayer.Direction = direction.East
-		//wPlayer.ActionChan = make(chan PlayerActionChan)
-
-		var cPlayer Player
-		cPlayer.PlayerInfo = &playerInfo
-		cPlayer.Session = session
-		cPlayer.Direction = direction.West
-		//cPlayer.ActionChan = make(chan PlayerActionChan)
-
-		var players []*Player
-		players = append(players, &wPlayer, &cPlayer)
-		room := NewRoom(roomType.ExperienceField, players)
-
-		// 设置用户全局房间Id
-		SetSessionRoomId(wPlayer.Session, room.RoomId)
-		SetSessionRoomId(cPlayer.Session, room.RoomId)
-		// 保存房间
-		SaveRoom(room.RoomId, room)
+		//wp := ExpFieldWaitUser.WaitUsers[0]
+		//wPlayerInfo := wp.Player
+		//
+		//// 置空等待队列
+		//EmptyExpFieldWaitUser(session, wPlayerInfo)
+		////wSession := wp.Session
+		//var wPlayer Player
+		//wPlayer.PlayerInfo = &wPlayerInfo
+		//wPlayer.Session = wp.Session
+		//wPlayer.Direction = direction.East
+		////wPlayer.ActionChan = make(chan PlayerActionChan)
+		//
+		//var cPlayer Player
+		//cPlayer.PlayerInfo = &playerInfo
+		//cPlayer.Session = session
+		//cPlayer.Direction = direction.West
+		////cPlayer.ActionChan = make(chan PlayerActionChan)
+		//
+		//var players []*Player
+		//players = append(players, &wPlayer, &cPlayer)
+		//room := NewRoom(roomType.ExperienceField, players)
+		//
+		//// 设置用户全局房间Id
+		//SetSessionRoomId(wPlayer.Session, room.RoomId)
+		//SetSessionRoomId(cPlayer.Session, room.RoomId)
+		//// 保存房间
+		//SaveRoom(room.RoomId, room)
 
 		// 开启线程 游戏开始
 		//go PlayGame(room)

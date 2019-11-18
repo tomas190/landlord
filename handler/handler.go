@@ -1,13 +1,13 @@
 package handler
 
 import (
-	"landlord/game"
-	"landlord/mconst/msgIdConst"
-	"landlord/msg/mproto"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
+	"landlord/game"
+	"landlord/mconst/msgIdConst"
+	"landlord/msg/mproto"
 )
 
 // onMessage
@@ -88,8 +88,8 @@ func OnMessageBinary(m *melody.Melody, session *melody.Session, bytes []byte) {
 		ReqLogin(m, session, data)
 	case msgIdConst.ReqEnterRoom: // 进入房间  101  // push 301 302
 		game.ReqEnterRoom(session, data)
-	case msgIdConst.ReqDoAction: // 获取玩家列表  102
-		//game.ReqDoAction(session, data)
+	//case msgIdConst.ReqDoAction: // 获取玩家列表  102
+	//game.ReqDoAction(session, data)
 	default:
 		logger.Error("未知指令")
 	}
@@ -98,5 +98,52 @@ func OnMessageBinary(m *melody.Melody, session *melody.Session, bytes []byte) {
 
 // OnSentMessageBinary  // debug 开发调试
 func OnSentMessageBinary(session *melody.Session, bytes []byte) {
+
+	if len(bytes)<=0 {
+		logger.Debug("auto ")
+		return
+	}
+	msgId := game.GetMsgId(bytes[:2])
+	if msgId == msgIdConst.Pong {
+		return
+	}
+
+	// todo  huck
+	logger.Info("Handler OnSentMessageBinary :", )
+	switch msgId {
+	case msgIdConst.RespLogin:
+
+		resp := &mproto.RespLogin{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgId.RespLogin")
+		game.PrintMsg("RespLogin:", resp)
+		fmt.Println()
+	case msgIdConst.PushRoomClassify:
+		resp := &mproto.PushRoomClassify{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgId.PushRoomClassify")
+		game.PrintMsg("PushRoomClassify:", resp)
+		fmt.Println()
+
+	case msgIdConst.ErrMsg:
+		resp := &mproto.ErrMsg{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgid.ErrMsg:")
+		game.PrintMsg("errorMsg:", resp)
+		fmt.Println()
+
+	}
 
 }

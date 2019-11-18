@@ -5,20 +5,35 @@ import (
 	"time"
 )
 
-func UserLogin(playerId, password string) {
+func UserLogin(playerId, password, token string) {
 
 	logger.Debug("<-------- UserLoginCenter -------->")
 	baseData := &ToCenterMessage{}
 	baseData.Event = msgUserLogin
-	baseData.Data = &UserReq{
-		ID:       playerId,
-		//PassWord: password,
-		GameId:  Server.GameId,
-		Token:   password,
-		DevName: Server.DevName,
-		DevKey:  Server.DevKey}
+
+	// 要改成判断token
+	if token != "" {
+		baseData.Data = &UserReqToken{
+			ID:      playerId,
+			Token:   token,
+			GameId:  Server.GameId,
+			DevName: Server.DevName,
+			DevKey:  Server.DevKey}
+	} else {
+		baseData.Data = &UserReqPassword{
+			ID:       playerId,
+			PassWord: password,
+			GameId:   Server.GameId,
+			DevName:  Server.DevName,
+			DevKey:   Server.DevKey}
+	}
 
 	WriteMsgToCenter(baseData)
+
+	//加入待处理map，等待处理
+	//c4c.waitUser[userId] = &UserCallback{}
+	//c4c.waitUser[userId].Data.ID = userId
+	//c4c.waitUser[userId].Callback = callback
 }
 
 //UserLogoutCenter 用户登出

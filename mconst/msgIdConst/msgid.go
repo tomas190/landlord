@@ -29,7 +29,6 @@ const (
 	Ping         uint16 = 0
 	ReqLogin     uint16 = 100 // 用户登录请求
 	ReqEnterRoom uint16 = 101 // 用户进入房间
-	ReqDoAction  uint16 = 103 // 玩家的麻将操作
 
 )
 
@@ -39,25 +38,13 @@ const (
 	RespLogin uint16 = 200 // 用户登录返回
 )
 
-/*
-   MSG_ROOM_CLASSIFY_PUSH = 300; // 推送房间分类信息  用户登录认证成功之后 推送
-   MSG_ROOM_INFO_PUSH = 301; // 推送房间信息  用户当玩家成功匹配时候 推送
-   MSG_DICE_PUSH = 302 ;  // 推送骰子 点数 // 前端收到此消息 显示开局和掷骰子动画
-   MSG_LICENSING_PUSH = 303 ;  // 发牌
-*/
+
 
 // 主动推送
 const (
 	PushRoomClassify              uint16 = 300 // 推送房间分类信息  用户登录认证成功之后 推送
 	PushRoomInfo                         = 301 // 推送房间信息  用户当玩家成功匹配时候 推送
-	PushDice                             = 302 //推送骰子 点数 // 前端收到此消息 显示开局和掷骰子动画
-	PushLicensing                        = 303 // 发牌
-	PushChangePlayerMahjongs             = 304 // 改变牌 自己
-	PushOtherChangePlayerMahjongs        = 305 // 改变牌 对手
-	PushGetMahjongs                      = 306 // 模牌
-	PushShowAction                       = 307 // 玩家摸牌或者打牌推送的显示信息
-	PushResetTime                        = 308 // 重新设置等待时间
-	PushSettlement                       = 308 // 重新设置等待时间
+
 
 )
 

@@ -1,12 +1,11 @@
 package app
 
 import (
-	"landlord/game"
-	"landlord/handler"
 	"github.com/gin-gonic/gin"
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
-	"time"
+	"landlord/game"
+	"landlord/handler"
 )
 
 // Init server with mode
@@ -28,7 +27,7 @@ func StartServer(mode, wsPath string) {
 		}
 	})
 
-	m.Config.PongWait = time.Second*5
+	//m.Config.PongWait = time.Second * 100
 
 	mHandler(m)
 	err := r.Run(":" + game.Server.Port)

@@ -15,10 +15,11 @@ message PING {
 message ReqLogin {
     string userId = 1;
     string userPassword = 2;
+    string token = 3;
 }
 
 // CLIENT REQ : MSG_ID 101
-// 2.登录请求
+// 2.进入房间
 message ReqEnterRoom {
     /*
     ExperienceField int32 = 1 // 体验场

@@ -1,12 +1,12 @@
 {
-  "Port": "1234",
+  "Port": "1221",
   "MaxConn": 1200,
   "CenterToken": "963258",
   "CenterDomain": "161.117.178.174:12345",
   "CenterPort": "9502",
-  "DevKey": "new_game_36",
+  "DevKey": "new_game_4",
   "DevName": "新游戏开发",
-  "GameId": "5b1f3a3cb76a591e7f25170",
+  "GameId": "5b1f3a3cb76a591e7f251711",
   "GameTaxRate": 0.05,
   "WinGoldNotice": 100,
 
