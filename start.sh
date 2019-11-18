@@ -1,0 +1,1 @@
+nohup ./landlord > out.log 2>&1 &

@@ -1,0 +1,17 @@
+{
+  "TimeFormat": "3:04PM",
+  "Console": {
+    "level": "TRAC",
+    "color": true
+  },
+  "File": {
+    "filename": "log/app.log",
+    "level": "TRAC",
+    "daily": true,
+    "maxlines": 100000,
+    "maxsize": 1,
+    "maxdays": 3,
+    "append": true,
+    "permit": "0660"
+  }
+}

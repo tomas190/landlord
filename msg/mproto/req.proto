@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+/*import "resp.proto";*/
+
+package mproto;
+
+// CLIENT REQ : MSG_ID 0
+// 1.PING
+message PING {
+    int64 time = 1; // 当前时间戳 格式 毫秒(ms) 1567668727760
+}
+
+// CLIENT REQ : MSG_ID 100
+// 1.登录请求
+message ReqLogin {
+    string userId = 1;
+    string userPassword = 2;
+}
+
+// CLIENT REQ : MSG_ID 101
+// 2.登录请求
+message ReqEnterRoom {
+    /*
+    ExperienceField int32 = 1 // 体验场
+	LowField        int32 = 2 // 初级场
+	MidField        int32 = 3 // 中级场
+	HighField       int32 = 4 // 高级场
+    */
+    int32 roomType = 1; //
+}
+
+
+

@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package mproto;
+
+// =================================  SERVER 收到指令返回 200 pong 消息为1 开始 ===========
+// SERVER RESP : MSG_ID 1
+// 1.PONG
+message PONG {
+    int64 time = 1; // 当前时间戳 格式 毫秒(ms) 1567668727760
+}
+
+// SERVER RESP : MSG_ID 200
+// 1.登录返回
+message RespLogin {
+    PlayerInfo playerInfo = 1;
+}
+
+// ================================= SERVER 主动推送的正常消息 300 开始 ===================
+
+// SERVER PUSH : MSG_ID 300  // 推送房间类型列表
+// 1.房间分类信息推送
+message PushRoomClassify {
+    repeated RoomClassify roomClassify = 1;
+}
+
+
+
+// =================================  SERVER 主动推送异常指令 500 开始 ======================
+
+// SERVER PUSH : MSG_ID 500  // 服务器断开指令
+// 1.断开连接指令
+message CloseConn {
+    int32 code = 1; // 断开连接code  1: 3秒之后未登录断开    2: 认证失败断开  3: 在其他地方登录
+    string msg = 2; // 断开msg
+}
+
+// SERVER PUSH : MSG_ID 501  // 服务器错误指令
+// 1.服务器错误指令
+message ErrMsg {
+    int32 msgId = 1; // 错误的指令Id 客户端发送的指令
+    string msg = 2; // 错误信息msg
+}
+
+// ============================================= 属性data =================================
+
+
+// 1. LoginResp   2.PlayerListPush
+message PlayerInfo {
+    string playerId = 1;
+    string playerName = 2;
+    string playerImg = 3;
+    double gold = 4;
+}
+
+// RoomClassifyPush
+message RoomClassify {
+    int32 roomType = 1; // 房间类型 1 体验场 2 初级场 3 中级场 4 高级场
+    double bottomPoint = 2; // 底分
+    double bottomEnterPoint = 3; // 最低入场金币
+}
+

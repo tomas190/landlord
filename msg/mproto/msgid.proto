@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package mproto;
+
+// 消息ID
+enum MessageID {
+    MSG_PING = 0; // c-s 发送ping  1
+    MSG_PONG = 1; // s-c 发送 pong 1
+
+    // REQ AND RESP
+    MSG_LOGIN = 100; // c-s 登录 1
+    MSG_LOGIN_RESP = 200; // s-c 登录返回 1
+
+    MSG_ENTER_ROOM = 101; // c-s 进入房间
+
+    /* SERVER PUSH  MSG - FROM 300 */
+    MSG_ROOM_CLASSIFY_PUSH = 300; // 推送房间分类信息  用户登录认证成功之后 推送
+    MSG_ROOM_INFO_PUSH = 301; // 推送房间信息  用户当玩家成功匹配时候 推送
+
+
+    /* SERVER PUSH ERROR MSG - FROM 500 */
+    MSG_CLOSE_CONN_PUSH = 500; // s-c 服务器主动断开
+    MSG_ERR_MSG_PUSH = 501; // s-c 错误信息推送
+}
