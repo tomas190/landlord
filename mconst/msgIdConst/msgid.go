@@ -38,13 +38,10 @@ const (
 	RespLogin uint16 = 200 // 用户登录返回
 )
 
-
-
 // 主动推送
 const (
-	PushRoomClassify              uint16 = 300 // 推送房间分类信息  用户登录认证成功之后 推送
-	PushRoomInfo                         = 301 // 推送房间信息  用户当玩家成功匹配时候 推送
-
+	PushRoomClassify uint16 = 300 // 推送房间分类信息  用户登录认证成功之后 推送
+	PushRoomPlayer          = 301 // 推送房间信息  用户当玩家成功匹配时候 推送
 
 )
 

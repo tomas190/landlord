@@ -25,7 +25,7 @@ func SetSessionPlayerInfo(session *melody.Session, playerInfo *PlayerInfo) {
 func GetSessionPlayerInfo(session *melody.Session) (*PlayerInfo, error) {
 	var result *PlayerInfo
 	value, exists := session.Get("playerInfo")
-	if exists {
+	if !exists {
 		return nil, errors.New("不存在绑定的playerInfo信息")
 	}
 

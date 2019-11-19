@@ -1,18 +1,19 @@
 package game
 
 import (
-	"landlord/mconst/roomType"
+	"github.com/google/uuid"
 	"github.com/wonderivan/logger"
-	"strconv"
+	"landlord/mconst/roomType"
 )
 
 type Room struct {
-	RoomClass         *RoomClassify         // 房间分类
-	RoomId            string                // 房间ID
-	Players           []*Player             // 当前玩家
-	//ControlChan       chan PlayerActionChan // 控制流
-	RemainingMahjongs []int32               // 当前房间剩余麻将
-	Status            int32                 // 房间状态  1 正在玩 2
+	RoomClass        *RoomClassify      // 房间分类
+	RoomId           string             // 房间ID
+	Players          map[string]*Player // 当前玩家
+	LandlordPlayerId string             // 地主玩家Id
+	bottomCards      []int32            // 地主牌(及最后三张牌)
+
+	Status int32 // 房间状态 0 等待中 1叫地主  2正在玩
 }
 
 type RoomClassify struct {
@@ -22,17 +23,16 @@ type RoomClassify struct {
 }
 
 // 创建一个新的房间
-func NewRoom(rType int32, players []*Player) *Room {
-	if len(players) != 2 {
-		logger.Debug("无法创建房间,房间人数异常:", len(players))
-		return nil
-	}
+func NewRoom(rType int32, players map[string]*Player) *Room {
+	//if len(players) != 3 {
+	//	logger.Debug("无法创建房间,房间人数异常:", len(players))
+	//	return nil
+	//}
 
 	var room Room
-	room.RoomId = strconv.Itoa(int(rType))
+	room.RoomId = uuid.New().String()
 	room.Players = players
 	room.RoomClass = NewRoomClassify(rType)
-//	room.ControlChan = make(chan PlayerActionChan)
 	return &room
 }
 

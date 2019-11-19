@@ -16,16 +16,6 @@ func ChangeRoomClassifyToProto(item *RoomClassify) *mproto.RoomClassify {
 	return &result
 }
 
-func ChangePlayerP2S(item mproto.PlayerInfo) PlayerInfo {
-
-	return PlayerInfo{
-		item.PlayerId,
-		item.PlayerName,
-		item.PlayerImg,
-		item.Gold,
-	}
-}
-
 func ChangePlayerInfoToProto(item *PlayerInfo) *mproto.PlayerInfo {
 
 	var result mproto.PlayerInfo
@@ -35,4 +25,36 @@ func ChangePlayerInfoToProto(item *PlayerInfo) *mproto.PlayerInfo {
 	result.PlayerImg = item.HeadImg
 
 	return &result
+}
+
+func ChangePlayerToRoomPlayerProto(player *Player) *mproto.RoomPlayer {
+	var result mproto.RoomPlayer
+	result.Players = ChangePlayerInfoToProto(player.PlayerInfo)
+	result.Position = player.PlayerPosition
+	return &result
+
+}
+
+func ChangeArrPlayerToRoomPlayerProto(players map[string]*Player) []*mproto.RoomPlayer {
+
+	var result []*mproto.RoomPlayer
+
+	for _, v := range players {
+		p := ChangePlayerToRoomPlayerProto(v)
+		result = append(result, p)
+	}
+
+	return result
+}
+
+// ==================== proto to struct ====================
+
+func ChangePlayerP2S(item mproto.PlayerInfo) PlayerInfo {
+
+	return PlayerInfo{
+		item.PlayerId,
+		item.PlayerName,
+		item.PlayerImg,
+		item.Gold,
+	}
 }

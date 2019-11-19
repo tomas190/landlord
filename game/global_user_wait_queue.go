@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
+	"landlord/mconst/roomType"
 	"sync"
 	"time"
 )
@@ -18,25 +19,34 @@ const (
 
 type WaitUser struct {
 	EnterRoomTime int64
-	Player        PlayerInfo
+	Player        *PlayerInfo
 	Session       *melody.Session
 }
 
 var ExpFieldWaitUser struct {
-	WaitUsers []*WaitUser
+	WaitUsers map[string]*WaitUser
 	mu        sync.RWMutex
 }
 var LowFieldWaitUser struct {
-	WaitUsers []*WaitUser
+	WaitUsers map[string]*WaitUser // key userId
 	mu        sync.RWMutex
 }
 var MidFieldWaitUser struct {
-	WaitUsers []*WaitUser
+	WaitUsers map[string]*WaitUser
 	mu        sync.RWMutex
 }
 var HighFieldWaitUser struct {
-	WaitUsers []*WaitUser
+	WaitUsers map[string]*WaitUser
 	mu        sync.RWMutex
+}
+
+func init() {
+	ExpFieldWaitUser.WaitUsers = make(map[string]*WaitUser, 3)
+	LowFieldWaitUser.WaitUsers = make(map[string]*WaitUser, 3)
+	MidFieldWaitUser.WaitUsers = make(map[string]*WaitUser, 3)
+	HighFieldWaitUser.WaitUsers = make(map[string]*WaitUser, 3)
+
+	globalRooms.roomMaps = make(map[string]*Room)
 }
 
 // 体验场 等待队列是否为空
@@ -56,9 +66,9 @@ func AddExpFieldWaitUser(session *melody.Session, player PlayerInfo) {
 
 	var wu WaitUser
 	wu.EnterRoomTime = time.Now().Unix()
-	wu.Player = player
+	wu.Player = &player
 	wu.Session = session
-	ExpFieldWaitUser.WaitUsers = append(ExpFieldWaitUser.WaitUsers, &wu)
+	ExpFieldWaitUser.WaitUsers[player.PlayerId] = &wu
 
 	// todo  需要3到5秒后如果没有玩家与之进行匹配 则分配一个机器人
 
@@ -79,42 +89,54 @@ func EmptyExpFieldWaitUser(session *melody.Session, player PlayerInfo) {
 
 // 体验场 处理玩家进入体验场
 func DealPlayerEnterExpField(session *melody.Session, playerInfo PlayerInfo) {
-	// todo  这里死锁  后面修改
-	//ExpFieldWaitUser.mu.Lock()
-	//defer ExpFieldWaitUser.mu.Unlock()
-	if len(ExpFieldWaitUser.WaitUsers) <= 0 {
+	if len(ExpFieldWaitUser.WaitUsers) < 2 { // 斗地主需要三个人才能玩
 		AddExpFieldWaitUser(session, playerInfo)
-	} else {
-		//wp := ExpFieldWaitUser.WaitUsers[0]
-		//wPlayerInfo := wp.Player
-		//
-		//// 置空等待队列
-		//EmptyExpFieldWaitUser(session, wPlayerInfo)
-		////wSession := wp.Session
-		//var wPlayer Player
-		//wPlayer.PlayerInfo = &wPlayerInfo
-		//wPlayer.Session = wp.Session
-		//wPlayer.Direction = direction.East
-		////wPlayer.ActionChan = make(chan PlayerActionChan)
-		//
-		//var cPlayer Player
-		//cPlayer.PlayerInfo = &playerInfo
-		//cPlayer.Session = session
-		//cPlayer.Direction = direction.West
-		////cPlayer.ActionChan = make(chan PlayerActionChan)
-		//
-		//var players []*Player
-		//players = append(players, &wPlayer, &cPlayer)
-		//room := NewRoom(roomType.ExperienceField, players)
-		//
-		//// 设置用户全局房间Id
-		//SetSessionRoomId(wPlayer.Session, room.RoomId)
-		//SetSessionRoomId(cPlayer.Session, room.RoomId)
-		//// 保存房间
-		//SaveRoom(room.RoomId, room)
+	} else if len(ExpFieldWaitUser.WaitUsers) == 2 {
+		ExpFieldWaitUser.mu.Lock()
+		players := make(map[string]*Player)
+		room := NewRoom(roomType.ExperienceField, nil)
+		var position int32
+		for id, wPlayer := range ExpFieldWaitUser.WaitUsers {
+			// todo 这一这里是否
+			position++
+			var p Player
+			p.PlayerInfo = wPlayer.Player
+			p.PlayerPosition = position
+			p.Session = wPlayer.Session
+			p.IsReady = true
+			p.ActionChan = make(chan PlayerActionChan)
+			players[id] = &p
+
+			//设置用户全局房间Id
+			logger.Debug("wp:", wPlayer.Session)
+			logger.Debug("rd:", room.RoomId)
+			SetSessionRoomId(wPlayer.Session, room.RoomId)
+		}
+		var p Player
+		p.PlayerInfo = &playerInfo
+		p.PlayerPosition = 3
+		p.Session = session
+		p.IsReady = true
+		p.ActionChan = make(chan PlayerActionChan)
+		players[playerInfo.PlayerId] = &p
+		room.Players = players
+
+		// 等待用户分配房间后清空 等待队列
+		ExpFieldWaitUser.WaitUsers = make(map[string]*WaitUser, 3)
+
+		ExpFieldWaitUser.mu.Unlock()
+
+		// 设置用户全局房间Id
+		SetSessionRoomId(session, room.RoomId)
+		// 保存房间
+		SaveRoom(room.RoomId, room)
 
 		// 开启线程 游戏开始
-		//go PlayGame(room)
+		go PlayGame(room)
+	} else {
+		logger.Debug("这不可能！ 如果出现这个消息 代码需要调整")
 	}
+
+	logger.Debug("等待的人儿:",ExpFieldWaitUser.WaitUsers)
 
 }

@@ -70,7 +70,7 @@ func OnMessageBinary(m *melody.Melody, session *melody.Session, bytes []byte) {
 	//logger.Info("Handler OnMessageBinary :", string(bytes))
 	dataLen := len(bytes)
 	if dataLen <= 2 {
-		logger.Debug(string(bytes))
+		//logger.Debug(string(bytes))
 		_ = session.WriteBinary([]byte("data is nil !"))
 		return
 	}
@@ -99,7 +99,7 @@ func OnMessageBinary(m *melody.Melody, session *melody.Session, bytes []byte) {
 // OnSentMessageBinary  // debug 开发调试
 func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 
-	if len(bytes)<=0 {
+	if len(bytes) <= 0 {
 		logger.Debug("auto ")
 		return
 	}
@@ -109,7 +109,7 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 	}
 
 	// todo  huck
-	logger.Info("Handler OnSentMessageBinary :", )
+	// logger.Info("Handler OnSentMessageBinary :", )
 	switch msgId {
 	case msgIdConst.RespLogin:
 
@@ -131,6 +131,16 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		}
 		fmt.Println("msgId.PushRoomClassify")
 		game.PrintMsg("PushRoomClassify:", resp)
+		fmt.Println()
+	case msgIdConst.PushRoomPlayer:
+		resp := &mproto.PushRoomPlayer{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgId.PushRoomPlayer")
+		game.PrintMsg("PushRoomPlayer:", resp)
 		fmt.Println()
 
 	case msgIdConst.ErrMsg:

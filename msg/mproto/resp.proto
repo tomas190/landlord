@@ -23,7 +23,41 @@ message PushRoomClassify {
     repeated RoomClassify roomClassify = 1;
 }
 
+// SERVER PUSH : MSG_ID 301  // 推送房间玩家信息
+// 1.推送房间玩家信息
+message PushRoomPlayer {
+    repeated RoomPlayer players = 1;
+}
 
+// SERVER PUSH : MSG_ID 302  // 发牌
+// 2.发牌
+message PushStartGame {
+    repeated int32 cards = 2; // 当前玩家手牌
+}
+
+// SERVER PUSH : MSG_ID 302  // 抢地主阶段
+// 3.抢地主阶段
+message PushGetLandlord {
+    string lastPlayerId = 1; // 可操作的玩家Id
+    int32 lastPlayerPosition = 2; // 可操作的玩家座位
+    string lastPlayerAction = 3; // 上个玩家的操作
+    int32 action = 4; // 1.叫地主 ,不叫 2.抢地主,不抢 0 第一次
+    int32 Multi = 5; // 倍数 当前倍数
+    int32 Countdown = 6; // 倒计时
+}
+
+// SERVER PUSH : MSG_ID 303  // 出牌阶段
+// 4.出牌阶段
+message PushPlayCard {
+    string lastPlayerId = 1; // 上个操作的玩家Id
+    int32 lastPlayerPosition = 2; // 上个操作的玩家座位
+    repeated int32 lastPlayerCards = 3; // 上个玩家的操作
+    int32 lastPlayerCardsType = 4; // 上个玩家的牌型
+    bool isMustPlay = 5; // 是否必须出牌(是否随便出牌)
+    int32 action = 6; // 1.叫地主 ,不叫 2.抢地主,不抢 0 第一次
+    int32 Multi = 7; // 倍数 当前倍数
+    int32 Countdown = 8; // 倒计时
+}
 
 // =================================  SERVER 主动推送异常指令 500 开始 ======================
 
@@ -42,7 +76,11 @@ message ErrMsg {
 }
 
 // ============================================= 属性data =================================
-
+// 1.PushStartGame
+message RoomPlayer {
+    PlayerInfo players = 1; // 房间里面的玩家
+    int32 Position = 2; // 1,2,3 // 座位号
+}
 
 // 1. LoginResp   2.PlayerListPush
 message PlayerInfo {
