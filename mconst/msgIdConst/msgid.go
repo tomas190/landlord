@@ -42,6 +42,7 @@ const (
 const (
 	PushRoomClassify uint16 = 300 // 推送房间分类信息  用户登录认证成功之后 推送
 	PushRoomPlayer          = 301 // 推送房间信息  用户当玩家成功匹配时候 推送
+	PushStartGame           = 302 // 推送开始游戏 发牌
 
 )
 

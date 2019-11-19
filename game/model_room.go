@@ -11,7 +11,7 @@ type Room struct {
 	RoomId           string             // 房间ID
 	Players          map[string]*Player // 当前玩家
 	LandlordPlayerId string             // 地主玩家Id
-	bottomCards      []int32            // 地主牌(及最后三张牌)
+	bottomCards      []*Card            // 地主牌(及最后三张牌)
 
 	Status int32 // 房间状态 0 等待中 1叫地主  2正在玩
 }
@@ -24,8 +24,8 @@ type RoomClassify struct {
 
 // 创建一个新的房间
 func NewRoom(rType int32, players map[string]*Player) *Room {
-	//if len(players) != 3 {
-	//	logger.Debug("无法创建房间,房间人数异常:", len(players))
+	//if len(cards) != 3 {
+	//	logger.Debug("无法创建房间,房间人数异常:", len(cards))
 	//	return nil
 	//}
 

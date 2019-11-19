@@ -2,7 +2,7 @@ package cardConst
 
 // 定义扑克级别
 const (
-	Card_RANK_THREE = iota + 1
+	CARD_RANK_THREE = iota + 1
 	CARD_RANK_FOUR
 	CARD_RANK_FIVE
 	CARD_RANK_SIX
@@ -43,7 +43,7 @@ const (
 	// CARD_SUIT_        = iota
 	CARD_SUIT_DIAMOND = iota + 1 // 黑桃
 	CARD_SUIT_HEART              // 红桃
-	CARD_SUIT_SPADE              // 黑桃
-	CARD_SUIT_CLUB               // 梅花
+	CARD_SUIT_SPADE              // 樱花
+	CARD_SUIT_CLUB               // 方片
 	CARD_SUIT_JOKER              // 大小王无花色
 )

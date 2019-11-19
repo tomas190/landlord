@@ -32,7 +32,7 @@ message PushRoomPlayer {
 // SERVER PUSH : MSG_ID 302  // 发牌
 // 2.发牌
 message PushStartGame {
-    repeated int32 cards = 2; // 当前玩家手牌
+    repeated Card cards = 2; // 当前玩家手牌
 }
 
 // SERVER PUSH : MSG_ID 302  // 抢地主阶段
@@ -97,3 +97,8 @@ message RoomClassify {
     double bottomEnterPoint = 3; // 最低入场金币
 }
 
+// PushStartGame
+message Card {
+    int32 value = 1; // 牌值
+    int32 suit = 2; // 花色 1方片 2红桃 3黑桃 4梅花 5
+}

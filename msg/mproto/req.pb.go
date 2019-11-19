@@ -165,7 +165,7 @@ func (m *ReqEnterRoom) GetRoomType() int32 {
 }
 
 // SERVER PUSH : MSG_ID 102  // 抢地主阶段
-// 1.抢地主阶段
+// 3.抢地主阶段
 type ReqGetLandlordDo struct {
 	PlayerSeat           int32    `protobuf:"varint,1,opt,name=playerSeat,proto3" json:"playerSeat,omitempty"`
 	Action               int32    `protobuf:"varint,2,opt,name=action,proto3" json:"action,omitempty"`

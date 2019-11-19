@@ -1,0 +1,130 @@
+package game
+
+import (
+	"fmt"
+	"landlord/mconst/cardConst"
+	"sort"
+)
+
+// 定义扑克牌
+type Card struct {
+	Value int32 // card值用于排序比较
+	Suit  int32 // card花色
+}
+
+var originalCard []*Card
+
+// 创建一副有序的牌
+func CreateSortCard() []*Card {
+	result := originalCard
+	SortCard(result)
+	return result
+}
+
+// 创建一副乱序的牌
+func CreateBrokenCard() []*Card {
+	result := originalCard
+	OutOfCard(result)
+	return result
+}
+
+func init() {
+	originalCard = initOriginalCard()
+}
+
+func initOriginalCard() []*Card {
+	var result []*Card
+	for i := 1; i <= 4; i++ {
+		for j := 1; j <= 13; j++ {
+			var card Card
+			card.Value = int32(j)
+			card.Suit = int32(i)
+			result = append(result, &card)
+		}
+	}
+	var bigCard Card
+	var smlCard Card
+	bigCard.Value = cardConst.CARD_RANK_RED_JOKER
+	bigCard.Suit = cardConst.CARD_SUIT_JOKER
+	smlCard.Value = cardConst.CARD_RANK_BLACK_JOKER
+	smlCard.Suit = cardConst.CARD_SUIT_JOKER
+
+	result = append(result, &bigCard, &smlCard)
+	return result
+}
+
+// 随机乱序
+func OutOfCard(arr []*Card) {
+	for i := len(arr) - 1; i > 0; i-- {
+		num := RandNum(0, 53)
+		arr[i], arr[num] = arr[num], arr[i]
+	}
+}
+
+// 排序
+func SortCard(cards []*Card) {
+	v := func(c1, c2 *Card) bool {
+		return c1.Value > c2.Value
+	}
+
+	s := func(c1, c2 *Card) bool {
+		return c1.Suit > c2.Suit
+	}
+	OrderedBy(v, s).Sort(cards)
+}
+
+
+func PrintCard(cards []*Card) {
+	for i := 0; i < len(cards); i++ {
+		fmt.Print(cards[i])
+		fmt.Print(",")
+	}
+	fmt.Println()
+}
+
+// =======================  sort =======================
+type lessFunc func(p, p1 *Card) bool
+
+type multiSort struct {
+	cards []*Card
+	less  []lessFunc
+}
+
+func (ms *multiSort) Sort(changes []*Card) {
+	ms.cards = changes
+	sort.Sort(ms)
+}
+
+func OrderedBy(less ...lessFunc) *multiSort {
+	return &multiSort{
+		less: less,
+	}
+}
+
+func (ms *multiSort) Len() int {
+	return len(ms.cards)
+}
+
+func (ms *multiSort) Swap(i, j int) {
+	ms.cards[i], ms.cards[j] = ms.cards[j], ms.cards[i]
+}
+
+func (ms *multiSort) Less(i, j int) bool {
+	p, q := &ms.cards[i], &ms.cards[j]
+	var k int
+	for k = 0; k < len(ms.less)-1; k++ {
+		less := ms.less[k]
+		switch {
+		case less(*p, *q):
+			// p < q, so we have a decision.
+			return true
+		case less(*q, *p):
+			// p > q, so we have a decision.
+			return false
+		}
+		// p == q; try the next comparison.
+	}
+	// All comparisons to here said "equal", so just return whatever
+	// the final comparison reports.
+	return ms.less[k](*p, *q)
+}

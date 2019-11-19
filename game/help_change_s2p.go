@@ -47,6 +47,18 @@ func ChangeArrPlayerToRoomPlayerProto(players map[string]*Player) []*mproto.Room
 	return result
 }
 
+func ChangeCardToProto(cards []*Card) []*mproto.Card {
+	var result []*mproto.Card
+
+	for i := 0; i < len(cards); i++ {
+		var mc mproto.Card
+		mc.Value = cards[i].Value
+		mc.Suit = cards[i].Suit
+		result = append(result, &mc)
+	}
+	return result
+}
+
 // ==================== proto to struct ====================
 
 func ChangePlayerP2S(item mproto.PlayerInfo) PlayerInfo {

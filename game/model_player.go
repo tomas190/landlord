@@ -8,8 +8,8 @@ type Player struct {
 	PlayerInfo     *PlayerInfo     // 玩家基本信息
 	PlayerPosition int32           // 玩家当前座位
 	IsRobot        bool            // 是否机器人
-	HandCards      []int32         // 手牌
-	ThrowCards     []int32         // 打初的牌
+	HandCards      []*Card         // 手牌
+	ThrowCards     []*Card         // 打初的牌
 	IsLandlord     bool            // 是否地主
 	IsGameHosting  bool            // 是否游戏托管
 	IsCanDo        bool            // 是否可操作
