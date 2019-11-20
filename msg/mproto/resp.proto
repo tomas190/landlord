@@ -62,12 +62,15 @@ message PushLandlord {
 message PushPlayCard {
     string lastPlayerId = 1; // 上个操作的玩家Id
     int32 lastPlayerPosition = 2; // 上个操作的玩家座位
-    repeated int32 lastPlayerCards = 3; // 上个玩家的操作
+    repeated Card lastPlayerCards = 3; // 上个玩家的出牌
     int32 lastPlayerCardsType = 4; // 上个玩家的牌型
-    bool isMustPlay = 5; // 是否必须出牌(是否随便出牌)
-    int32 action = 6; // 1.叫地主 ,不叫 2.抢地主,不抢 0 第一次
-    int32 Multi = 7; // 倍数 当前倍数
-    int32 Countdown = 8; // 倒计时
+    int32 lastAction = 5; // 3 出牌了 -3 没出牌
+
+    string playerId = 6; // 当前操作的玩家Id
+    int32 playerPosition = 7; // 当前操作的玩家座位
+    bool isMustPlay = 8; // 是否必须出牌(是否随便出牌)
+    int32 Multi = 9; // 倍数 当前倍数
+    int32 Countdown = 10; // 倒计时
 }
 
 // =================================  SERVER 主动推送异常指令 500 开始 ======================

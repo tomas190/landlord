@@ -6,10 +6,12 @@ import (
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2"
 	"io/ioutil"
+	"landlord/msg/mproto"
 	"strings"
 	"time"
 )
 
+// 服务器配置
 var Server struct {
 	Port         string
 	MaxConn      int
@@ -32,11 +34,14 @@ var Server struct {
 	UrlSendLog string
 }
 var globalSession *mgo.Session
+var roomClassify *mproto.PushRoomClassify
 
 func InitConfig() {
 	initLogger()
 	initServerConf()
-	InitMongoDb()
+	initMongoDb()
+	initRoomClassify()
+
 }
 
 // 加载日志适配器
@@ -95,7 +100,7 @@ func initServerConf() {
 }
 
 // 初始化mongoDB
-func InitMongoDb() {
+func initMongoDb() {
 
 	//logger.Debug(".MongoDBAddr:", Server.MongoDBAddr)
 	//logger.Debug(".MongoDBAuth,", Server.MongoDBAuth)
@@ -117,6 +122,20 @@ func InitMongoDb() {
 	globalSession.SetMode(mgo.Monotonic, true)
 	logger.Info("连接mongo数据库成功 address:", Server.MongoDBAddr)
 
+}
+
+// 初始化房间分类信息
+func initRoomClassify() {
+	var resp mproto.PushRoomClassify
+	var i int32
+	for i = 1; i <= 4; i++ {
+		var roomClassify mproto.RoomClassify
+		roomClassify.RoomType = i
+		roomClassify.BottomPoint = GetRoomClassifyBottomPoint(i)
+		roomClassify.BottomEnterPoint = GetRoomClassifyBottomEnterPoint(i)
+		resp.RoomClassify = append(resp.RoomClassify, &roomClassify)
+	}
+	roomClassify = &resp
 }
 
 func GetDBConn(dbName, cName string) (*mgo.Session, *mgo.Collection) {

@@ -8,7 +8,47 @@ import (
 	"landlord/mconst/roomStatus"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
+	"time"
 )
+
+/*
+抢地主阶段
+*/
+
+// 3.1.叫地主阶段 和抢地主阶段
+func CallLandlord(room *Room, playerId string) {
+	actionPlayer := room.Players[playerId]
+	if actionPlayer == nil {
+		logger.Error("房间里无此用户...!!!incredible")
+		return
+	}
+
+	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
+	nextPlayer := getPlayerByPosition(room, nextPosition)
+
+	lastPosition := getLastPosition(actionPlayer.PlayerPosition)
+	lastPlayer := getPlayerByPosition(room, lastPosition)
+	// 阻塞等待当前玩家的动作 超过系统设置时间后自动处理
+	select {
+	case action := <-actionPlayer.ActionChan:
+		switch action.ActionType {
+		case playerAction.CallLandlord: // 叫地主动作
+			CallLandlordAction(room, actionPlayer, nextPlayer)
+		case playerAction.GetLandlord: // 抢地主动作
+			GetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
+		case playerAction.NotCallLandlord: // 不叫
+			NotCallLandlordAction(room, actionPlayer, nextPlayer)
+		case playerAction.NotGetLandlord: // 不抢
+			NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
+		}
+	case <-time.After(time.Second * sysSet.GameDelayTime): // 自动进行不叫或者不抢
+		if room.Status == roomStatus.CallLandlord {
+			NotCallLandlordAction(room, actionPlayer, nextPlayer) // 不叫
+		} else if room.Status == roomStatus.GetLandlord {
+			NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer) // 不抢
+		}
+	}
+}
 
 /* ==========================================  四大 action ===========================================*/
 
@@ -72,7 +112,7 @@ func NotGetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Play
 		ensureWhoIsLandlord(room, nextPlayer, actionPlayer)
 	} else if nextPlayer.DidAction < playerAction.NoAction { // 如果下一个玩家已经做了不抢的动作  那么上一个玩家就是地主
 		ensureWhoIsLandlord(room, lastPlayer, actionPlayer)
-	} else if lastPlayer.DidAction == playerAction.GetLandlord &&// 如果上一个玩家抢了地主 并且下一个玩家做了不叫或者不抢
+	} else if lastPlayer.DidAction == playerAction.GetLandlord && // 如果上一个玩家抢了地主 并且下一个玩家做了不叫或者不抢
 		nextPlayer.DidAction < playerAction.NoAction { // 那么上一个玩家就是地主
 		ensureWhoIsLandlord(room, lastPlayer, actionPlayer)
 	} else if nextPlayer.DidAction == playerAction.GetLandlord { // 如果下一个玩家抢了地主 那下一个玩家就是地主
@@ -93,9 +133,41 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 	landlordPlayer.IsLandlord = true
 	logger.Debug("=============== 玩牌开始 ===========")
 	logger.Debug("地主玩家:", landlordPlayer.PlayerInfo.PlayerId)
-	// todo 推送地主牌 开始玩牌逻辑
-	pushCallLandlordLastAction(room, actionPlayer)
+	pushLastCallLandlord(room, actionPlayer)
 	pushWhoIsLandlord(room, landlordPlayer)
+
+	// todo  流程控制 到 出牌阶段
+
+}
+
+/* ==================== 动作action 的消息推送  ==========================*/
+// 3.第一次开始叫地主
+func pushFirstCallLandlord(room *Room) string {
+	lastPosition := int32(RandNum(1, 3))
+	lastPlayer := getPlayerByPosition(room, lastPosition)
+
+	actionPosition := getNextPosition(lastPosition)
+	actionPlayer := getPlayerByPosition(room, actionPosition)
+
+	pushCallLandlordHelp(room, lastPlayer, actionPlayer, playerAction.CallLandlord)
+	return actionPlayer.PlayerInfo.PlayerId
+}
+
+// 抢地主阶段辅助推送
+/*
+最后一个玩家的动作决定了谁是地主但是要显示这个玩家发出的动作
+*/
+func pushLastCallLandlord(room *Room, lastPlayer *Player) {
+	var push mproto.PushGetLandlord
+	push.Action = room.Status
+	push.LastPlayerPosition = lastPlayer.PlayerPosition
+	push.LastPlayerId = lastPlayer.PlayerInfo.PlayerId
+	push.LastPlayerAction = lastPlayer.DidAction
+	push.Countdown = sysSet.GameDelayTimeInt
+
+	bytes, _ := proto.Marshal(&push)
+	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushCallLandlord, bytes))
+
 }
 
 // 抢地主阶段辅助推送
@@ -115,26 +187,7 @@ func pushCallLandlordHelp(room *Room, lastPlayer, nextPlayer *Player, showAction
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushCallLandlord, bytes))
 }
 
-// 抢地主阶段辅助推送
-/*
-最后一个玩家的动作决定了谁是地主但是要显示这个玩家发出的动作
-
-*/
-func pushCallLandlordLastAction(room *Room, lastPlayer *Player) {
-	var push mproto.PushGetLandlord
-	push.Action = room.Status
-	push.LastPlayerPosition = lastPlayer.PlayerPosition
-	push.LastPlayerId = lastPlayer.PlayerInfo.PlayerId
-	push.LastPlayerAction = lastPlayer.DidAction
-	push.Countdown = sysSet.GameDelayTimeInt
-
-	bytes, _ := proto.Marshal(&push)
-	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushCallLandlord, bytes))
-
-}
-
 // 推送地主玩家
-
 func pushWhoIsLandlord(room *Room, landlordPlayer *Player) {
 
 	landlordPlayer.HandCards = append(landlordPlayer.HandCards, room.bottomCards...)
@@ -145,84 +198,4 @@ func pushWhoIsLandlord(room *Room, landlordPlayer *Player) {
 	bytes, _ := proto.Marshal(&push)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushWhoIsLandlord, bytes))
 
-}
-
-// 清空玩家
-func emptyPlayerCardInfo(room *Room) {
-	for _, v := range room.Players {
-		v.IsCanDo = false
-		v.DidAction = 0
-		v.HandCards = nil
-		v.ThrowCards = nil
-	}
-}
-
-// 设置当前操作玩家
-func setCurrentPlayer(room *Room, playerId string) {
-	for _, v := range room.Players {
-		if v.PlayerInfo.PlayerId == playerId {
-			v.IsCanDo = true
-		} else {
-			v.IsCanDo = false
-		}
-	}
-
-}
-
-// 根据当前玩家的位置获取上一个玩家的位置
-func getLastPosition(currentPosition int32) int32 {
-	switch currentPosition {
-	case 3:
-		return 2
-	case 2:
-		return 1
-	case 1:
-		return 3
-	default:
-		logger.Error("!!!!!!!!!incredible！1", currentPosition)
-		return 0
-	}
-
-}
-
-// 根据上个玩家的位置获取当前玩家的位置
-func getCurrentPosition(lastPosition int32) int32 {
-	switch lastPosition {
-	case 3:
-		return 1
-	case 2:
-		return 3
-	case 1:
-		return 2
-	default:
-		logger.Error("!!!!!!!!!incredible！2", lastPosition)
-		return 0
-	}
-}
-
-// 根据当前玩家的位置获取下一个玩家的位置
-func getNextPosition(currentPosition int32) int32 {
-	switch currentPosition {
-	case 3:
-		return 1
-	case 2:
-		return 3
-	case 1:
-		return 2
-	default:
-		logger.Error("!!!!!!!!!incredible！3", currentPosition)
-		return 0
-	}
-}
-
-// 根据位置获取玩家
-func getPlayerByPosition(room *Room, position int32) *Player {
-	for _, v := range room.Players {
-		if v.PlayerPosition == position {
-			return v
-		}
-	}
-
-	logger.Debug("!!!!!!!!!incredible")
-	return nil
 }

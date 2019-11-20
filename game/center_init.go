@@ -2,7 +2,6 @@ package game
 
 import (
 	"sync"
-	"time"
 )
 
 var userLoginChan struct {
@@ -14,7 +13,7 @@ func StartCenter() {
 
 	userLoginChan.chanMap = make(map[string]chan *UserLoginCallBack, 1000)
 	//	go changeToken()
-	time.Sleep(time.Second)
+	DelaySomeTime(1)
 	ConnectCenterWs()
 }
 

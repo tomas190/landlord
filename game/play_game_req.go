@@ -45,7 +45,7 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 
 }
 
-// ReqGetLandlordDo
+// 抢地主操作
 func ReqGetLandlordDo(session *melody.Session, data []byte) {
 	logger.Debug("=== ReqGetLandlordDo ===")
 	req := &mproto.ReqGetLandlordDo{}
