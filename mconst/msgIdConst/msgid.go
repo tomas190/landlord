@@ -26,9 +26,10 @@ enum MessageID {
 */
 // 指令请求
 const (
-	Ping         uint16 = 0
-	ReqLogin     uint16 = 100 // 用户登录请求
-	ReqEnterRoom uint16 = 101 // 用户进入房间
+	Ping             uint16 = 0
+	ReqLogin         uint16 = 100 // 用户登录请求
+	ReqEnterRoom     uint16 = 101 // 用户进入房间
+	ReqGetLandlordDo uint16 = 102 // 争夺地主的操作
 
 )
 
@@ -43,7 +44,7 @@ const (
 	PushRoomClassify uint16 = 300 // 推送房间分类信息  用户登录认证成功之后 推送
 	PushRoomPlayer          = 301 // 推送房间信息  用户当玩家成功匹配时候 推送
 	PushStartGame           = 302 // 推送开始游戏 发牌
-
+	PushCallLandlord        = 303 // 推送叫地主阶段消息
 )
 
 // 主动推送 Error

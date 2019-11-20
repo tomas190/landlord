@@ -13,7 +13,7 @@ type Room struct {
 	LandlordPlayerId string             // 地主玩家Id
 	bottomCards      []*Card            // 地主牌(及最后三张牌)
 
-	Status int32 // 房间状态 0 等待中 1叫地主  2正在玩
+	Status int32 // 房间状态 0 等待中 1叫地主 2.抢地主, 3正在玩
 }
 
 type RoomClassify struct {

@@ -10,6 +10,7 @@ type Player struct {
 	IsRobot        bool            // 是否机器人
 	HandCards      []*Card         // 手牌
 	ThrowCards     []*Card         // 打初的牌
+	DidAction      int32            // 抢地主的操作 0 没有进行过抢地主 1 / -1 叫了地主  2/-2 抢了地主
 	IsLandlord     bool            // 是否地主
 	IsGameHosting  bool            // 是否游戏托管
 	IsCanDo        bool            // 是否可操作
@@ -26,4 +27,6 @@ type PlayerInfo struct {
 
 // 玩家动作
 type PlayerActionChan struct {
+	ActionType  int32   // 1叫地主 2抢地主 3打牌  -1 不叫 -2 步枪 -3 不要
+	ActionCards []*Card // 操作牌
 }

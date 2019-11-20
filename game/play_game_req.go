@@ -19,7 +19,7 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		return
 	}
 
-	PrintMsg("登录请求参数:", req)
+	PrintMsg("ReqEnterRoom:", req)
 	/*==== 参数验证 =====*/
 
 	playerInfo, err := GetSessionPlayerInfo(session)
@@ -41,7 +41,47 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 	case roomType.MidField:
 	case roomType.HighField:
 
-
 	}
+
+}
+
+// ReqGetLandlordDo
+func ReqGetLandlordDo(session *melody.Session, data []byte) {
+	logger.Debug("=== ReqGetLandlordDo ===")
+	req := &mproto.ReqGetLandlordDo{}
+	err := proto.Unmarshal(data, req)
+	if err != nil {
+		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "请求数据异常:"+err.Error())
+		return
+	}
+
+	info, err := GetSessionPlayerInfo(session)
+	if err != nil {
+		logger.Error("ReqDoAction:此session无用户信息", info)
+		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "无用户信息:"+err.Error())
+		return
+	}
+
+	PrintMsg("ReqGetLandlordDo:"+info.PlayerId, req)
+	/*==== 参数验证 =====*/
+
+	roomId := GetSessionRoomId(session)
+	room := GetRoom(roomId)
+	if room == nil {
+		logger.Error("ReqDoAction:无room信息", roomId)
+		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "无room信息:"+roomId)
+		return
+	}
+
+	actionPlayer := room.Players[info.PlayerId]
+	if actionPlayer == nil {
+		logger.Error("ReqDoAction:无room信息", roomId)
+		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "room无用户信息:"+roomId+"--"+info.PlayerId)
+		return
+	}
+
+	var actionChan PlayerActionChan
+	actionChan.ActionType = req.Action
+	actionPlayer.ActionChan <- actionChan
 
 }
