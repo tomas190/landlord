@@ -14,18 +14,12 @@ import (
 
 // 叫地主
 func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
-	playerId := actionPlayer.PlayerInfo.PlayerId
+	//playerId := actionPlayer.PlayerInfo.PlayerId
 	actionPlayer.DidAction = playerAction.CallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 叫地主的动作...")
 	room.Status = roomStatus.GetLandlord
 	if nextPlayer.DidAction < playerAction.NoAction { // 如果下一个玩家的已做操作<0 那么他就是地主
-		setCurrentPlayer(room, playerId)
-		actionPlayer.IsLandlord = true
-		logger.Debug("=============== 玩牌开始 ===========")
-		logger.Debug("地主玩家:", actionPlayer.PlayerInfo.PlayerId)
-		// todo 推送地主牌 开始玩牌逻辑
-		pushCallLandlordLastAction(room,actionPlayer)
-
+		ensureWhoIsLandlord(room, actionPlayer, actionPlayer)
 	} else { // 则让下一个玩家抢地主
 		setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
 		pushCallLandlordHelp(room, actionPlayer, nextPlayer, playerAction.GetLandlord)
@@ -39,14 +33,9 @@ func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player,
 	actionPlayer.DidAction = playerAction.GetLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 抢地主动作...")
 	if lastAction == playerAction.CallLandlord { // 如果玩家抢了地主 又已经叫过地主的情况下 那他就是地主
-		setCurrentPlayer(room, actionPlayer.PlayerInfo.PlayerId)
-		actionPlayer.IsLandlord = true
-		logger.Debug("=============== 玩牌开始 ===========")
-		logger.Debug("地主玩家:", actionPlayer.PlayerInfo.PlayerId)
-		// todo 推送地主牌 开始玩牌逻辑
-		pushCallLandlordLastAction(room,actionPlayer)
+		ensureWhoIsLandlord(room, actionPlayer, actionPlayer)
 	} else {
-		// 如果下一个玩家不叫  上一个玩家叫了地主 则该上一个玩家抢地主
+		// 如果下一个玩家不叫或者不抢  上一个玩家叫了地主 则该上一个玩家抢地主
 		if nextPlayer.DidAction < playerAction.NoAction && lastPlayer.DidAction == playerAction.CallLandlord {
 			setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
 			pushCallLandlordHelp(room, actionPlayer, lastPlayer, playerAction.GetLandlord)
@@ -80,20 +69,15 @@ func NotGetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Play
 	actionPlayer.DidAction = playerAction.NotGetLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 不抢...")
 	if lastPlayer.DidAction < playerAction.NoAction { // 如果上一个玩家已经做了不抢的动作  那么下一个玩家就是地主
-		setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
-		nextPlayer.IsLandlord = true
-		logger.Debug("=============== 玩牌开始 ===========")
-		logger.Debug("地主玩家:", nextPlayer.PlayerInfo.PlayerId)
-		// todo 推送地主牌 开始玩牌逻辑
-		pushCallLandlordLastAction(room,actionPlayer)
-
+		ensureWhoIsLandlord(room, nextPlayer, actionPlayer)
 	} else if nextPlayer.DidAction < playerAction.NoAction { // 如果下一个玩家已经做了不抢的动作  那么上一个玩家就是地主
-		setCurrentPlayer(room, lastPlayer.PlayerInfo.PlayerId)
-		lastPlayer.IsLandlord = true
-		logger.Debug("=============== 玩牌开始 ===========")
-		logger.Debug("地主玩家:", lastPlayer.PlayerInfo.PlayerId)
-		// todo 推送地主牌 开始玩牌逻辑
-		pushCallLandlordLastAction(room,actionPlayer)
+		ensureWhoIsLandlord(room, lastPlayer, actionPlayer)
+	} else if lastPlayer.DidAction == playerAction.GetLandlord &&// 如果上一个玩家抢了地主 并且下一个玩家做了不叫或者不抢
+		nextPlayer.DidAction < playerAction.NoAction { // 那么上一个玩家就是地主
+		ensureWhoIsLandlord(room, lastPlayer, actionPlayer)
+	} else if nextPlayer.DidAction == playerAction.GetLandlord { // 如果下一个玩家抢了地主 那下一个玩家就是地主
+		ensureWhoIsLandlord(room, nextPlayer, actionPlayer)
+
 	} else {
 		setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
 		pushCallLandlordHelp(room, actionPlayer, nextPlayer, playerAction.GetLandlord)
@@ -102,6 +86,17 @@ func NotGetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Play
 }
 
 /* ==========================================  四大 action ===========================================*/
+
+// 已经确定谁是地主
+func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
+	setCurrentPlayer(room, landlordPlayer.PlayerInfo.PlayerId)
+	landlordPlayer.IsLandlord = true
+	logger.Debug("=============== 玩牌开始 ===========")
+	logger.Debug("地主玩家:", landlordPlayer.PlayerInfo.PlayerId)
+	// todo 推送地主牌 开始玩牌逻辑
+	pushCallLandlordLastAction(room, actionPlayer)
+	pushWhoIsLandlord(room, landlordPlayer)
+}
 
 // 抢地主阶段辅助推送
 func pushCallLandlordHelp(room *Room, lastPlayer, nextPlayer *Player, showAction int32) {
@@ -135,13 +130,20 @@ func pushCallLandlordLastAction(room *Room, lastPlayer *Player) {
 
 	bytes, _ := proto.Marshal(&push)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushCallLandlord, bytes))
+
 }
 
 // 推送地主玩家
 
 func pushWhoIsLandlord(room *Room, landlordPlayer *Player) {
 
-
+	landlordPlayer.HandCards = append(landlordPlayer.HandCards, room.bottomCards...)
+	var push mproto.PushLandlord
+	push.LandlordId = landlordPlayer.PlayerInfo.PlayerId
+	push.Cards = ChangeCardToProto(room.bottomCards)
+	push.Position = landlordPlayer.PlayerPosition
+	bytes, _ := proto.Marshal(&push)
+	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushWhoIsLandlord, bytes))
 
 }
 

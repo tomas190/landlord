@@ -35,7 +35,7 @@ message PushStartGame {
     repeated Card cards = 2; // 当前玩家手牌
 }
 
-// SERVER PUSH : MSG_ID 302  // 抢地主阶段
+// SERVER PUSH : MSG_ID 303  // 抢地主阶段
 // 3.抢地主阶段
 message PushGetLandlord {
     string lastPlayerId = 1; // 上个的玩家Id
@@ -48,15 +48,16 @@ message PushGetLandlord {
     int32 Countdown = 8; // 倒计时
 }
 
-// SERVER PUSH : MSG_ID 303  // 地主推送
-// 4.出牌阶段
+// SERVER PUSH : MSG_ID 304  // 地主推送
+// 4.地主推送
 message PushLandlord {
     string landlordId = 1; // 地主玩家Id
-    repeated Card cards = 2 ; // 底牌
+    int32 position = 2; // 地主玩家Id
+    repeated Card cards = 3; // 底牌
 
 }
 
-// SERVER PUSH : MSG_ID 304  // 出牌阶段
+// SERVER PUSH : MSG_ID 305  // 出牌阶段
 // 5.出牌阶段
 message PushPlayCard {
     string lastPlayerId = 1; // 上个操作的玩家Id
