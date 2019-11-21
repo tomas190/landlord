@@ -44,18 +44,20 @@ func PushPlayerEnterRoom(room *Room) {
 // 2.给玩家发牌
 func PushPlayerStartGame(room *Room) {
 	cards := CreateBrokenCard()
+	//cards := CreateSortCard()
 	players := room.Players
 	for _, v := range players {
-		v.HandCards = cards[:17]
+		v.HandCards = append([]*Card{}, cards[:17]...)
+		SortCard(v.HandCards)
 		logger.Debug("玩家" + v.PlayerInfo.PlayerId + "的牌：")
 		PrintCard(v.HandCards)
-		cards = cards[17:]
+		cards = append([]*Card{}, cards[17:]...)
 		var push mproto.PushStartGame
 		push.Cards = ChangeCardToProto(v.HandCards)
 		bytes, _ := proto.Marshal(&push)
 		PlayerSendMsg(v, PkgMsg(msgIdConst.PushStartGame, bytes))
 	}
-	room.BottomCards = cards
+	room.BottomCards = append([]*Card{}, cards...)
 	logger.Debug("底牌:")
 	PrintCard(cards)
 	room.Status = roomStatus.CallLandlord
@@ -66,5 +68,3 @@ func PushPlayerStartGame(room *Room) {
 	actionPlayerId := pushFirstCallLandlord(room)
 	CallLandlord(room, actionPlayerId)
 }
-
-

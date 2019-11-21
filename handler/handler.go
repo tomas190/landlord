@@ -110,6 +110,8 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		return
 	}
 
+	return
+
 	// todo  huck
 	// logger.Info("Handler OnSentMessageBinary :", )
 	switch msgId {

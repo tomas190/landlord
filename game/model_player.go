@@ -13,7 +13,8 @@ type Player struct {
 	DidAction      int32           // 抢地主的操作 0 没有进行过抢地主 1 / -1 叫了地主  2/-2 抢了地主
 	IsLandlord     bool            // 是否地主
 	IsGameHosting  bool            // 是否游戏托管
-	IsCanDo        bool            // 是否可操作
+	IsCanDo        bool            // 是该当前玩家操作
+	IsMustDo       bool            // 是否必须出牌
 	IsReady        bool            // 打完一局之后是否准备
 	ActionChan     chan PlayerActionChan
 }

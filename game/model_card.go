@@ -16,21 +16,18 @@ var originalCard []*Card
 
 // 创建一副有序的牌
 func CreateSortCard() []*Card {
-	result := originalCard
+	result := initOriginalCard()
 	SortCard(result)
 	return result
 }
 
 // 创建一副乱序的牌
 func CreateBrokenCard() []*Card {
-	result := originalCard
+	result := initOriginalCard()
 	OutOfCard(result)
 	return result
 }
 
-func init() {
-	originalCard = initOriginalCard()
-}
 
 func initOriginalCard() []*Card {
 	var result []*Card

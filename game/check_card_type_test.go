@@ -1,10 +1,9 @@
 package game
 
 import (
-	"fmt"
+	"github.com/wonderivan/logger"
 	"testing"
 )
-
 
 /*
 // 牌型
@@ -29,12 +28,9 @@ const (
 )
 */
 func TestCalPattern(t *testing.T) {
-	card := []*Card{{12, 1}, {12, 1},{12, 1} ,
-		{11, 1}, {11, 1},{11, 1},
-	{9,2},{9,2}}
-	set := NewCardSet(card)
+	lastCard := []*Card{{12, 1}, {12, 2}, {12, 2}}
+	outCard := []*Card{{14, 1}, {15, 2}}
 
-	pattern := CalPattern(set)
-	fmt.Println(pattern)
+	logger.Debug(CanBeat(lastCard, outCard))
 
 }

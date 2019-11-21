@@ -55,6 +55,7 @@ func CallLandlord(room *Room, playerId string) {
 // 叫地主
 func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 	//playerId := actionPlayer.PlayerInfo.PlayerId
+	room.Multiple = room.Multiple * 2
 	actionPlayer.DidAction = playerAction.CallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 叫地主的动作...")
 	room.Status = roomStatus.GetLandlord
@@ -69,6 +70,7 @@ func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 
 // 抢地主
 func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, ) {
+	room.Multiple = room.Multiple * 2
 	lastAction := actionPlayer.DidAction
 	actionPlayer.DidAction = playerAction.GetLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 抢地主动作...")
@@ -138,8 +140,8 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 	pushWhoIsLandlord(room, landlordPlayer)
 
 	// todo  流程控制 到 出牌阶段
-	reSetOutRoomToOut(room) // 清空玩家动作
-
+	reSetOutRoomToOut(room, landlordPlayer.PlayerInfo.PlayerId)         // 清空玩家动作
+	setCurrentPlayerOut(room, landlordPlayer.PlayerInfo.PlayerId, true) // 设置位当前操作玩家
 	pushMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
 	PlayingGame(room, landlordPlayer.PlayerInfo.PlayerId)
 
@@ -169,6 +171,7 @@ func pushLastCallLandlord(room *Room, lastPlayer *Player) {
 	push.LastPlayerId = lastPlayer.PlayerInfo.PlayerId
 	push.LastPlayerAction = lastPlayer.DidAction
 	push.Countdown = sysSet.GameDelayTimeInt
+	push.Multi = room.Multiple
 
 	bytes, _ := proto.Marshal(&push)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushCallLandlord, bytes))
@@ -187,6 +190,7 @@ func pushCallLandlordHelp(room *Room, lastPlayer, nextPlayer *Player, showAction
 	push.PlayerId = nextPlayer.PlayerInfo.PlayerId
 	push.Countdown = sysSet.GameDelayTimeInt
 	push.Action = showAction
+	push.Multi = room.Multiple
 
 	bytes, _ := proto.Marshal(&push)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushCallLandlord, bytes))
@@ -196,6 +200,7 @@ func pushCallLandlordHelp(room *Room, lastPlayer, nextPlayer *Player, showAction
 func pushWhoIsLandlord(room *Room, landlordPlayer *Player) {
 
 	landlordPlayer.HandCards = append(landlordPlayer.HandCards, room.BottomCards...)
+	SortCard(landlordPlayer.HandCards)
 	var push mproto.PushLandlord
 	push.LandlordId = landlordPlayer.PlayerInfo.PlayerId
 	push.Cards = ChangeCardToProto(room.BottomCards)
