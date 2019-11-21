@@ -13,6 +13,7 @@ enum MessageID {
 
     MSG_ENTER_ROOM = 101; // c-s 进入房间
     MSG_GET_LANDLORD_DO = 102; // c-s 玩家叫地主阶段操作
+    MSG_OUT_CARD_DO = 103; // c-s // 玩家出牌
 
     /* SERVER PUSH  MSG - FROM 300 */
     MSG_ROOM_CLASSIFY_PUSH = 300; // 推送房间分类信息  用户登录认证成功之后 推送
@@ -22,6 +23,7 @@ enum MessageID {
     MSG_GET_LANDLORD_PUSH = 303; // 抢地主推送
     MSG_LANDLORD_PUSH = 304; // 谁是地主推送
     MSG_PLAY_CARD_PUSH = 305; // 开始打牌逻辑
+    MSG_SETTLEMENT_PUSH = 306; // 结算
 
     /* SERVER PUSH ERROR MSG - FROM 500 */
     MSG_CLOSE_CONN_PUSH = 500; // s-c 服务器主动断开

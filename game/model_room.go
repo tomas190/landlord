@@ -11,9 +11,11 @@ type Room struct {
 	RoomId           string             // 房间ID
 	Players          map[string]*Player // 当前玩家
 	LandlordPlayerId string             // 地主玩家Id
-	bottomCards      []*Card            // 地主牌(及最后三张牌)
-
-	Status int32 // 房间状态 0 等待中 1叫地主 2.抢地主, 3正在玩
+	BottomCards      []*Card            // 地主牌(及最后三张牌)
+	EffectiveCard    []*Card            // 有效牌
+	EffectiveType    int32              // 有效牌牌型
+	Multiple         int32              // 当局游戏倍数
+	Status           int32              // 房间状态 0 等待中 1叫地主 2.抢地主, 3正在玩
 }
 
 type RoomClassify struct {

@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -15,5 +14,3 @@ func TestName(t *testing.T) {
 	PrintCard(cards)
 
 }
-
-

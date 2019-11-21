@@ -59,7 +59,7 @@ message PushLandlord {
 
 // SERVER PUSH : MSG_ID 305  // 出牌阶段
 // 5.出牌阶段
-message PushPlayCard {
+message PushOutCard {
     string lastPlayerId = 1; // 上个操作的玩家Id
     int32 lastPlayerPosition = 2; // 上个操作的玩家座位
     repeated Card lastPlayerCards = 3; // 上个玩家的出牌

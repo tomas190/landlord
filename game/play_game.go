@@ -55,7 +55,7 @@ func PushPlayerStartGame(room *Room) {
 		bytes, _ := proto.Marshal(&push)
 		PlayerSendMsg(v, PkgMsg(msgIdConst.PushStartGame, bytes))
 	}
-	room.bottomCards = cards
+	room.BottomCards = cards
 	logger.Debug("底牌:")
 	PrintCard(cards)
 	room.Status = roomStatus.CallLandlord

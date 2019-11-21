@@ -5,6 +5,7 @@ import (
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
 	"landlord/mconst/msgIdConst"
+	"landlord/mconst/playerAction"
 	"landlord/mconst/roomType"
 	"landlord/msg/mproto"
 )
@@ -82,6 +83,55 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 
 	var actionChan PlayerActionChan
 	actionChan.ActionType = req.Action
+	actionPlayer.ActionChan <- actionChan
+
+} // 抢地主操作
+
+// 出牌打牌操作
+func ReqOutCardDo(session *melody.Session, data []byte) {
+	logger.Debug("=== ReqOutCardDo ===")
+	req := &mproto.ReqOutCardDo{}
+	err := proto.Unmarshal(data, req)
+	if err != nil {
+		SendErrMsg(session, msgIdConst.ReqOutCardDo, "请求数据异常:"+err.Error())
+		return
+	}
+
+	info, err := GetSessionPlayerInfo(session)
+	if err != nil {
+		logger.Error("ReqOutCardDo:此session无用户信息", info)
+		SendErrMsg(session, msgIdConst.ReqOutCardDo, "无用户信息:"+err.Error())
+		return
+	}
+
+	PrintMsg("ReqOutCardDo:"+info.PlayerId, req)
+	/*==== 参数验证 =====*/
+
+	roomId := GetSessionRoomId(session)
+	room := GetRoom(roomId)
+	if room == nil {
+		logger.Error("ReqOutCardDo:无room信息", roomId)
+		SendErrMsg(session, msgIdConst.ReqOutCardDo, "无room信息:"+roomId)
+		return
+	}
+
+	actionPlayer := room.Players[info.PlayerId]
+	if actionPlayer == nil {
+		logger.Error("ReqOutCardDo:无room信息", roomId)
+		SendErrMsg(session, msgIdConst.ReqOutCardDo, "room无用户信息:"+roomId+"--"+info.PlayerId)
+		return
+	}
+
+	var actionChan PlayerActionChan
+	if len(req.Cards) <= 0 {
+		actionChan.ActionType = playerAction.NotOutCardAction
+	} else {
+		actionChan.ActionType = playerAction.OutCardAction
+		actionChan.ActionCards = ChangeProtoToCard(req.Cards)
+		// todo 获取房间牌型和有效牌 并判断是否可以出此牌 如果否则推送错误消息
+		// todo 如果出牌是炸弹 则 房间翻倍
+
+	}
 	actionPlayer.ActionChan <- actionChan
 
 }

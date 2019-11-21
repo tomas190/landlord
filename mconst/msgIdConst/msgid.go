@@ -30,6 +30,7 @@ const (
 	ReqLogin         uint16 = 100 // 用户登录请求
 	ReqEnterRoom     uint16 = 101 // 用户进入房间
 	ReqGetLandlordDo uint16 = 102 // 争夺地主的操作
+	ReqOutCardDo     uint16 = 103 // 出牌操作
 
 )
 
@@ -46,6 +47,7 @@ const (
 	PushStartGame            = 302 // 推送开始游戏 发牌
 	PushCallLandlord         = 303 // 推送叫地主阶段消息
 	PushWhoIsLandlord        = 304 // 推送叫地主阶段消息
+	PushOutCard              = 305 // 推送出牌消息
 )
 
 // 主动推送 Error

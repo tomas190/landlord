@@ -88,8 +88,10 @@ func OnMessageBinary(m *melody.Melody, session *melody.Session, bytes []byte) {
 		ReqLogin(m, session, data)
 	case msgIdConst.ReqEnterRoom: // 进入房间  101  // push 301 302
 		game.ReqEnterRoom(session, data)
-	case msgIdConst.ReqGetLandlordDo: // 获取玩家列表  102
+	case msgIdConst.ReqGetLandlordDo: // 玩家抢地主请求 102
 		game.ReqGetLandlordDo(session, data)
+	case msgIdConst.ReqOutCardDo: // 玩家出牌请求 102
+		game.ReqOutCardDo(session, data)
 	default:
 		logger.Error("未知指令")
 	}
@@ -151,6 +153,16 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		}
 		fmt.Println("msgId.PushCallLandlord")
 		game.PrintMsg("PushCallLandlord:", resp)
+		fmt.Println()
+	case msgIdConst.PushOutCard:
+		resp := &mproto.PushOutCard{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgId.PushOutCard")
+		game.PrintMsg("PushOutCard:", resp)
 		fmt.Println()
 
 	case msgIdConst.ErrMsg:

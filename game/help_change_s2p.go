@@ -59,6 +59,18 @@ func ChangeCardToProto(cards []*Card) []*mproto.Card {
 	return result
 }
 
+func ChangeProtoToCard(cards []*mproto.Card) []*Card {
+	var result []*Card
+
+	for i := 0; i < len(cards); i++ {
+		var mc Card
+		mc.Value = cards[i].Value
+		mc.Suit = cards[i].Suit
+		result = append(result, &mc)
+	}
+	return result
+}
+
 // ==================== proto to struct ====================
 
 func ChangePlayerP2S(item mproto.PlayerInfo) PlayerInfo {
