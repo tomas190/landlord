@@ -8,4 +8,5 @@ import "time"
 const (
 	GameDelayTime time.Duration = 10
 	GameDelayTimeInt int32= 10
+	GameDelayReadyTimeInt int32= 10
 )

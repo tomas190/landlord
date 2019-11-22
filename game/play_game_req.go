@@ -177,7 +177,8 @@ func verifyOutCard(room *Room, actionPlayer *Player, outCards []*Card) (int32, e
 
 	// 14火箭
 	if cardType == cardConst.CARD_PATTERN_BOMB || cardType == cardConst.CARD_PATTERN_ROCKET {
-		room.Multiple = room.Multiple * 2
+		room.MultiAll = room.MultiAll * 2
+		room.MultiBoom = room.MultiBoom * 2
 	}
 
 	room.EffectiveCard = outCards

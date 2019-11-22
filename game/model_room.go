@@ -14,7 +14,11 @@ type Room struct {
 	BottomCards      []*Card            // 地主牌(及最后三张牌)
 	EffectiveCard    []*Card            // 有效牌
 	EffectiveType    int32              // 有效牌牌型
-	Multiple         int32              // 当局游戏倍数
+	MultiAll         int32              // 当局游戏总倍数
+	MultiGetLandlord int32              // 当局抢地主倍数
+	MultiBoom        int32              // 炸弹倍数
+	MultiSpring      int32              // 是否春天
+	LandlordOutNum   int32              // 地主出了多少首牌 用于计算春天
 	Status           int32              // 房间状态 0 等待中 1叫地主 2.抢地主, 3正在玩
 }
 
@@ -33,7 +37,11 @@ func NewRoom(rType int32, players map[string]*Player) *Room {
 
 	var room Room
 	room.RoomId = uuid.New().String()
-	room.Multiple = 3 // 初始倍数是3
+	room.MultiAll = 3 // 初始倍数是3
+	room.MultiGetLandlord = 1
+	room.MultiBoom = 1
+	room.MultiBoom = 1
+//	room.MultiSpring = 1
 	room.Players = players
 	room.RoomClass = NewRoomClassify(rType)
 	return &room

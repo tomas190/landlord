@@ -55,7 +55,7 @@ func CallLandlord(room *Room, playerId string) {
 // 叫地主
 func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 	//playerId := actionPlayer.PlayerInfo.PlayerId
-	room.Multiple = room.Multiple * 2
+	// room.MultiAll = room.MultiAll * 2 叫地主不加倍
 	actionPlayer.DidAction = playerAction.CallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 叫地主的动作...")
 	room.Status = roomStatus.GetLandlord
@@ -70,7 +70,8 @@ func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 
 // 抢地主
 func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, ) {
-	room.Multiple = room.Multiple * 2
+	room.MultiAll = room.MultiAll * 2
+	room.MultiGetLandlord = room.MultiGetLandlord * 2
 	lastAction := actionPlayer.DidAction
 	actionPlayer.DidAction = playerAction.GetLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 抢地主动作...")
@@ -171,7 +172,7 @@ func pushLastCallLandlord(room *Room, lastPlayer *Player) {
 	push.LastPlayerId = lastPlayer.PlayerInfo.PlayerId
 	push.LastPlayerAction = lastPlayer.DidAction
 	push.Countdown = sysSet.GameDelayTimeInt
-	push.Multi = room.Multiple
+	push.Multi = room.MultiAll
 
 	bytes, _ := proto.Marshal(&push)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushCallLandlord, bytes))
@@ -190,7 +191,7 @@ func pushCallLandlordHelp(room *Room, lastPlayer, nextPlayer *Player, showAction
 	push.PlayerId = nextPlayer.PlayerInfo.PlayerId
 	push.Countdown = sysSet.GameDelayTimeInt
 	push.Action = showAction
-	push.Multi = room.Multiple
+	push.Multi = room.MultiAll
 
 	bytes, _ := proto.Marshal(&push)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushCallLandlord, bytes))

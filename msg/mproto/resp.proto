@@ -138,13 +138,14 @@ message Settlement {
     int32 winOrFail = 7; // 是输是赢  1 赢 -1 输
     bool minSettlement = 8; // 是否最小金币结算 (及玩家 这局本来输/赢 100 但自身原有金币只有50 所有最多只能输/赢 50)
     repeated Card remainCards = 9; // 剩余手牌
+    int32 position = 10; // 玩家座位号
 
 }
 
 // 倍数详细信息
 message MultipleInfo {
     // 前端每轮显示 *3 的房间底分倍数
-    string spring = 1; // 春天倍数
     string fightLandlord = 2; // 抢地主倍数
     string boom = 3; // 炸弹倍数
+    string spring = 1; // 春天倍数
 }

@@ -46,6 +46,10 @@ func PlayingGame(room *Room, actionPlayerId string) {
 // 逻辑能到这一步  是确保能正常操作的
 func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card, cardsType int32) {
 
+	if actionPlayer.IsLandlord {
+		room.LandlordOutNum++
+	}
+
 	/*after*/
 	after := actionPlayer.HandCards
 	/*after*/
@@ -70,6 +74,8 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		//pushOutCardHelp(room, nil, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType)
 		pushLastOutCard(room, actionPlayer, cards, cardsType)
 		logger.Debug("玩家胜利:", actionPlayer.PlayerInfo.PlayerId)
+		// 判断是否春天
+		CheckSpring(room, actionPlayer)
 		// todo 当前玩家胜利  推送结算消息
 		Settlement(room, actionPlayer)
 		return
@@ -77,6 +83,22 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
 	pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType)
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
+}
+
+// 判断是否春天
+func CheckSpring(room *Room, player *Player) {
+	// 1. 判断玩家是否地主
+	_, f1, f2 := getPlayerClass(room)
+	if player.IsLandlord == true {
+		farmerThrows := append(f1.ThrowCards, f2.ThrowCards...)
+		if len(farmerThrows) <= 0 || farmerThrows == nil {
+			room.MultiSpring = 2
+		}
+	} else {
+		if room.LandlordOutNum == 1 {
+			room.MultiSpring = 2
+		}
+	}
 }
 
 // 不出逻辑
@@ -98,48 +120,112 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 func Settlement(room *Room, winPlayer *Player) {
 	// 1. 计算基本倍数
 
-	mult := room.Multiple
+	mult := room.MultiAll
 	settlementGold := room.RoomClass.BottomPoint * float64(mult)
 
 	landPlayer, fp1, fp2 := getPlayerClass(room)
-
 	roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
+
+	var sPush mproto.PushSettlement
+
 	// 如果赢家是地主
 	if winPlayer.IsLandlord == true {
 		var landRealWinGold float64 // 地主实际赢钱 税前
 		if fp1.PlayerInfo.Gold < settlementGold { // 如果玩家1 的钱不够开
 			landRealWinGold += fp1.PlayerInfo.Gold
 			syncLossGold(fp1, fp1.PlayerInfo.Gold, roundId) // 同步金币 到中心服务 session
+
+			showWinLossGold := fmt.Sprintf("-%.2f", fp1.PlayerInfo.Gold)
+			ss := getSelfSettlement(room, fp1, -1, showWinLossGold, true)
+			sPush.Settlement = append(sPush.Settlement, ss)
 		} else {
 			landRealWinGold += settlementGold
 			syncLossGold(fp1, settlementGold, roundId) // 同步金币 到中心服务 session
+
+			showWinLossGold := fmt.Sprintf("-%.2f", settlementGold)
+			ss := getSelfSettlement(room, fp1, -1, showWinLossGold, false)
+			sPush.Settlement = append(sPush.Settlement, ss)
 		}
 
 		if fp2.PlayerInfo.Gold < settlementGold { // 如果玩家2 的钱不够开
 			landRealWinGold += fp2.PlayerInfo.Gold
 			syncLossGold(fp1, fp2.PlayerInfo.Gold, roundId) // 同步金币 到中心服务 session
+
+			showWinLossGold := fmt.Sprintf("-%.2f", fp2.PlayerInfo.Gold)
+			ss := getSelfSettlement(room, fp2, -1, showWinLossGold, true)
+			sPush.Settlement = append(sPush.Settlement, ss)
 		} else {
 			landRealWinGold += settlementGold
 			syncLossGold(fp1, settlementGold, roundId) // 同步金币 到中心服务 session
+
+			showWinLossGold := fmt.Sprintf("-%.2f", settlementGold)
+			ss := getSelfSettlement(room, fp2, -1, showWinLossGold, false)
+			sPush.Settlement = append(sPush.Settlement, ss)
 		}
 
 		landRealWinGoldPay := landRealWinGold * Server.GameTaxRate            // 地主实际赢钱 税后
 		syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId) // 同步金币 到中心服务 session
-		return
+
+		showWinLossGold := fmt.Sprintf("%.2f", landRealWinGoldPay)
+		ss := getSelfSettlement(room, landPlayer, 1, showWinLossGold, false)
+		sPush.Settlement = append(sPush.Settlement, ss)
+
+	} else { // 如果玩家不是地主
+		// 1. 判断地主金币是否够开
+		if landPlayer.PlayerInfo.Gold/2 < settlementGold {
+
+			farmerRealWinGold := landPlayer.PlayerInfo.Gold / 2
+			farmerRealWinGoldPay := farmerRealWinGold * Server.GameTaxRate
+
+			syncWinGold(fp1, settlementGold, farmerRealWinGoldPay, roundId)
+			syncWinGold(fp2, settlementGold, farmerRealWinGoldPay, roundId)
+			syncLossGold(landPlayer, landPlayer.PlayerInfo.Gold, roundId)
+			//
+			logger.Debug("地主玩家输钱不够开", landPlayer.PlayerInfo.Gold)
+			logger.Debug("结算金额基*1", settlementGold)
+			logger.Debug("结算金额基*2", settlementGold*2)
+
+			showWinLossGold := fmt.Sprintf("%.2f", farmerRealWinGoldPay)
+			fs1 := getSelfSettlement(room, fp1, 1, showWinLossGold, false)
+			sPush.Settlement = append(sPush.Settlement, fs1)
+
+			fs2 := getSelfSettlement(room, fp2, 1, showWinLossGold, false)
+			sPush.Settlement = append(sPush.Settlement, fs2)
+
+			landShowWinLossGold := fmt.Sprintf("-%.2f", landPlayer.PlayerInfo.Gold)
+			ls := getSelfSettlement(room, landPlayer, -1, landShowWinLossGold, true)
+			sPush.Settlement = append(sPush.Settlement, ls)
+
+		} else {
+			// 正常结算
+			winGoldPay := settlementGold * Server.GameTaxRate
+			syncWinGold(fp1, settlementGold, winGoldPay, roundId)
+			syncWinGold(fp2, settlementGold, winGoldPay, roundId)
+			syncLossGold(landPlayer, settlementGold*2, roundId)
+
+			showWinLossGold := fmt.Sprintf("%.2f", winGoldPay)
+			fs1 := getSelfSettlement(room, fp1, 1, showWinLossGold, false)
+			sPush.Settlement = append(sPush.Settlement, fs1)
+
+			fs2 := getSelfSettlement(room, fp2, 1, showWinLossGold, false)
+			sPush.Settlement = append(sPush.Settlement, fs2)
+
+			landShowWinLossGold := fmt.Sprintf("-%.2f", settlementGold*2)
+			ls := getSelfSettlement(room, landPlayer, -1, landShowWinLossGold, true)
+			sPush.Settlement = append(sPush.Settlement, ls)
+		}
+
 	}
 
-	// 如果玩家不是地主
-	// 1. 判断地主金币是否够开
-	if landPlayer.PlayerInfo.Gold/2 < settlementGold {
-		//
-		logger.Debug("地主玩家输钱不够开", landPlayer.PlayerInfo.Gold)
-		logger.Debug("结算金额基*1", settlementGold)
-		logger.Debug("结算金额基*2", settlementGold*2)
+	var mulitInfo mproto.MultipleInfo
+	mulitInfo.FightLandlord = fmt.Sprintf("×%d", room.MultiBoom)
+	mulitInfo.Boom = fmt.Sprintf("×%d", room.MultiBoom)
+	mulitInfo.Spring = fmt.Sprintf("×%d", room.MultiSpring)
+	sPush.MultipleInfo = &mulitInfo
+	sPush.WaitTime = sysSet.GameDelayReadyTimeInt
 
-	} else {
-		syncWinGold(fp1)
-
-	}
+	bytes, _ := proto.Marshal(&sPush)
+	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushSettlement, bytes))
 
 }
 
@@ -156,13 +242,34 @@ func syncWinGold(player *Player, gold, goldPay float64, roundId string) float64 
 
 func syncLossGold(player *Player, gold float64, roundId string) float64 {
 	orderId := fmt.Sprintf("%s-%s-loss", roundId, player.PlayerInfo.PlayerId)
-	player.PlayerInfo.Gold += gold
-	err := SetSessionGold(player.Session, gold) // 同步到session
+	player.PlayerInfo.Gold -= gold
+	err := SetSessionGold(player.Session, -gold) // 同步到session
 	if err != nil {
 		logger.Error("同步进步到session失败: !!!incredible")
 	}
-	UserSyncLoseScore(player.PlayerInfo.PlayerId, gold, roundId, orderId)
+	UserSyncLoseScore(player.PlayerInfo.PlayerId, -gold, roundId, orderId)
 	return player.PlayerInfo.Gold
+}
+
+func getSelfSettlement(room *Room, player *Player, winOrFail int32, winOrLossGold string, isMinSettlement bool) *mproto.Settlement {
+	var result mproto.Settlement
+
+	if player.IsLandlord {
+		result.IsLandlord = 1
+		result.Multiple = room.MultiAll * 2
+	} else {
+		result.IsLandlord = -1
+		result.Multiple = room.MultiAll
+	}
+	result.PlayerId = player.PlayerInfo.PlayerId
+	result.Position = player.PlayerPosition
+	result.CurrentGold = player.PlayerInfo.Gold
+	result.PlayerName = player.PlayerInfo.Name
+	result.WinOrFail = winOrFail
+	result.WinLossGold = winOrLossGold
+	result.RemainCards = ChangeCardToProto(player.HandCards)
+	result.MinSettlement = isMinSettlement
+	return &result
 }
 
 /*
@@ -247,7 +354,7 @@ func pushOutCardHelp(room *Room, actionPlayer, lastPlayer *Player, lastAction in
 		push.Countdown = sysSet.GameDelayTimeInt
 		push.IsMustPlay = isMustPlay
 	}
-	push.Multi = room.Multiple
+	push.Multi = room.MultiAll
 	bytes, _ := proto.Marshal(&push)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushOutCard, bytes))
 }

@@ -110,8 +110,10 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		return
 	}
 
-	return
 
+	if msgId != msgIdConst.PushSettlement {
+		return
+	}
 	// todo  huck
 	// logger.Info("Handler OnSentMessageBinary :", )
 	switch msgId {
@@ -167,6 +169,19 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		game.PrintMsg("PushOutCard:", resp)
 		fmt.Println()
 
+	case msgIdConst.PushSettlement:
+		resp := &mproto.PushSettlement{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgId.PushSettlement")
+		game.PrintMsg("PushSettlement:", resp)
+		fmt.Println()
+
+
+// ==========================================
 	case msgIdConst.ErrMsg:
 		resp := &mproto.ErrMsg{}
 		err := proto.Unmarshal(bytes[2:], resp)

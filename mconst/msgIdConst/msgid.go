@@ -48,6 +48,7 @@ const (
 	PushCallLandlord         = 303 // 推送叫地主阶段消息
 	PushWhoIsLandlord        = 304 // 推送叫地主阶段消息
 	PushOutCard              = 305 // 推送出牌消息
+	PushSettlement           = 306 // 推送结算你教习
 )
 
 // 主动推送 Error
