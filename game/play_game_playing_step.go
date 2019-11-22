@@ -1,12 +1,14 @@
 package game
 
 import (
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/wonderivan/logger"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/playerAction"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
+	"time"
 )
 
 /*
@@ -19,6 +21,7 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		logger.Error("房间里无此用户...!!!incredible")
 		return
 	}
+	// todo 用户托管动作
 
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
 	nextPlayer := getPlayerByPosition(room, nextPosition)
@@ -68,6 +71,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		pushLastOutCard(room, actionPlayer, cards, cardsType)
 		logger.Debug("玩家胜利:", actionPlayer.PlayerInfo.PlayerId)
 		// todo 当前玩家胜利  推送结算消息
+		Settlement(room, actionPlayer)
 		return
 	}
 	setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
@@ -87,6 +91,100 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 		pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, nil, -3)
 	}
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
+}
+
+// 结算
+// todo 最小金额计算 玩家只有这么多金币 则 只能输或者赢这么多
+func Settlement(room *Room, winPlayer *Player) {
+	// 1. 计算基本倍数
+
+	mult := room.Multiple
+	settlementGold := room.RoomClass.BottomPoint * float64(mult)
+
+	landPlayer, fp1, fp2 := getPlayerClass(room)
+
+	roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
+	// 如果赢家是地主
+	if winPlayer.IsLandlord == true {
+		var landRealWinGold float64 // 地主实际赢钱 税前
+		if fp1.PlayerInfo.Gold < settlementGold { // 如果玩家1 的钱不够开
+			landRealWinGold += fp1.PlayerInfo.Gold
+			syncLossGold(fp1, fp1.PlayerInfo.Gold, roundId) // 同步金币 到中心服务 session
+		} else {
+			landRealWinGold += settlementGold
+			syncLossGold(fp1, settlementGold, roundId) // 同步金币 到中心服务 session
+		}
+
+		if fp2.PlayerInfo.Gold < settlementGold { // 如果玩家2 的钱不够开
+			landRealWinGold += fp2.PlayerInfo.Gold
+			syncLossGold(fp1, fp2.PlayerInfo.Gold, roundId) // 同步金币 到中心服务 session
+		} else {
+			landRealWinGold += settlementGold
+			syncLossGold(fp1, settlementGold, roundId) // 同步金币 到中心服务 session
+		}
+
+		landRealWinGoldPay := landRealWinGold * Server.GameTaxRate            // 地主实际赢钱 税后
+		syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId) // 同步金币 到中心服务 session
+		return
+	}
+
+	// 如果玩家不是地主
+	// 1. 判断地主金币是否够开
+	if landPlayer.PlayerInfo.Gold/2 < settlementGold {
+		//
+		logger.Debug("地主玩家输钱不够开", landPlayer.PlayerInfo.Gold)
+		logger.Debug("结算金额基*1", settlementGold)
+		logger.Debug("结算金额基*2", settlementGold*2)
+
+	} else {
+		syncWinGold(fp1)
+
+	}
+
+}
+
+func syncWinGold(player *Player, gold, goldPay float64, roundId string) float64 {
+	orderId := fmt.Sprintf("%s-%s-win", roundId, player.PlayerInfo.PlayerId)
+	player.PlayerInfo.Gold += goldPay              // 同步到房间id
+	err := SetSessionGold(player.Session, goldPay) // 同步到session
+	if err != nil {
+		logger.Error("同步进步到session失败: !!!incredible")
+	}
+	UserSyncWinScore(player.PlayerInfo.PlayerId, gold, roundId, orderId) // 同步到中心服务
+	return player.PlayerInfo.Gold
+}
+
+func syncLossGold(player *Player, gold float64, roundId string) float64 {
+	orderId := fmt.Sprintf("%s-%s-loss", roundId, player.PlayerInfo.PlayerId)
+	player.PlayerInfo.Gold += gold
+	err := SetSessionGold(player.Session, gold) // 同步到session
+	if err != nil {
+		logger.Error("同步进步到session失败: !!!incredible")
+	}
+	UserSyncLoseScore(player.PlayerInfo.PlayerId, gold, roundId, orderId)
+	return player.PlayerInfo.Gold
+}
+
+/*
+	返回第一个地主玩家
+	后面两个农民玩家
+*/
+func getPlayerClass(room *Room) (*Player, *Player, *Player) {
+	var landPlayer *Player
+	var fplayers []*Player
+	for _, p := range room.Players {
+		if p.IsLandlord == true {
+			landPlayer = p
+		} else {
+			fplayers = append(fplayers, p)
+		}
+	}
+
+	if len(fplayers) != 2 || fplayers == nil {
+		logger.Error("分类玩家失败: !!!incredible")
+		return nil, nil, nil
+	}
+	return landPlayer, fplayers[0], fplayers[1]
 }
 
 // 设置房间重新出牌

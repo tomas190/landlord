@@ -29,7 +29,7 @@ const (
 */
 func TestCalPattern(t *testing.T) {
 	lastCard := []*Card{{12, 1}, {12, 2}, {12, 2}}
-	outCard := []*Card{{14, 1}, {15, 2}}
+	outCard := []*Card{{14, 1}, {14, 2}, {14, 4}, {14, 3}}
 
 	logger.Debug(CanBeat(lastCard, outCard))
 

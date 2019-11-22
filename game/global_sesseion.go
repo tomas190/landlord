@@ -2,7 +2,6 @@ package game
 
 import (
 	"errors"
-	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
 )
 
@@ -40,11 +39,6 @@ func SetSessionGold(session *melody.Session, gold float64) error {
 	}
 
 	pi := value.(*PlayerInfo)
-
-	if gold < 0 && pi.Gold < (-gold) {
-		// todo 钱不够扣的情况
-		logger.Debug("出现这种情况 钱不够扣")
-	}
 
 	pi.Gold = pi.Gold + gold
 	return nil

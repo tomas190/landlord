@@ -139,7 +139,7 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 	pushLastCallLandlord(room, actionPlayer)
 	pushWhoIsLandlord(room, landlordPlayer)
 
-	// todo  流程控制 到 出牌阶段
+	//
 	reSetOutRoomToOut(room, landlordPlayer.PlayerInfo.PlayerId)         // 清空玩家动作
 	setCurrentPlayerOut(room, landlordPlayer.PlayerInfo.PlayerId, true) // 设置位当前操作玩家
 	pushMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)

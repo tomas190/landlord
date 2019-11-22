@@ -36,6 +36,12 @@ func CanBeatIt(cs, eCs *CardSet) bool {
 		return true
 	}
 
+	if cs.Pattern == cardConst.CARD_PATTERN_BOMB {
+		if eCs.Pattern != cardConst.CARD_PATTERN_BOMB && eCs.Pattern != cardConst.CARD_PATTERN_ROCKET {
+			return true
+		}
+	}
+
 	return eCs.Pattern == cs.Pattern &&
 		eCs.SeqCount == cs.SeqCount &&
 		eCs.SubCount == cs.SubCount &&
