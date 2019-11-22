@@ -38,10 +38,7 @@ func NewRoom(rType int32, players map[string]*Player) *Room {
 	var room Room
 	room.RoomId = uuid.New().String()
 	room.MultiAll = 3 // 初始倍数是3
-	room.MultiGetLandlord = 1
-	room.MultiBoom = 1
-	room.MultiBoom = 1
-//	room.MultiSpring = 1
+	room.MultiGetLandlord = 3
 	room.Players = players
 	room.RoomClass = NewRoomClassify(rType)
 	return &room

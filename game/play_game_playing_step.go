@@ -72,11 +72,11 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 
 	if len(actionPlayer.HandCards) == 0 {
 		//pushOutCardHelp(room, nil, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType)
+		CheckSpring(room, actionPlayer)
 		pushLastOutCard(room, actionPlayer, cards, cardsType)
 		logger.Debug("玩家胜利:", actionPlayer.PlayerInfo.PlayerId)
 		// 判断是否春天
-		CheckSpring(room, actionPlayer)
-		// todo 当前玩家胜利  推送结算消息
+		//
 		Settlement(room, actionPlayer)
 		return
 	}
@@ -92,10 +92,14 @@ func CheckSpring(room *Room, player *Player) {
 	if player.IsLandlord == true {
 		farmerThrows := append(f1.ThrowCards, f2.ThrowCards...)
 		if len(farmerThrows) <= 0 || farmerThrows == nil {
+			logger.Debug("================ 地主春天 =================")
+			room.MultiAll = room.MultiAll * 2
 			room.MultiSpring = 2
 		}
 	} else {
 		if room.LandlordOutNum == 1 {
+			logger.Debug("================ 农民春天 =================")
+			room.MultiAll = room.MultiAll * 2
 			room.MultiSpring = 2
 		}
 	}
