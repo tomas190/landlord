@@ -26,22 +26,23 @@ enum MessageID {
 */
 // 指令请求
 const (
-	Ping             uint16 = 0
-	ReqLogin         uint16 = 100 // 用户登录请求
-	ReqEnterRoom     uint16 = 101 // 用户进入房间
-	ReqGetLandlordDo uint16 = 102 // 争夺地主的操作
-	ReqOutCardDo     uint16 = 103 // 出牌操作
-	ReqExitRoom      uint16 = 104 // 退出房间
-	ReqGameHosting   uint16 = 105 // 托管玩家
+	Ping              uint16 = 0
+	ReqLogin          uint16 = 100 // 用户登录请求
+	ReqEnterRoom      uint16 = 101 // 用户进入房间
+	ReqGetLandlordDo  uint16 = 102 // 争夺地主的操作
+	ReqOutCardDo      uint16 = 103 // 出牌操作
+	ReqExitRoom       uint16 = 104 // 退出房间
+	ReqGameHosting    uint16 = 105 // 托管玩家
+	ReqEnterRoomCheck uint16 = 106 // 用户进入房间
 
 )
 
 // 指令返回
 const (
-	Pong            uint16 = 1
-	RespLogin       uint16 = 200 // 用户登录返回
-	RespEnterRoom   uint16 = 201 // 进入房间返回
-	RespGameHosting uint16 = 205 // 托管玩家 返回
+	Pong               uint16 = 1
+	RespLogin          uint16 = 200 // 用户登录返回
+	RespGameHosting    uint16 = 205 // 托管玩家 返回
+	RespEnterRoomCheck uint16 = 206 // 进入房间返回
 )
 
 // 主动推送

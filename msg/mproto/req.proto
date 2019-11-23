@@ -56,7 +56,11 @@ message ReqGameHosting {
 }
 
 
-
+// CLIENT REQ : MSG_ID 106
+// 6.进入房间 检查是否能进
+message ReqEnterRoomCheck {
+    int32 roomType = 1; //
+}
 
 
 

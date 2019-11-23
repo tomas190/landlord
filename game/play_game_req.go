@@ -40,15 +40,10 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 	if roomId != "" {
 		room := GetRoom(roomId)
 		if room.RoomClass.RoomType != req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
-			RespEnterRoom(session, room.RoomClass.RoomType)
-		} else {
 			//todo  用户waitTime 和上一个操作 上一个牌 待处理
 			PushRecoverRoom(session, room, playerInfo.PlayerId)
 		}
 		return
-	} else {
-		// 如果房间为空 则返回发送的房间type
-		go RespEnterRoom(session, req.RoomType)
 	}
 
 	switch req.RoomType {
@@ -64,14 +59,52 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		logger.Error("进入房间失败:无此房间类型", req.RoomType)
 	}
 
+} // 進入房間
+
+func ReqEnterRoomCheck(session *melody.Session, data []byte) {
+	logger.Debug("=== ReqEnterRoom ===")
+	req := &mproto.ReqEnterRoom{}
+	err := proto.Unmarshal(data, req)
+	if err != nil {
+		SendErrMsg(session, msgIdConst.ReqEnterRoom, "请求数据异常:"+err.Error())
+		return
+	}
+
+	PrintMsg("ReqEnterRoom:", req)
+	/*==== 参数验证 =====*/
+
+	playerInfo, err := GetSessionPlayerInfo(session)
+	if err != nil {
+		SendErrMsg(session, msgIdConst.ReqEnterRoom, "无用户信息")
+		return
+	}
+
+	if playerInfo.Gold < GetRoomClassifyBottomEnterPoint(req.RoomType) {
+		SendErrMsg(session, msgIdConst.ReqEnterRoom, "金币不足!")
+		return
+	}
+
+	roomId := GetSessionRoomId(session)
+	if roomId != "" {
+		room := GetRoom(roomId)
+		if room.RoomClass.RoomType != req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
+			//todo  用户waitTime 和上一个操作 上一个牌 待处理
+			RespEnterRoomCheck(session, room.RoomClass.RoomType)
+		} else {
+			RespEnterRoomCheck(session, req.RoomType)
+		}
+	} else {
+		RespEnterRoomCheck(session, req.RoomType)
+	}
+
 }
 
 // 进入房间返回
-func RespEnterRoom(session *melody.Session, roomType int32) {
-	var resp mproto.RespEnterRoom
+func RespEnterRoomCheck(session *melody.Session, roomType int32) {
+	var resp mproto.RespEnterRoomCheck
 	resp.RoomType = roomType
 	bytes, _ := proto.Marshal(&resp)
-	_ = session.WriteBinary(PkgMsg(msgIdConst.RespEnterRoom, bytes))
+	_ = session.WriteBinary(PkgMsg(msgIdConst.RespEnterRoomCheck, bytes))
 }
 
 // 抢地主操作

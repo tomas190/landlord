@@ -12,8 +12,6 @@ enum MessageID {
     MSG_LOGIN_RESP = 200; // s-c 登录返回 1
 
     MSG_ENTER_ROOM = 101; // c-s 进入房间
-    MSG_ENTER_ROOM_RESP = 201; // s-c 进入房间返回
-
 
     MSG_GET_LANDLORD_DO = 102; // c-s 玩家叫地主阶段操作
     MSG_OUT_CARD_DO = 103; // c-s // 玩家出牌
@@ -22,6 +20,9 @@ enum MessageID {
 
     MSG_GAME_HOSTING = 105; // 托管请求
     MSG_GAME_HOSTING_RESP = 205; // 托管请求返回
+
+    MSG_CHECK_ROOM = 106; // 检查这个房间是否能进
+    MSG_CHECK_ROOM_RESP = 206; // 检查房间是否能进返回
 
     /* SERVER PUSH  MSG - FROM 300 */
     MSG_ROOM_CLASSIFY_PUSH = 300; // 推送房间分类信息  用户登录认证成功之后 推送
