@@ -36,14 +36,23 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		return
 	}
 
+	// todo 进入房间之前 判断用户是否在房间中...
+	if GetSessionRoomId(session) != "" {
+		// todo 恢复房间信息
+
+	}
+
 	switch req.RoomType {
 	case roomType.ExperienceField: // 如果是体验场
 		DealPlayerEnterExpField(session, *playerInfo)
 	case roomType.LowField:
-	// todo
+		DealPlayerEnterLowField(session, *playerInfo)
 	case roomType.MidField:
+		DealPlayerEnterLowField(session, *playerInfo)
 	case roomType.HighField:
-
+		DealPlayerEnterLowField(session, *playerInfo)
+	default:
+		logger.Error("进入房间失败:无此房间类型", req.RoomType)
 	}
 
 }
@@ -145,6 +154,51 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 
 }
 
+// 退出房间
+func ReqExitRoom(session *melody.Session, data []byte) {
+	logger.Debug("=== ReqExitRoom ===")
+	req := &mproto.ReqExitRoom{}
+	err := proto.Unmarshal(data, req)
+	if err != nil {
+		SendErrMsg(session, msgIdConst.ReqExitRoom, "请求数据异常:"+err.Error())
+		return
+	}
+
+	info, err := GetSessionPlayerInfo(session)
+	if err != nil {
+		logger.Error("ReqExitRoom:此session无用户信息", info)
+		SendErrMsg(session, msgIdConst.ReqExitRoom, "无用户信息:"+err.Error())
+		return
+	}
+
+	PrintMsg("ReqExitRoom:"+info.PlayerId, req)
+	/*==== 参数验证 =====*/
+
+	roomId := GetSessionRoomId(session)
+	// 1. 如果roomId为空代表玩家是在等待队列 则移除等待队列
+	if roomId == "" {
+		logger.Debug(info.PlayerId, "当前在等待队列中..")
+		RemoveWaitUser(info.PlayerId)
+		return
+	}
+
+	// 2. 如果玩家在游戏中 则设置退出房间标记
+	room := GetRoom(roomId)
+	if room == nil {
+		logger.Error("ReqOutCardDo:无room信息", roomId)
+		SendErrMsg(session, msgIdConst.ReqExitRoom, "无room信息:"+roomId)
+		return
+	}
+	player := room.Players[info.PlayerId]
+	if player != nil {
+		player.IsExitRoom = true
+	} else {
+		logger.Error("改房间无玩家信息 !!!incredible")
+	}
+
+}
+
+/*=================== help func ===================*/
 // 检测出牌是否合理
 func verifyOutCard(room *Room, actionPlayer *Player, outCards []*Card) (int32, error) {
 	if len(outCards) <= 0 && !actionPlayer.IsMustDo {

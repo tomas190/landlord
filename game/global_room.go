@@ -7,9 +7,8 @@ import (
 
 var globalRooms struct {
 	roomMaps map[string]*Room
-	rwMutex     sync.RWMutex
+	rwMutex  sync.RWMutex
 }
-
 
 // 判断用户是否存在
 // globalRooms
@@ -29,7 +28,7 @@ func SaveRoom(roomId string, room *Room) {
 	globalRooms.rwMutex.Lock()
 	globalRooms.roomMaps[roomId] = room
 	globalRooms.rwMutex.Unlock()
-
+	logger.Debug("新建"+roomId+"房间后 的房间数量:", len(globalRooms.roomMaps))
 }
 
 // 获取Room
@@ -52,5 +51,5 @@ func RemoveRoom(roomId string) {
 	if ok {
 		delete(globalRooms.roomMaps, roomId)
 	}
-	logger.Debug("清除"+roomId+"房间后:", len(globalRooms.roomMaps))
+	logger.Debug("清除"+roomId+"房间后 的房间数量:", len(globalRooms.roomMaps))
 }

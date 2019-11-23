@@ -74,7 +74,7 @@ type UserReqToken struct {
 type UserReq struct {
 	ID       string `json:"id"`
 	GameId   string `json:"game_id"`
-	PassWord string `json:"password"`
+	Password string `json:"password"`
 	Token    string `json:"token"`
 	DevName  string `json:"dev_name"`
 	DevKey   string `json:"dev_key"`

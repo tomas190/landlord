@@ -31,6 +31,7 @@ const (
 	ReqEnterRoom     uint16 = 101 // 用户进入房间
 	ReqGetLandlordDo uint16 = 102 // 争夺地主的操作
 	ReqOutCardDo     uint16 = 103 // 出牌操作
+	ReqExitRoom      uint16 = 104 // 出牌操作
 
 )
 

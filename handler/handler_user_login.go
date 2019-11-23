@@ -52,6 +52,8 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	p := game.ChangePlayerP2S(*playerInfo)
 	game.SetSessionPlayerInfo(session, &p)
 	game.SetSessionIsLogin(session)
+	game.SetSessionPassword(session, req.UserPassword)
+	game.SaveAgent(playerInfo.PlayerId, session)
 
 }
 

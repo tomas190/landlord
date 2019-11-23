@@ -2,10 +2,12 @@ package game
 
 import (
 	"errors"
+	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
 )
 
-/*type SessionPlayerInfo struct {
+/*type SessionPlayerInfo struct
+playerInfo{
 	PlayerId      string
 	Name    string
 	HeadImg string
@@ -68,6 +70,21 @@ func SetSessionRoomId(session *melody.Session, roomId string) {
 func GetSessionRoomId(session *melody.Session) string {
 	value, exists := session.Get("roomId")
 	if !exists {
+		return ""
+	}
+	return value.(string)
+}
+
+//
+func SetSessionPassword(session *melody.Session, password string) {
+	session.Set("password", password)
+}
+
+//
+func GetSessionPassword(session *melody.Session) string {
+	value, exists := session.Get("password")
+	if !exists {
+		logger.Debug("!!!没有获取到用户的密码")
 		return ""
 	}
 	return value.(string)

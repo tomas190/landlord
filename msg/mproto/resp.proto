@@ -82,6 +82,13 @@ message PushSettlement {
     int32 waitTime = 3;
 
 }
+// SERVER PUSH : MSG_ID 307  // 房间恢复
+// MSG_ROOM_INFO_PUSH = 307 ;
+// 7.玩家在玩的过程中 退出房间  在进入 的房间数据信息推送
+message PushRoomRecover {
+
+
+}
 
 // =================================  SERVER 主动推送异常指令 500 开始 ======================
 

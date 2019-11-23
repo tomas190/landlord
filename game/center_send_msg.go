@@ -43,44 +43,39 @@ func UserLogoutCenter(userId string, password string) {
 	base.Event = msgUserLogout
 	base.Data = &UserReq{
 		ID:       userId,
-		PassWord: password,
+		Password: password,
 		GameId:   Server.GameId,
 		Token:    password,
 		DevName:  Server.DevName,
 		DevKey:   Server.DevKey,
 	}
+
+	var num int
+LoginOut:
+	can := canLoginOut(userId)
+	if can || num == 3 {
+		logger.Debug("loginOut normal.", num)
+		WriteMsgToCenter(base)
+		RemoveAgent(userId)
+	} else {
+		t := time.Tick(time.Second * 1)
+		<-t
+		num++
+		goto LoginOut
+	}
+
 	// 发送消息到中心服
-	WriteMsgToCenter(base)
+	// 延时1秒后发送退出中心服消息
+	//logger.Debug("loginOut delay.")
+	//WriteMsgToCenter(base)
+	//global.RemoveAgent(userId)
 }
 
-//UserSyncWinScore 同步赢分
-//func UserSyncWinScore(playerId string, winMoney float64, roundId, orderId string) {
-//
-//	logger.Debug("<-------- GenWinOrder -------->")
-//	timeUnix := time.Now().Unix()
-//
-//	baseData := &ToCenterMessage{}
-//	baseData.Event = msgUserWinScore
-//	userWin := &UserChangeScore{}
-//	userWin.Auth.Token = TokenOfCenter
-//	userWin.Auth.DevKey = models.Server.DevKey
-//	userWin.Info.CreateTime = timeUnix
-//	userWin.Info.GameId = models.Server.GameId
-//	userWin.Info.ID = playerId
-//	//userWin.Info.LockMoney = 0
-//	userWin.Info.Money = winMoney
-//	userWin.Info.Order = orderId
-//	userWin.Info.PayReason = "下注"
-//	//userWin.Info.PreMoney = 0
-//	userWin.Info.RoundId = roundId
-//	baseData.Data = userWin
-//
-//	WriteMsgToCenter(baseData)
-//}
+
 
 //UserSyncWinScore 同步赢分
 func UserSyncWinScore(playerId string, winMoney float64, roundId, orderId string) {
-
+	addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	logger.Debug("<-------- 发送赢钱指令 -------->")
 	timeUnix := time.Now().Unix()
 
@@ -107,32 +102,10 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId, orderId string
 	WriteMsgToCenter(baseData)
 }
 
-/*
-{
-    "event":"/GameServer/GameUser/winSettlement",
-    "data":{
-        "auth:{
-            "token":"you token",
-            "dev_key":"123"
-        },
-        "info":{
-            "id":"123456",
-            "create_time":1548971234,
-            "pay_reason":" 下注",
-            "money":12.0,
-            "lock_money":120.0,
-            "pre_money":12.0,
-            "order":"自己创建一个唯一ID,方便之后查询",
-            "game_id":"abc",
-            "round_id":"唯一ID,用于识别多人是否在同一局游戏",
-        }
-    }
-}
-*/
 
 //UserSyncWinScore 同步输分
 func UserSyncLoseScore(playerId string, lossMoney float64, roundId, orderId string) {
-
+	addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	logger.Debug("<-------- GenLoseOrder -------->")
 
 	timeUnix := time.Now().Unix()
@@ -155,4 +128,55 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId, orderId stri
 	baseData.Data = userLose
 
 	WriteMsgToCenter(baseData)
+}
+
+func canLoginOut(userId string) bool {
+	agent := GetAgent(userId)
+	if agent == nil {
+		logger.Debug("已经移除玩家信息")
+		return true
+	}
+	value, exists := agent.Get("msgNum")
+	if exists {
+		if value.(int) == 0 {
+			return true
+		} else {
+			return false
+		}
+	}
+	return true
+}
+
+
+func addPlayerMsgNum(playerId string) {
+	agent := GetAgent(playerId)
+	if agent == nil {
+		logger.Error("无", playerId, "的session信息")
+		return
+	}
+
+	num, ok := agent.Get("msgNum")
+	if ok {
+		agent.Set("msgNum", num.(int)+1)
+	} else {
+		agent.Set("msgNum", 1)
+	}
+
+}
+
+func reducePlayerMsgNum(playerId string) {
+
+	agent := GetAgent(playerId)
+	if agent == nil {
+		logger.Error("无", playerId, "的session信息")
+		return
+	}
+
+	num, ok := agent.Get("msgNum")
+	if ok {
+		agent.Set("msgNum", num.(int)-1)
+	} else {
+		logger.Error("不正常的操作流程")
+		// agent.Set("msgNum", 1)
+	}
 }

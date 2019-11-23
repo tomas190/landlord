@@ -15,7 +15,8 @@ type Player struct {
 	IsGameHosting  bool            // 是否游戏托管
 	IsCanDo        bool            // 是该当前玩家操作
 	IsMustDo       bool            // 是否必须出牌
-	IsReady        bool            // 打完一局之后是否准备
+	IsCloseSession bool            // session 是否断开
+	IsExitRoom     bool            // 是否退出房间
 	ActionChan     chan PlayerActionChan
 }
 

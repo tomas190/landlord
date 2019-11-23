@@ -43,6 +43,8 @@ func OnConnect(m *melody.Melody, session *melody.Session) {
 
 // onDisconnection
 func OnDisconnect(m *melody.Melody, session *melody.Session) {
+	// 如果客户端断开连接
+	dealCloseConn(session)
 	logger.Info("Handler OnDisconnect :")
 }
 
@@ -90,8 +92,10 @@ func OnMessageBinary(m *melody.Melody, session *melody.Session, bytes []byte) {
 		game.ReqEnterRoom(session, data)
 	case msgIdConst.ReqGetLandlordDo: // 玩家抢地主请求 102
 		game.ReqGetLandlordDo(session, data)
-	case msgIdConst.ReqOutCardDo: // 玩家出牌请求 102
+	case msgIdConst.ReqOutCardDo: // 玩家出牌请求 103
 		game.ReqOutCardDo(session, data)
+	case msgIdConst.ReqExitRoom: // 玩家退出房间 104
+		game.ReqExitRoom(session, data)
 	default:
 		logger.Error("未知指令")
 	}
@@ -109,7 +113,6 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 	if msgId == msgIdConst.Pong {
 		return
 	}
-
 
 	if msgId != msgIdConst.PushSettlement {
 		return
@@ -180,8 +183,7 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		game.PrintMsg("PushSettlement:", resp)
 		fmt.Println()
 
-
-// ==========================================
+		// ==========================================
 	case msgIdConst.ErrMsg:
 		resp := &mproto.ErrMsg{}
 		err := proto.Unmarshal(bytes[2:], resp)
@@ -195,4 +197,24 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 
 	}
 
+}
+
+// 处理用户断开连接
+func dealCloseConn(session *melody.Session) {
+	roomId := game.GetSessionRoomId(session)
+	if roomId == "" { // 证明用户不在游戏中
+		game.ClearClosePlayer(session)
+	} else { // 设置清除标记
+		room := game.GetRoom(roomId)
+		info, err := game.GetSessionPlayerInfo(session)
+		if err != nil {
+			logger.Debug("无用户session信息")
+			return
+		}
+		for _, p := range room.Players {
+			if p.PlayerInfo.PlayerId == info.PlayerId {
+				p.IsCloseSession = true
+			}
+		}
+	}
 }
