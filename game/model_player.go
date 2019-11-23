@@ -10,14 +10,17 @@ type Player struct {
 	IsRobot        bool            // 是否机器人
 	HandCards      []*Card         // 手牌
 	ThrowCards     []*Card         // 打初的牌
-	DidAction      int32           // 抢地主的操作 0 没有进行过抢地主 1 / -1 叫了地主  2/-2 抢了地主
+	LastAction     int32           // 上一首的操作 0 没有进行过抢地主 1 / -1 叫了地主  2/-2 抢了地主  3/-3 出牌/没出
+	LastOutCard    []*Card         // 上一首出的牌 过
 	IsLandlord     bool            // 是否地主
 	IsGameHosting  bool            // 是否游戏托管
 	IsCanDo        bool            // 是该当前玩家操作
 	IsMustDo       bool            // 是否必须出牌
 	IsCloseSession bool            // session 是否断开
 	IsExitRoom     bool            // 是否退出房间
-	ActionChan     chan PlayerActionChan
+	WaitingTime    int32           // 等待时间 // 当改玩家操作的时候 不托管的情况下 从系统设置时间开始
+	// 每秒-1 来防止用户在叫地主阶段退出 用于恢复时间点
+	ActionChan chan PlayerActionChan
 }
 
 type PlayerInfo struct {

@@ -36,10 +36,19 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		return
 	}
 
-	// todo 进入房间之前 判断用户是否在房间中...
-	if GetSessionRoomId(session) != "" {
-		// todo 恢复房间信息
-
+	roomId := GetSessionRoomId(session)
+	if roomId != "" {
+		room := GetRoom(roomId)
+		if room.RoomClass.RoomType != req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
+			RespEnterRoom(session, room.RoomClass.RoomType)
+		} else {
+			//todo  用户waitTime 和上一个操作 上一个牌 待处理
+			PushRecoverRoom(session, room, playerInfo.PlayerId)
+		}
+		return
+	} else {
+		// 如果房间为空 则返回发送的房间type
+		go RespEnterRoom(session, req.RoomType)
 	}
 
 	switch req.RoomType {
@@ -48,13 +57,21 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 	case roomType.LowField:
 		DealPlayerEnterLowField(session, *playerInfo)
 	case roomType.MidField:
-		DealPlayerEnterLowField(session, *playerInfo)
+		DealPlayerEnterMidField(session, *playerInfo)
 	case roomType.HighField:
-		DealPlayerEnterLowField(session, *playerInfo)
+		DealPlayerEnterHighField(session, *playerInfo)
 	default:
 		logger.Error("进入房间失败:无此房间类型", req.RoomType)
 	}
 
+}
+
+// 进入房间返回
+func RespEnterRoom(session *melody.Session, roomType int32) {
+	var resp mproto.RespEnterRoom
+	resp.RoomType = roomType
+	bytes, _ := proto.Marshal(&resp)
+	_ = session.WriteBinary(PkgMsg(msgIdConst.RespEnterRoom, bytes))
 }
 
 // 抢地主操作
@@ -189,11 +206,72 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 		SendErrMsg(session, msgIdConst.ReqExitRoom, "无room信息:"+roomId)
 		return
 	}
+	// 设置退出房间标记
+	// 并设置托管操作
 	player := room.Players[info.PlayerId]
 	if player != nil {
 		player.IsExitRoom = true
+		player.IsGameHosting = true
 	} else {
-		logger.Error("改房间无玩家信息 !!!incredible")
+		logger.Error("该房间无玩家信息 !!!incredible")
+	}
+
+} // 退出房间
+
+// 托管
+func ReqGameHosting(session *melody.Session, data []byte) {
+	logger.Debug("=== ReqGameHosting ===")
+	req := &mproto.ReqGameHosting{}
+	err := proto.Unmarshal(data, req)
+	if err != nil {
+		SendErrMsg(session, msgIdConst.ReqGameHosting, "请求数据异常:"+err.Error())
+		return
+	}
+
+	info, err := GetSessionPlayerInfo(session)
+	if err != nil {
+		logger.Error("ReqGameHosting:此session无用户信息", info)
+		SendErrMsg(session, msgIdConst.ReqGameHosting, "无用户信息:"+err.Error())
+		return
+	}
+
+	PrintMsg("ReqGameHosting:"+info.PlayerId, req)
+	/*==== 参数验证 =====*/
+
+	roomId := GetSessionRoomId(session)
+	if roomId == "" {
+		logger.Debug(info.PlayerId, "ReqGameHosting 玩家不在房间")
+		SendErrMsg(session, msgIdConst.ReqGameHosting, "托管失败:玩家不在房间中...")
+		return
+	}
+
+	room := GetRoom(roomId)
+	if room == nil {
+		logger.Error("ReqGameHosting:无room信息", roomId)
+		SendErrMsg(session, msgIdConst.ReqExitRoom, "无room信息:"+roomId)
+		return
+	}
+	// 设置退出房间标记
+	// 并设置托管操作
+	player := room.Players[info.PlayerId]
+	if player != nil {
+		if req.GameHostType == 1 {
+			// 托管
+			player.IsGameHosting = true
+		} else if req.GameHostType == -1 {
+			// 取消托管
+			player.IsGameHosting = true
+		}
+
+		var resp mproto.RespGameHosting
+		resp.GameHostType = req.GameHostType
+		resp.PlayerId = player.PlayerInfo.PlayerId
+		resp.Position = player.PlayerPosition
+		bytes, _ := proto.Marshal(&resp)
+		_ = session.WriteBinary(PkgMsg(msgIdConst.RespGameHosting, bytes))
+
+	} else {
+		logger.Error("ReqGameHosting 该房间无玩家信息 !!!incredible")
 	}
 
 }

@@ -56,10 +56,10 @@ func CallLandlord(room *Room, playerId string) {
 func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 	//playerId := actionPlayer.PlayerInfo.PlayerId
 	// room.MultiAll = room.MultiAll * 2 叫地主不加倍
-	actionPlayer.DidAction = playerAction.CallLandlord
+	actionPlayer.LastAction = playerAction.CallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 叫地主的动作...")
 	room.Status = roomStatus.GetLandlord
-	if nextPlayer.DidAction < playerAction.NoAction { // 如果下一个玩家的已做操作<0 那么他就是地主
+	if nextPlayer.LastAction < playerAction.NoAction { // 如果下一个玩家的已做操作<0 那么他就是地主
 		ensureWhoIsLandlord(room, actionPlayer, actionPlayer)
 	} else { // 则让下一个玩家抢地主
 		setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
@@ -72,14 +72,14 @@ func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, ) {
 	room.MultiAll = room.MultiAll * 2
 	room.MultiGetLandlord = room.MultiGetLandlord * 2
-	lastAction := actionPlayer.DidAction
-	actionPlayer.DidAction = playerAction.GetLandlord
+	lastAction := actionPlayer.LastAction
+	actionPlayer.LastAction = playerAction.GetLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 抢地主动作...")
 	if lastAction == playerAction.CallLandlord { // 如果玩家抢了地主 又已经叫过地主的情况下 那他就是地主
 		ensureWhoIsLandlord(room, actionPlayer, actionPlayer)
 	} else {
 		// 如果下一个玩家不叫或者不抢  上一个玩家叫了地主 则该上一个玩家抢地主
-		if nextPlayer.DidAction < playerAction.NoAction && lastPlayer.DidAction == playerAction.CallLandlord {
+		if nextPlayer.LastAction < playerAction.NoAction && lastPlayer.LastAction == playerAction.CallLandlord {
 			setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
 			pushCallLandlordHelp(room, actionPlayer, lastPlayer, playerAction.GetLandlord)
 			CallLandlord(room, lastPlayer.PlayerInfo.PlayerId)
@@ -94,9 +94,9 @@ func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player,
 
 // 不叫
 func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
-	actionPlayer.DidAction = playerAction.NotCallLandlord
+	actionPlayer.LastAction = playerAction.NotCallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 不叫...")
-	if nextPlayer.DidAction == playerAction.NotCallLandlord { // 如果下一个玩家已经做了不叫的动作 重新发牌
+	if nextPlayer.LastAction == playerAction.NotCallLandlord { // 如果下一个玩家已经做了不叫的动作 重新发牌
 		logger.Debug("三个玩家都不叫 重新发牌")
 		emptyPlayerCardInfo(room) // 清空数据
 		PushPlayerStartGame(room)
@@ -109,17 +109,17 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 
 // 不抢
 func NotGetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, ) {
-	actionPlayer.DidAction = playerAction.NotGetLandlord
+	actionPlayer.LastAction = playerAction.NotGetLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 不抢...")
-	if lastPlayer.DidAction < playerAction.NoAction { // 如果上一个玩家已经做了不抢的动作  那么下一个玩家就是地主
+	if lastPlayer.LastAction < playerAction.NoAction { // 如果上一个玩家已经做了不抢的动作  那么下一个玩家就是地主
 		ensureWhoIsLandlord(room, nextPlayer, actionPlayer)
-	} else if nextPlayer.DidAction < playerAction.NoAction { // 如果下一个玩家已经做了不抢的动作  那么上一个玩家就是地主 1
+	} else if nextPlayer.LastAction < playerAction.NoAction { // 如果下一个玩家已经做了不抢的动作  那么上一个玩家就是地主 1
 		ensureWhoIsLandlord(room, lastPlayer, actionPlayer)
-	} else if lastPlayer.DidAction == playerAction.GetLandlord && // 如果上一个玩家抢了地主 并且下一个玩家做了不叫或者不抢
-		nextPlayer.DidAction < playerAction.NoAction { // 那么上一个玩家就是地主
+	} else if lastPlayer.LastAction == playerAction.GetLandlord && // 如果上一个玩家抢了地主 并且下一个玩家做了不叫或者不抢
+		nextPlayer.LastAction < playerAction.NoAction { // 那么上一个玩家就是地主
 		ensureWhoIsLandlord(room, lastPlayer, actionPlayer)
-	} else if nextPlayer.DidAction == playerAction.GetLandlord &&
-		lastPlayer.DidAction == playerAction.GetLandlord { // 如果上下两个玩家都抢了地主 那上一个玩家就是地主
+	} else if nextPlayer.LastAction == playerAction.GetLandlord &&
+		lastPlayer.LastAction == playerAction.GetLandlord { // 如果上下两个玩家都抢了地主 那上一个玩家就是地主
 		ensureWhoIsLandlord(room, lastPlayer, actionPlayer)
 	} else {
 		setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
@@ -170,7 +170,7 @@ func pushLastCallLandlord(room *Room, lastPlayer *Player) {
 	push.Action = room.Status
 	push.LastPlayerPosition = lastPlayer.PlayerPosition
 	push.LastPlayerId = lastPlayer.PlayerInfo.PlayerId
-	push.LastPlayerAction = lastPlayer.DidAction
+	push.LastPlayerAction = lastPlayer.LastAction
 	push.Countdown = sysSet.GameDelayTimeInt
 	push.Multi = room.MultiAll
 
@@ -185,7 +185,7 @@ func pushCallLandlordHelp(room *Room, lastPlayer, nextPlayer *Player, showAction
 	push.Action = room.Status
 	push.LastPlayerPosition = lastPlayer.PlayerPosition
 	push.LastPlayerId = lastPlayer.PlayerInfo.PlayerId
-	push.LastPlayerAction = lastPlayer.DidAction
+	push.LastPlayerAction = lastPlayer.LastAction
 
 	push.PlayerPosition = nextPlayer.PlayerPosition
 	push.PlayerId = nextPlayer.PlayerInfo.PlayerId

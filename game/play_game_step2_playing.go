@@ -54,7 +54,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	after := actionPlayer.HandCards
 	/*after*/
 
-	actionPlayer.DidAction = playerAction.OutCardAction
+	actionPlayer.LastAction = playerAction.OutCardAction
 	actionPlayer.HandCards = append([]*Card{}, removeCards(actionPlayer.HandCards, cards)...)
 	actionPlayer.ThrowCards = append(actionPlayer.ThrowCards, cards[:]...)
 	room.EffectiveCard = cards
@@ -91,8 +91,8 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 
 // 不出逻辑
 func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player, ) {
-	actionPlayer.DidAction = playerAction.NotOutCardAction
-	if lastPlayer.DidAction == playerAction.NotOutCardAction { // 如果上一个玩家不出 则又下一个玩家重新出牌
+	actionPlayer.LastAction = playerAction.NotOutCardAction
+	if lastPlayer.LastAction == playerAction.NotOutCardAction { // 如果上一个玩家不出 则又下一个玩家重新出牌
 		reSetOutRoomToOut(room, nextPlayer.PlayerInfo.PlayerId)
 		setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, true)
 		pushMustOutCard(room, nextPlayer.PlayerInfo.PlayerId)
@@ -160,7 +160,7 @@ func reSetOutRoomToOut(room *Room, playerId string) {
 			v.IsMustDo = false
 			v.IsCanDo = false
 		}
-		v.DidAction = playerAction.NoAction
+		v.LastAction = playerAction.NoAction
 	}
 
 }

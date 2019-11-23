@@ -96,6 +96,8 @@ func OnMessageBinary(m *melody.Melody, session *melody.Session, bytes []byte) {
 		game.ReqOutCardDo(session, data)
 	case msgIdConst.ReqExitRoom: // 玩家退出房间 104
 		game.ReqExitRoom(session, data)
+	case msgIdConst.ReqGameHosting: // 玩家托管 105
+		game.ReqGameHosting(session, data)
 	default:
 		logger.Error("未知指令")
 	}

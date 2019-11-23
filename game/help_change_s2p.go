@@ -71,6 +71,29 @@ func ChangeProtoToCard(cards []*mproto.Card) []*Card {
 	return result
 }
 
+func ChangePlayerToRecoverPlayer(mPlayers map[string]*Player, rPlayerId string) []*mproto.RecoverPlayer {
+	var resp []*mproto.RecoverPlayer
+
+	for _, v := range mPlayers {
+		var rp mproto.RecoverPlayer
+		rp.Player = ChangePlayerToRoomPlayerProto(v)
+		rp.IsGameHosting = v.IsGameHosting
+		rp.IsMustPlay = v.IsMustDo
+		rp.IsAction = v.IsCanDo
+		rp.LastOutCard = ChangeCardToProto(v.LastOutCard)
+		rp.LastAction = v.LastAction
+		rp.CardsLen = int32(len(v.HandCards))
+		if rPlayerId == v.PlayerInfo.PlayerId { // 如果是恢复玩家则将手牌传值
+			rp.Cards = ChangeCardToProto(v.HandCards)
+		}
+		rp.IsLandLord = v.IsLandlord
+		resp = append(resp, &rp)
+
+	}
+	return resp
+}
+
+
 // ==================== proto to struct ====================
 
 func ChangePlayerP2S(item mproto.PlayerInfo) PlayerInfo {

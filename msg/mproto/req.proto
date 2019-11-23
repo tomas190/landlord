@@ -44,12 +44,16 @@ message ReqOutCardDo {
 }
 
 // SERVER PUSH : MSG_ID 104  // 退出房间
-// 3.退出房间
+// 1.退出房间
 message ReqExitRoom {
     string roomId = 1; // 房间Id
 }
 
-
+// SERVER PUSH : MSG_ID 105  // 退出房间
+// 5.托管请求
+message ReqGameHosting {
+    int32 GameHostType = 1; // 1 托管  -1 取消托管
+}
 
 
 

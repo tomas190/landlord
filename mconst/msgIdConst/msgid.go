@@ -31,14 +31,17 @@ const (
 	ReqEnterRoom     uint16 = 101 // 用户进入房间
 	ReqGetLandlordDo uint16 = 102 // 争夺地主的操作
 	ReqOutCardDo     uint16 = 103 // 出牌操作
-	ReqExitRoom      uint16 = 104 // 出牌操作
+	ReqExitRoom      uint16 = 104 // 退出房间
+	ReqGameHosting   uint16 = 105 // 托管玩家
 
 )
 
 // 指令返回
 const (
-	Pong      uint16 = 1
-	RespLogin uint16 = 200 // 用户登录返回
+	Pong            uint16 = 1
+	RespLogin       uint16 = 200 // 用户登录返回
+	RespEnterRoom   uint16 = 201 // 进入房间返回
+	RespGameHosting uint16 = 205 // 托管玩家 返回
 )
 
 // 主动推送
@@ -50,6 +53,7 @@ const (
 	PushWhoIsLandlord        = 304 // 推送叫地主阶段消息
 	PushOutCard              = 305 // 推送出牌消息
 	PushSettlement           = 306 // 推送结算你教习
+	PushRoomRecover          = 307 // 恢复房间
 )
 
 // 主动推送 Error

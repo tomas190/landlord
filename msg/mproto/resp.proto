@@ -15,6 +15,20 @@ message RespLogin {
     PlayerInfo playerInfo = 1;
 }
 
+// SERVER RESP : MSG_ID 201
+// 1.进入房间返回
+message RespEnterRoom {
+    int32 roomType = 1;
+}
+
+// SERVER PUSH : MSG_ID 205  // 托管请求返回
+// 5.托管请求
+message RespGameHosting {
+    string playerId = 1;
+    int32 position = 2;
+    int32 GameHostType = 3; // 1 托管  -1 取消托管
+}
+
 // ================================= SERVER 主动推送的正常消息 300 开始 ===================
 
 // SERVER PUSH : MSG_ID 300  // 推送房间类型列表
@@ -86,7 +100,10 @@ message PushSettlement {
 // MSG_ROOM_INFO_PUSH = 307 ;
 // 7.玩家在玩的过程中 退出房间  在进入 的房间数据信息推送
 message PushRoomRecover {
-
+    repeated RecoverPlayer players = 1; // 房间用户信息
+    int32 Countdown = 2; // 倒计时
+    int32 Multi = 3; // 倍数 当前倍数房间倍数
+    double bottomPoint = 4; // 底分
 
 }
 
@@ -156,3 +173,27 @@ message MultipleInfo {
     string boom = 3; // 炸弹倍数
     string spring = 1; // 春天倍数
 }
+
+// 恢复的玩家信息
+message RecoverPlayer {
+    RoomPlayer player = 1; //
+    int32 LastAction = 2; // 上一个操作 1 叫地主 -1 不叫 2抢地主 -2 不抢 3 出牌 -3 不出
+    repeated Card lastOutCard = 3; // 最后一首出的牌  // 如果 LastAction ==3 的时候才会有这个字段和数据
+    bool isLandLord = 4;
+    bool isAction = 5;
+    bool isMustPlay = 6; // 是否必须出牌(是否随便出牌)
+    bool isGameHosting = 7; // 是否托管
+    int32 cardsLen = 8; // 手牌剩余 张输
+    repeated Card cards = 9; // 手牌 // 如果是自己才会有这个字段
+
+}
+
+
+
+
+
+
+
+
+
+

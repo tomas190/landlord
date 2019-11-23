@@ -6,7 +6,7 @@ import "github.com/wonderivan/logger"
 func emptyPlayerCardInfo(room *Room) {
 	for _, v := range room.Players {
 		v.IsCanDo = false
-		v.DidAction = 0
+		v.LastAction = 0
 		v.HandCards = nil
 		v.ThrowCards = nil
 	}
