@@ -45,7 +45,7 @@ func init()  {
 func InitConfig() {
 	initLogger()
 	initServerConf()
-	initMongoDb()
+	// initMongoDb()
 	initRoomClassify()
 }
 
