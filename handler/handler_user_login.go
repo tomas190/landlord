@@ -60,12 +60,12 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 // 向中心服发送登录验证请求
 func userLoginVerify(userId, password, token string) (*mproto.PlayerInfo, error) {
 
-	var pi mproto.PlayerInfo
-	pi.PlayerId = userId
-	pi.Gold = 6300
-	pi.PlayerName = userId
-	pi.PlayerImg = "2.png"
-	return &pi, nil
+	//var pi mproto.PlayerInfo
+	//pi.PlayerId = userId
+	//pi.Gold = 6300
+	//pi.PlayerName = userId
+	//pi.PlayerImg = "2.png"
+	//return &pi, nil
 
 	loginChan := make(chan *game.UserLoginCallBack)
 	game.SaveUserLoginCallBack(userId, loginChan)

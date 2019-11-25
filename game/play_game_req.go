@@ -232,6 +232,11 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 		return
 	}
 
+	if roomId!=req.RoomId { // 如果请求的roomId 和 自己的roomId 不一样 ze
+		SendErrMsg(session, msgIdConst.ReqExitRoom, "roomId不一致！")
+		return
+	}
+
 	// 2. 如果玩家在游戏中 则设置退出房间标记
 	room := GetRoom(roomId)
 	if room == nil {
@@ -284,6 +289,10 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 		SendErrMsg(session, msgIdConst.ReqGameHosting, "无room信息:"+roomId)
 		return
 	}
+
+	// todo 如果玩家在自己出牌阶段没出牌 点击了托管 则根据是否必出 进行托管托管逻辑出牌
+
+
 	// 设置退出房间标记
 	// 并设置托管操作
 	player := room.Players[info.PlayerId]

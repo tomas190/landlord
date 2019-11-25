@@ -119,6 +119,9 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 
 // todo 这里要修改  能出必出
 func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
+
+	DelaySomeTime(1)
+
 	if actionPlayer.IsMustDo {
 		SortCard(actionPlayer.HandCards)
 		// todo最后一张
@@ -144,7 +147,7 @@ func reSetOutRoomToOut(room *Room, playerId string) {
 			v.IsMustDo = false
 			v.IsCanDo = false
 		}
-		//v.LastAction = playerAction.NoAction
+		v.WaitingTime = sysSet.GameDelayTimeInt
 	}
 
 }

@@ -23,6 +23,11 @@ func CallLandlord(room *Room, playerId string) {
 		return
 	}
 
+	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
+	uptWtChin := make(chan struct{})
+	go updatePlayerWaitingTime(actionPlayer, uptWtChin)
+	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
+
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
 	nextPlayer := getPlayerByPosition(room, nextPosition)
 
@@ -31,6 +36,7 @@ func CallLandlord(room *Room, playerId string) {
 	// 阻塞等待当前玩家的动作 超过系统设置时间后自动处理
 	select {
 	case action := <-actionPlayer.ActionChan:
+		uptWtChin <- struct{}{}
 		switch action.ActionType {
 		case playerAction.CallLandlord: // 叫地主动作
 			CallLandlordAction(room, actionPlayer, nextPlayer)
@@ -42,6 +48,7 @@ func CallLandlord(room *Room, playerId string) {
 			NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
 		}
 	case <-time.After(time.Second * sysSet.GameDelayTime): // 自动进行不叫或者不抢
+		uptWtChin <- struct{}{}
 		if room.Status == roomStatus.CallLandlord {
 			NotCallLandlordAction(room, actionPlayer, nextPlayer) // 不叫
 		} else if room.Status == roomStatus.GetLandlord {
@@ -130,24 +137,6 @@ func NotGetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Play
 
 /* ==========================================  四大 action ===========================================*/
 
-// 已经确定谁是地主
-func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
-	setCurrentPlayer(room, landlordPlayer.PlayerInfo.PlayerId)
-	landlordPlayer.IsLandlord = true
-	room.Status = roomStatus.Playing
-	logger.Debug("=============== 玩牌开始 ===========")
-	logger.Debug("地主玩家:", landlordPlayer.PlayerInfo.PlayerId)
-	pushLastCallLandlord(room, actionPlayer)
-	pushWhoIsLandlord(room, landlordPlayer)
-
-	//
-	reSetOutRoomToOut(room, landlordPlayer.PlayerInfo.PlayerId)         // 清空玩家动作
-	setCurrentPlayerOut(room, landlordPlayer.PlayerInfo.PlayerId, true) // 设置位当前操作玩家
-	pushMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
-	PlayingGame(room, landlordPlayer.PlayerInfo.PlayerId)
-
-}
-
 /* ==================== 动作action 的消息推送  ==========================*/
 // 3.第一次开始叫地主
 func pushFirstCallLandlord(room *Room) string {
@@ -208,5 +197,49 @@ func pushWhoIsLandlord(room *Room, landlordPlayer *Player) {
 	push.Position = landlordPlayer.PlayerPosition
 	bytes, _ := proto.Marshal(&push)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushWhoIsLandlord, bytes))
+
+}
+
+/* ==================== 动作action 的消息推送  ==========================*/
+
+// 已经确定谁是地主
+func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
+	setCurrentPlayer(room, landlordPlayer.PlayerInfo.PlayerId)
+	landlordPlayer.IsLandlord = true
+	room.Status = roomStatus.Playing
+	logger.Debug("=============== 玩牌开始 ===========")
+	logger.Debug("地主玩家:", landlordPlayer.PlayerInfo.PlayerId)
+	pushLastCallLandlord(room, actionPlayer)
+	pushWhoIsLandlord(room, landlordPlayer)
+
+	//
+	reSetOutRoomToOut(room, landlordPlayer.PlayerInfo.PlayerId)         // 清空玩家动作
+	setCurrentPlayerOut(room, landlordPlayer.PlayerInfo.PlayerId, true) // 设置位当前操作玩家
+	pushMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
+	PlayingGame(room, landlordPlayer.PlayerInfo.PlayerId)
+
+}
+
+// 叫地主阶段 保存更新用户等待时间点
+func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}) {
+	actionPlayer.WaitingTime = sysSet.GameDelayTimeInt
+	for {
+		select {
+		case <-tmpChan:
+			logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
+			actionPlayer.WaitingTime = sysSet.GameDelayTimeInt
+			close(tmpChan)
+			break
+		case <-time.After(1):
+			if actionPlayer.WaitingTime <= 0 {
+
+				close(tmpChan)
+				break
+			}
+			logger.Debug("更新一次时间:", actionPlayer.WaitingTime)
+			actionPlayer.WaitingTime = actionPlayer.WaitingTime - 1
+		}
+
+	}
 
 }
