@@ -33,15 +33,20 @@ var Server struct {
 
 	UrlSendLog string
 }
+
+var originCardNum map[int32]int32
 var globalSession *mgo.Session
 var roomClassify *mproto.PushRoomClassify
+
+func init()  {
+	originCardNum = originalCardNum()
+}
 
 func InitConfig() {
 	initLogger()
 	initServerConf()
 	initMongoDb()
 	initRoomClassify()
-
 }
 
 // 加载日志适配器
@@ -142,4 +147,23 @@ func GetDBConn(dbName, cName string) (*mgo.Session, *mgo.Collection) {
 	s := globalSession.Copy()
 	c := s.DB(dbName).C(cName)
 	return s, c
+}
+
+// 原始的卡牌张数
+func originalCardNum() map[int32]int32 {
+	m := make(map[int32]int32, 15)
+	var i int32
+	for i = 1; i <= 15; i++ {
+		if i >= 14 {
+			m[i] = 1
+		} else {
+			m[i] = 4
+		}
+	}
+	return m
+}
+
+func GetOriginCardNum() map[int32]int32 {
+	m := originCardNum
+	return m
 }

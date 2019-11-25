@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"github.com/wonderivan/logger"
 	"testing"
 )
@@ -32,5 +33,21 @@ func TestCalPattern(t *testing.T) {
 	outCard := []*Card{{14, 1}, {14, 2}, {14, 4}, {14, 3}}
 
 	logger.Debug(CanBeat(lastCard, outCard))
+
+}
+
+func TestCardCount(t *testing.T) {
+	hands := []*Card{{12, 1}, {12, 2}, {12, 2}}
+	roomThrows := []*Card{{12, 1}, }
+
+	cards := countCards(hands, roomThrows)
+
+	m := cards.CardCount
+
+
+	for k, v := range m {
+		fmt.Printf("%d -- %d", k, v)
+		fmt.Println()
+	}
 
 }

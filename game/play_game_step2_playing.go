@@ -4,10 +4,13 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
+	"landlord/mconst/cardConst"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/playerAction"
+	"landlord/mconst/playerStatus"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
+	"time"
 )
 
 /*
@@ -20,7 +23,6 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		logger.Error("房间里无此用户...!!!incredible")
 		return
 	}
-	// todo 用户托管动作
 
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
 	nextPlayer := getPlayerByPosition(room, nextPosition)
@@ -28,6 +30,13 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	lastPosition := getLastPosition(actionPlayer.PlayerPosition)
 	lastPlayer := getPlayerByPosition(room, lastPosition)
 	// 阻塞等待当前玩家的动作 超过系统设置时间后自动处理
+
+	// todo 用户托管动作
+	if actionPlayer.IsGameHosting {
+		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer)
+		return
+	}
+
 	select {
 	case action := <-actionPlayer.ActionChan:
 		switch action.ActionType {
@@ -36,9 +45,11 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		case playerAction.NotOutCardAction: // 不出
 			NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 		}
-		//case <-time.After(time.Second * sysSet.GameDelayTime): // 自动不出
+	case <-time.After(time.Second * sysSet.GameDelayTime): // 自动不出
 		// todo 进入托管
-		//	NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
+		actionPlayer.IsGameHosting = true
+		RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
+		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer) // 走托管逻辑
 	}
 }
 
@@ -50,10 +61,11 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		room.LandlordOutNum++
 	}
 
+	room.ThrowCards = append(room.ThrowCards, cards...)
 	/*after*/
 	after := actionPlayer.HandCards
 	/*after*/
-
+	actionPlayer.LastOutCard = cards
 	actionPlayer.LastAction = playerAction.OutCardAction
 	actionPlayer.HandCards = append([]*Card{}, removeCards(actionPlayer.HandCards, cards)...)
 	actionPlayer.ThrowCards = append(actionPlayer.ThrowCards, cards[:]...)
@@ -86,6 +98,8 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	}
 	setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
 	pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType)
+	// 推送记牌器
+	pushCardCount(room)
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
@@ -103,49 +117,19 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
-/*================== help func ===============*/
-
-// 判断是否春天
-func CheckSpring(room *Room, player *Player) {
-	// 1. 判断玩家是否地主
-	_, f1, f2 := getPlayerClass(room)
-	if player.IsLandlord == true {
-		farmerThrows := append(f1.ThrowCards, f2.ThrowCards...)
-		if len(farmerThrows) <= 0 || farmerThrows == nil {
-			logger.Debug("================ 地主春天 =================")
-			room.MultiAll = room.MultiAll * 2
-			room.MultiSpring = 2
-		}
+// todo 这里要修改  能出必出
+func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
+	if actionPlayer.IsMustDo {
+		SortCard(actionPlayer.HandCards)
+		// todo最后一张
+		OutCardsAction(room, actionPlayer, nextPlayer, actionPlayer.HandCards[len(actionPlayer.HandCards)-1:], cardConst.CARD_PATTERN_SINGLE)
 	} else {
-		if room.LandlordOutNum == 1 {
-			logger.Debug("================ 农民春天 =================")
-			room.MultiAll = room.MultiAll * 2
-			room.MultiSpring = 2
-		}
+		// 自动不出
+		NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 	}
 }
 
-/*
-	返回第一个地主玩家
-	后面两个农民玩家
-*/
-func getPlayerClass(room *Room) (*Player, *Player, *Player) {
-	var landPlayer *Player
-	var fPlayers []*Player
-	for _, p := range room.Players {
-		if p.IsLandlord == true {
-			landPlayer = p
-		} else {
-			fPlayers = append(fPlayers, p)
-		}
-	}
-
-	if len(fPlayers) != 2 || fPlayers == nil {
-		logger.Error("分类玩家失败: !!!incredible")
-		return nil, nil, nil
-	}
-	return landPlayer, fPlayers[0], fPlayers[1]
-}
+/*================== help func ===============*/
 
 // 设置房间重新出牌
 // 及玩家 出的牌 下两家都不要
@@ -160,7 +144,7 @@ func reSetOutRoomToOut(room *Room, playerId string) {
 			v.IsMustDo = false
 			v.IsCanDo = false
 		}
-		v.LastAction = playerAction.NoAction
+		//v.LastAction = playerAction.NoAction
 	}
 
 }
@@ -236,6 +220,48 @@ func removeCard(cards []*Card, removeCard *Card) []*Card {
 		}
 	}
 	return cards
+}
+
+// 判断是否春天
+func CheckSpring(room *Room, player *Player) {
+	// 1. 判断玩家是否地主
+	_, f1, f2 := getPlayerClass(room)
+	if player.IsLandlord == true {
+		farmerThrows := append(f1.ThrowCards, f2.ThrowCards...)
+		if len(farmerThrows) <= 0 || farmerThrows == nil {
+			logger.Debug("================ 地主春天 =================")
+			room.MultiAll = room.MultiAll * 2
+			room.MultiSpring = 2
+		}
+	} else {
+		if room.LandlordOutNum == 1 {
+			logger.Debug("================ 农民春天 =================")
+			room.MultiAll = room.MultiAll * 2
+			room.MultiSpring = 2
+		}
+	}
+}
+
+/*
+	返回第一个地主玩家
+	后面两个农民玩家
+*/
+func getPlayerClass(room *Room) (*Player, *Player, *Player) {
+	var landPlayer *Player
+	var fPlayers []*Player
+	for _, p := range room.Players {
+		if p.IsLandlord == true {
+			landPlayer = p
+		} else {
+			fPlayers = append(fPlayers, p)
+		}
+	}
+
+	if len(fPlayers) != 2 || fPlayers == nil {
+		logger.Error("分类玩家失败: !!!incredible")
+		return nil, nil, nil
+	}
+	return landPlayer, fPlayers[0], fPlayers[1]
 }
 
 // 清空房间 和用户 的session

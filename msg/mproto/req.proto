@@ -55,14 +55,16 @@ message ReqGameHosting {
     int32 GameHostType = 1; // 1 托管  -1 取消托管
 }
 
-
 // CLIENT REQ : MSG_ID 106
 // 6.进入房间 检查是否能进
 message ReqEnterRoomCheck {
     int32 roomType = 1; //
 }
 
-
-
+// CLIENT REQ : MSG_ID 107
+// 7.发送消息请求
+message ReqSendMsg {
+    SendMsg msg = 1;
+}
 
 

@@ -281,7 +281,7 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 	room := GetRoom(roomId)
 	if room == nil {
 		logger.Error("ReqGameHosting:无room信息", roomId)
-		SendErrMsg(session, msgIdConst.ReqExitRoom, "无room信息:"+roomId)
+		SendErrMsg(session, msgIdConst.ReqGameHosting, "无room信息:"+roomId)
 		return
 	}
 	// 设置退出房间标记
@@ -296,16 +296,69 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 			player.IsGameHosting = true
 		}
 
-		var resp mproto.RespGameHosting
-		resp.GameHostType = req.GameHostType
-		resp.PlayerId = player.PlayerInfo.PlayerId
-		resp.Position = player.PlayerPosition
-		bytes, _ := proto.Marshal(&resp)
-		_ = session.WriteBinary(PkgMsg(msgIdConst.RespGameHosting, bytes))
+		//var resp mproto.RespGameHosting
+		//resp.GameHostType = req.GameHostType
+		//resp.PlayerId = player.PlayerInfo.PlayerId
+		//resp.Position = player.PlayerPosition
+		//bytes, _ := proto.Marshal(&resp) // 广播给房间的人
+		//MapPlayersSendMsg(room.Players, bytes)
+		// _ = session.WriteBinary(PkgMsg(msgIdConst.RespGameHosting, bytes))
+		RespGameHosting(room, req.GameHostType, player.PlayerPosition, player.PlayerInfo.PlayerId)
 
 	} else {
 		logger.Error("ReqGameHosting 该房间无玩家信息 !!!incredible")
 	}
+
+}
+
+func RespGameHosting(room *Room, ghType, position int32, PlayerId string) {
+	var resp mproto.RespGameHosting
+	resp.GameHostType = ghType
+	resp.PlayerId = PlayerId
+	resp.Position = position
+	bytes, _ := proto.Marshal(&resp) // 广播给房间的人
+	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.RespGameHosting, bytes))
+}
+
+// 发送消息
+func ReqSendMsg(session *melody.Session, data []byte) {
+	logger.Debug("=== ReqSendMsg ===")
+	req := &mproto.ReqSendMsg{}
+	err := proto.Unmarshal(data, req)
+	if err != nil {
+		SendErrMsg(session, msgIdConst.ReqSendMsg, "请求数据异常:"+err.Error())
+		return
+	}
+
+	info, err := GetSessionPlayerInfo(session)
+	if err != nil {
+		logger.Error("ReqSendMsg:此session无用户信息", info)
+		SendErrMsg(session, msgIdConst.ReqSendMsg, "无用户信息:"+err.Error())
+		return
+	}
+
+	PrintMsg("ReqSendMsg:"+info.PlayerId, req)
+	/*==== 参数验证 =====*/
+
+	roomId := GetSessionRoomId(session)
+	if roomId == "" {
+		logger.Debug(info.PlayerId, "ReqSendMsg 玩家不在房间")
+		SendErrMsg(session, msgIdConst.ReqSendMsg, "托管失败:玩家不在房间中...")
+		return
+	}
+
+	room := GetRoom(roomId)
+	if room == nil {
+		logger.Error("ReqSendMsg:无room信息", roomId)
+		SendErrMsg(session, msgIdConst.ReqGameHosting, "无room信息:"+roomId)
+		return
+	}
+
+	var resp mproto.RespSendMsg
+
+	bytes, _ := proto.Marshal(&resp)
+	resp.Msg = req.Msg
+	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.RespSendMsg, bytes))
 
 }
 

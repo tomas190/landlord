@@ -35,3 +35,29 @@ func PushRecoverRoom(session *melody.Session, room *Room, playerId string) {
 	bytes, _ := proto.Marshal(&resp)
 	_ = session.WriteBinary(PkgMsg(msgIdConst.PushRoomRecover, bytes))
 }
+
+// 推送记牌器
+func pushCardCount(room *Room) {
+
+	players := room.Players
+	throwCards := room.ThrowCards
+	for _, v := range players {
+		result := countCards(v.HandCards, throwCards)
+		bytes, _ := proto.Marshal(result)
+		PlayerSendMsg(v, PkgMsg(msgIdConst.PushCardCount, bytes))
+	}
+
+}
+
+// 计算记牌器
+func countCards(handCards, roomThrowCards []*Card) *mproto.PushCardCount {
+	m := GetOriginCardNum()
+	throwCards := append(roomThrowCards, handCards...)
+	for i := 0; i < len(throwCards); i++ {
+		m[throwCards[i].Value] = m[throwCards[i].Value] - 1
+	}
+
+	var result mproto.PushCardCount
+	result.CardCount = m
+	return &result
+}

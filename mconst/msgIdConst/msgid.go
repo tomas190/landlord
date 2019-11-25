@@ -34,6 +34,7 @@ const (
 	ReqExitRoom       uint16 = 104 // 退出房间
 	ReqGameHosting    uint16 = 105 // 托管玩家
 	ReqEnterRoomCheck uint16 = 106 // 用户进入房间
+	ReqSendMsg        uint16 = 107 // 玩家发送消息
 
 )
 
@@ -43,6 +44,7 @@ const (
 	RespLogin          uint16 = 200 // 用户登录返回
 	RespGameHosting    uint16 = 205 // 托管玩家 返回
 	RespEnterRoomCheck uint16 = 206 // 进入房间返回
+	RespSendMsg        uint16 = 207 // 发送消息返回
 )
 
 // 主动推送
@@ -55,6 +57,7 @@ const (
 	PushOutCard              = 305 // 推送出牌消息
 	PushSettlement           = 306 // 推送结算你教习
 	PushRoomRecover          = 307 // 恢复房间
+	PushCardCount            = 308 // 记牌器推送
 )
 
 // 主动推送 Error

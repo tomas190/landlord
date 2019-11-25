@@ -100,6 +100,8 @@ func OnMessageBinary(m *melody.Melody, session *melody.Session, bytes []byte) {
 		game.ReqGameHosting(session, data)
 	case msgIdConst.ReqEnterRoomCheck: // 进入房间检查 106
 		game.ReqEnterRoomCheck(session, data)
+	case msgIdConst.ReqSendMsg: // 进入房间检查 106
+		game.ReqSendMsg(session, data)
 	default:
 		logger.Error("未知指令")
 	}

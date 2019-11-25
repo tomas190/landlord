@@ -35,6 +35,12 @@ message RespEnterRoomCheck {
     int32 roomType = 1; // 返回的是能进的roomType
 }
 
+// CLIENT REQ : MSG_ID 207
+// 7.发送消息请求
+message RespSendMsg {
+    SendMsg msg = 1;
+}
+
 // ================================= SERVER 主动推送的正常消息 300 开始 ===================
 
 // SERVER PUSH : MSG_ID 300  // 推送房间类型列表
@@ -111,6 +117,13 @@ message PushRoomRecover {
     int32 Multi = 3; // 倍数 当前倍数房间倍数
     double bottomPoint = 4; // 底分
 
+}
+
+// SERVER PUSH : MSG_ID 308  // 记牌器
+// MSG_ROOM_INFO_PUSH = 308 ;
+// 8.玩家记牌器
+message PushCardCount {
+    map<int32, int32> cardCount = 1; // 第一个int32 改值 第二个int32 该值的张数
 }
 
 // =================================  SERVER 主动推送异常指令 500 开始 ======================
@@ -191,15 +204,23 @@ message RecoverPlayer {
     bool isGameHosting = 7; // 是否托管
     int32 cardsLen = 8; // 手牌剩余 张输
     repeated Card cards = 9; // 手牌 // 如果是自己才会有这个字段
+}
+
+
+message CardCount {
+    int32 value = 1; // 牌值
+    int32 num = 2; // 改牌值还剩多少张  // 如果为0 则没有该字段
 
 }
 
 
-
-
-
-
-
+message SendMsg{
+    int32 msgType = 1; // 1 发送文字消息 , 2 发送表情消息 3.玩家互动消息
+    string sendPlayerId = 2; // 发送方玩家的消息Id
+    string sendPlayerPosition = 3; // 发送方玩家的消息Id
+    string receivePlayerId = 4; // 接收方玩家的消息Id   // 如果msgType 是3 才会有这个字段
+    string receivePlayerPosition = 5; // 接收方玩家的消息Id  // 如果msgType 是3 才会有这个字段
+}
 
 
 

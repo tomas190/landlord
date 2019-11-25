@@ -11,6 +11,7 @@ type Room struct {
 	RoomId           string             // 房间ID
 	Players          map[string]*Player // 当前玩家
 	LandlordPlayerId string             // 地主玩家Id
+	ThrowCards       []*Card            // 弃牌堆
 	BottomCards      []*Card            // 地主牌(及最后三张牌)
 	EffectiveCard    []*Card            // 有效牌
 	EffectiveType    int32              // 有效牌牌型
