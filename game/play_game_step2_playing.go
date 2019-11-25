@@ -4,7 +4,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
-	"landlord/mconst/cardConst"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/playerAction"
 	"landlord/mconst/playerStatus"
@@ -49,7 +48,8 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		// todo 进入托管
 		actionPlayer.IsGameHosting = true
 		RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
-		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer) // 走托管逻辑
+		//DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer) // 走托管逻辑
+		NotOutCardsAction(room, actionPlayer, nextPlayer, lastPlayer) // 走不出逻辑
 	}
 }
 
@@ -117,17 +117,18 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
-// todo 这里要修改  能出必出
+// 托管操作
 func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
-
 	DelaySomeTime(1)
-
 	if actionPlayer.IsMustDo {
-		SortCard(actionPlayer.HandCards)
+		cards, cType := FindMustBeOutCards(actionPlayer.HandCards)
 		// todo最后一张
-		OutCardsAction(room, actionPlayer, nextPlayer, actionPlayer.HandCards[len(actionPlayer.HandCards)-1:], cardConst.CARD_PATTERN_SINGLE)
+		OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
+	} else if b, bCards, bType := FindCanBeatCards(actionPlayer.HandCards, room.EffectiveCard); b {
+		//  判断出上家的牌型 如果有能大过上家的牌 则出没有则不出
+		OutCardsAction(room, actionPlayer, nextPlayer, bCards, bType)
 	} else {
-		// 自动不出
+		//  判断出上家的牌型 如果有能大过上家的牌 则出没有则不出
 		NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 	}
 }
