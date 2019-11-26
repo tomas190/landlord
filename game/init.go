@@ -34,13 +34,10 @@ var Server struct {
 	UrlSendLog string
 }
 
-var originCardNum map[int32]int32
+
 var globalSession *mgo.Session
 var roomClassify *mproto.PushRoomClassify
 
-func init()  {
-	originCardNum = originalCardNum()
-}
 
 func InitConfig() {
 	initLogger()
@@ -163,7 +160,4 @@ func originalCardNum() map[int32]int32 {
 	return m
 }
 
-func GetOriginCardNum() map[int32]int32 {
-	m := originCardNum
-	return m
-}
+

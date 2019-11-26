@@ -8,6 +8,7 @@ import (
 	"landlord/mconst/roomStatus"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
+	"runtime"
 	"time"
 )
 
@@ -216,6 +217,7 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 	reSetOutRoomToOut(room, landlordPlayer.PlayerInfo.PlayerId)         // 清空玩家动作
 	setCurrentPlayerOut(room, landlordPlayer.PlayerInfo.PlayerId, true) // 设置位当前操作玩家
 	pushMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
+	pushCardCount(room)
 	PlayingGame(room, landlordPlayer.PlayerInfo.PlayerId)
 
 }
@@ -229,17 +231,20 @@ func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}) {
 			logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
 			actionPlayer.WaitingTime = sysSet.GameDelayTimeInt
 			close(tmpChan)
+			runtime.Goexit()
 			break
-		case <-time.After(1):
-			if actionPlayer.WaitingTime <= 0 {
-
-				close(tmpChan)
+		case <-time.After(time.Second):
+			if actionPlayer.WaitingTime < 0 {
+				_, isClose := <-tmpChan
+				if !isClose {
+					logger.Debug("更新管道没有关闭")
+					close(tmpChan)
+				}
+				runtime.Goexit()
 				break
 			}
 			logger.Debug("更新一次时间:", actionPlayer.WaitingTime)
 			actionPlayer.WaitingTime = actionPlayer.WaitingTime - 1
 		}
-
 	}
-
 }

@@ -120,7 +120,7 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		return
 	}
 
-	if msgId != msgIdConst.PushSettlement {
+	if msgId != msgIdConst.PushCardCount {
 		return
 	}
 	// todo  huck
@@ -188,6 +188,26 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		fmt.Println("msgId.PushSettlement")
 		game.PrintMsg("PushSettlement:", resp)
 		fmt.Println()
+	case msgIdConst.RespSendMsg:
+		resp := &mproto.RespSendMsg{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgId.RespSendMsg")
+		game.PrintMsg("RespSendMsg:", resp)
+		fmt.Println()
+	case msgIdConst.PushCardCount:
+		resp := &mproto.PushCardCount{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgId.PushCardCount")
+		game.PrintMsg("PushCardCount:", resp)
+		fmt.Println()
 
 		// ==========================================
 	case msgIdConst.ErrMsg:
@@ -209,6 +229,7 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 func dealCloseConn(session *melody.Session) {
 	roomId := game.GetSessionRoomId(session)
 	if roomId == "" { // 证明用户不在游戏中
+
 		game.ClearClosePlayer(session)
 	} else { // 设置清除标记
 		room := game.GetRoom(roomId)
@@ -219,6 +240,7 @@ func dealCloseConn(session *melody.Session) {
 		}
 		for _, p := range room.Players {
 			if p.PlayerInfo.PlayerId == info.PlayerId {
+				p.IsGameHosting = true
 				p.IsCloseSession = true
 			}
 		}

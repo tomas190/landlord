@@ -9,6 +9,7 @@ import (
 	"landlord/mconst/playerStatus"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
+	"runtime"
 	"time"
 )
 
@@ -48,8 +49,8 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		// todo 进入托管
 		actionPlayer.IsGameHosting = true
 		RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
-		//DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer) // 走托管逻辑
-		NotOutCardsAction(room, actionPlayer, nextPlayer, lastPlayer) // 走不出逻辑
+		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer) // 走托管逻辑
+		//NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer) // 走不出逻辑
 	}
 }
 
@@ -89,11 +90,14 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		pushLastOutCard(room, actionPlayer, cards, cardsType)
 		logger.Debug("玩家胜利:", actionPlayer.PlayerInfo.PlayerId)
 
+
+		DelaySomeTime(2)
 		// 结算
 		Settlement(room, actionPlayer)
 
 		// 移除房间
 		clearRoomAndPlayer(room)
+		runtime.Goexit()
 		return
 	}
 	setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
@@ -293,4 +297,5 @@ func ClearClosePlayer(session *melody.Session) {
 	// 登出中心服
 	UserLogoutCenter(playerInfo.PlayerId, password)
 	RemoveAgent(playerInfo.PlayerId)
+	RemoveWaitUser(playerInfo.PlayerId)
 }

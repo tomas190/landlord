@@ -38,16 +38,46 @@ func TestCalPattern(t *testing.T) {
 
 func TestCardCount(t *testing.T) {
 	hands := []*Card{{12, 1}, {12, 2}, {12, 2}}
-	roomThrows := []*Card{{12, 1}, }
+	roomThrows := []*Card{{12, 1},}
 
 	cards := countCards(hands, roomThrows)
 
 	m := cards.CardCount
 
-
 	for k, v := range m {
 		fmt.Printf("%d -- %d", k, v)
 		fmt.Println()
 	}
+
+}
+func TestFindMinSingle(t *testing.T) {
+	hands := []*Card{{11, 1},{12, 1}, {12, 2}, {12, 2},{14,1},{15,1},}
+
+	SortCard(hands)
+	PrintCard(hands)
+
+	cards, b := findMinSingle(hands)
+	fmt.Println("是否有单张:", b)
+	if b {
+		fmt.Println(cards[0].Value)
+	}
+	PrintCard(hands)
+
+}
+
+func TestFindMinDouble(t *testing.T) {
+	hands := []*Card{{10, 1}, {3, 1},{3, 1},{5, 1},{3, 1},{3, 1},
+		{12, 1}, {12, 1},{12, 1},{13, 3},{13,1},{15,1},}
+
+	PrintCard(hands)
+
+	cards, b := findMinTriple(hands)
+	//fmt.Println("是否有最小的对子:", b)
+	fmt.Println("是否有最小的三张:", b) //findMinTriple
+	//fmt.Println("是否有最小的炸弹:", b) // findMinBoom
+	if b {
+		PrintCard(cards)
+	}
+	PrintCard(hands)
 
 }

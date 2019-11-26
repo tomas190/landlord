@@ -187,7 +187,7 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 
 	cardType, err := verifyOutCard(room, actionPlayer, outCards)
 	if err != nil {
-		logger.Error("ReqOutCardDo:出牌错误", roomId)
+		logger.Error("ReqOutCardDo:出牌错误", err.Error())
 		SendErrMsg(session, msgIdConst.ReqOutCardDo, err.Error())
 		return
 	}
@@ -302,7 +302,7 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 			player.IsGameHosting = true
 		} else if req.GameHostType == -1 {
 			// 取消托管
-			player.IsGameHosting = true
+			player.IsGameHosting = false
 		}
 
 		//var resp mproto.RespGameHosting
@@ -364,9 +364,8 @@ func ReqSendMsg(session *melody.Session, data []byte) {
 	}
 
 	var resp mproto.RespSendMsg
-
-	bytes, _ := proto.Marshal(&resp)
 	resp.Msg = req.Msg
+	bytes, _ := proto.Marshal(&resp)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.RespSendMsg, bytes))
 
 }
@@ -424,7 +423,7 @@ func verifyMustOutCard(actionPlayer *Player, cards []*Card, cardType int32) erro
 	// 1.判断玩家的手牌中是否存在这样的牌
 	exist := checkCardsIsExist(actionPlayer.HandCards, cards)
 	if !exist {
-		return errors.New("===你手中没有这样的牌===")
+		return errors.New("你手中没有这样的牌")
 	}
 
 	return nil

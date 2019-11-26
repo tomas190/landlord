@@ -217,9 +217,9 @@ message CardCount {
 message SendMsg{
     int32 msgType = 1; // 1 发送文字消息 , 2 发送表情消息 3.玩家互动消息
     string sendPlayerId = 2; // 发送方玩家的消息Id
-    string sendPlayerPosition = 3; // 发送方玩家的消息Id
+    int32 sendPlayerPosition = 3; // 发送方玩家的座位号
     string receivePlayerId = 4; // 接收方玩家的消息Id   // 如果msgType 是3 才会有这个字段
-    string receivePlayerPosition = 5; // 接收方玩家的消息Id  // 如果msgType 是3 才会有这个字段
+    int32 receivePlayerPosition = 5; // 接收方玩家的座位号  // 如果msgType 是3 才会有这个字段
 }
 
 

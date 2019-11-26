@@ -51,7 +51,7 @@ func pushCardCount(room *Room) {
 
 // 计算记牌器
 func countCards(handCards, roomThrowCards []*Card) *mproto.PushCardCount {
-	m := GetOriginCardNum()
+	m := originalCardNum()
 	throwCards := append(roomThrowCards, handCards...)
 	for i := 0; i < len(throwCards); i++ {
 		m[throwCards[i].Value] = m[throwCards[i].Value] - 1
