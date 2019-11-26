@@ -121,8 +121,8 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
 	DelaySomeTime(1)
 	if actionPlayer.IsMustDo {
+		// 取牌
 		cards, cType := FindMustBeOutCards(actionPlayer.HandCards)
-		// todo最后一张
 		OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
 	} else if b, bCards, bType := FindCanBeatCards(actionPlayer.HandCards, room.EffectiveCard); b {
 		//  判断出上家的牌型 如果有能大过上家的牌 则出没有则不出

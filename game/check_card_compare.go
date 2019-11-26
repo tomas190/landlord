@@ -59,7 +59,8 @@ func FindCanBeatCards(handsCard, eCards []*Card) (bool, []*Card, int32) {
 }
 
 /*
-	必出牌 获取必出牌
+	桌面无牌，单张-对子-三张-炸弹出最小的牌型
+	尾牌符合一次性出完原则，则自动出完，比如三带一、顺子、三代二、四带二、火箭等等
 */
 func FindMustBeOutCards(handsCard []*Card) ([]*Card, int32) {
 	// todo 判断最后能否出完

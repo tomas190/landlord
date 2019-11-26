@@ -12,8 +12,6 @@ type Card struct {
 	Suit  int32 // card花色
 }
 
-var originalCard []*Card
-
 // 创建一副有序的牌
 func CreateSortCard() []*Card {
 	result := initOriginalCard()

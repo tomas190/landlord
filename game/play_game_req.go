@@ -352,7 +352,7 @@ func ReqSendMsg(session *melody.Session, data []byte) {
 	roomId := GetSessionRoomId(session)
 	if roomId == "" {
 		logger.Debug(info.PlayerId, "ReqSendMsg 玩家不在房间")
-		SendErrMsg(session, msgIdConst.ReqSendMsg, "托管失败:玩家不在房间中...")
+		SendErrMsg(session, msgIdConst.ReqSendMsg, "发送消息失败:玩家不在房间中...")
 		return
 	}
 
