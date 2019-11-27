@@ -120,7 +120,7 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		return
 	}
 
-	if msgId != msgIdConst.PushCardCount {
+	if msgId != msgIdConst.PushRoomRecover {
 		return
 	}
 	// todo  huck
@@ -207,6 +207,16 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		}
 		fmt.Println("msgId.PushCardCount")
 		game.PrintMsg("PushCardCount:", resp)
+		fmt.Println()
+	case msgIdConst.PushRoomRecover:
+		resp := &mproto.PushRoomRecover{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgId.PushRoomRecover")
+		game.PrintMsg("PushRoomRecover:", resp)
 		fmt.Println()
 
 		// ==========================================

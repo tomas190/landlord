@@ -26,6 +26,7 @@ func CallLandlord(room *Room, playerId string) {
 
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 	uptWtChin := make(chan struct{})
+	actionPlayer.WaitingTime = sysSet.GameDelayTimeInt
 	go updatePlayerWaitingTime(actionPlayer, uptWtChin)
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 
@@ -112,6 +113,7 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 			landPlayer := getPlayerByPosition(room, landPosition)
 			ensureWhoIsLandlord(room, landPlayer, actionPlayer)
 		} else {
+			room.reStartNum = room.reStartNum+1
 			logger.Debug("三个玩家都不叫 重新发牌")
 			emptyPlayerCardInfo(room) // 清空数据
 			PushPlayerStartGame(room)
@@ -232,7 +234,6 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 
 // 叫地主阶段 保存更新用户等待时间点
 func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}) {
-	actionPlayer.WaitingTime = sysSet.GameDelayTimeInt
 	for {
 		select {
 		case <-tmpChan:
