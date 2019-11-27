@@ -87,10 +87,10 @@ func FindCanBeatCards(handsCard, eCards []*Card, eCardType int32) (bool, []*Card
 /*
   查找能打赢单张的牌
 */
-func findBeatSingle(handsCard, eCards []*Card) (bool, []*Card) {
-
-
-}
+//func findBeatSingle(handsCard, eCards []*Card) (bool, []*Card) {
+//
+//
+//}
 
 /* ================================= 托管必出牌抽取 ==========================*/
 
