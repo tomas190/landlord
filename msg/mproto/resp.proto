@@ -116,6 +116,7 @@ message PushRoomRecover {
     int32 Countdown = 2; // 倒计时
     int32 Multi = 3; // 倍数 当前倍数房间倍数
     double bottomPoint = 4; // 底分
+    int32 roomStatus = 5 ;  // 房间当前状态   1 叫地主  2抢地主  3 出牌
 
 }
 

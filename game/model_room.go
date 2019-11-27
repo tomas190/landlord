@@ -13,6 +13,7 @@ type Room struct {
 	LandlordPlayerId string             // 地主玩家Id
 	ThrowCards       []*Card            // 弃牌堆
 	BottomCards      []*Card            // 地主牌(及最后三张牌)
+	reStartNum       int32              // 都不叫重发次数
 	EffectiveCard    []*Card            // 有效牌
 	EffectiveType    int32              // 有效牌牌型
 	MultiAll         int32              // 当局游戏总倍数

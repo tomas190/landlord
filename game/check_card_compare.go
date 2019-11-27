@@ -69,15 +69,12 @@ func canBeatIt(cs, eCs *CardSet) bool {
 	CARD_PATTERN_QUADPLEX_WITH_PAIRS                         // 16四带两对            J-J-J-J-9-9-Q-Q.m
 
 */
-func FindCanBeatCards(handsCard, eCards []*Card,eCardType int32) (bool, []*Card, int32) {
+func FindCanBeatCards(handsCard, eCards []*Card, eCardType int32) (bool, []*Card, int32) {
 	// todo
 	switch eCardType {
 	case cardConst.CARD_PATTERN_SINGLE:
 
-
 	}
-
-
 
 	return false, nil, 0
 }
@@ -85,8 +82,15 @@ func FindCanBeatCards(handsCard, eCards []*Card,eCardType int32) (bool, []*Card,
 /*
 	桌面无牌，单张-对子-三张-炸弹出最小的牌型
 	尾牌符合一次性出完原则，则自动出完，比如三带一、顺子、三代二、四带二、火箭等等
-
 */
+
+/*
+  查找能打赢单张的牌
+*/
+func findBeatSingle(handsCard, eCards []*Card) (bool, []*Card) {
+
+
+}
 
 /* ================================= 托管必出牌抽取 ==========================*/
 
@@ -134,7 +138,6 @@ func findMinSingle(handCards []*Card) ([]*Card, bool) {
 		return nil, false
 	}
 
-
 	// 如果最后一张牌是大王  则改成和小王同级
 	if handCards[0].Value == cardConst.CARD_RANK_RED_JOKER {
 		handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
@@ -143,27 +146,17 @@ func findMinSingle(handCards []*Card) ([]*Card, bool) {
 		}()
 	}
 	// 先统计牌的张输
-	var doubleArr []int
-	cardCount := make(map[int32]int, len(handCards))
-	for i := 0; i < len(handCards); i++ {
-		cardCount[handCards[i].Value] = cardCount[handCards[i].Value] + 1
-	}
+	singleCards := getHasNumsCard(handCards, 1)
 
-	for k, v := range cardCount {
-		if v == 1 {
-			doubleArr = append(doubleArr, int(k))
-		}
-	}
-
-	if len(doubleArr) == 0 {
+	if len(singleCards) == 0 {
 		return nil, false
 	}
 
-	sort.Ints(doubleArr)
+	sort.Ints(singleCards)
 	var result []*Card
 
 	for i := 0; i < len(handCards); i++ {
-		if int(handCards[i].Value) == doubleArr[0] {
+		if int(handCards[i].Value) == singleCards[0] {
 			result = append(result, handCards[i])
 		}
 		if len(result) == 1 {
@@ -180,18 +173,7 @@ func findMinSingle(handCards []*Card) ([]*Card, bool) {
 func findMinDouble(handCards []*Card) ([]*Card, bool) {
 
 	// 先统计牌的张输
-	var doubleArr []int
-	cardCount := make(map[int32]int, len(handCards))
-	for i := 0; i < len(handCards); i++ {
-		cardCount[handCards[i].Value] = cardCount[handCards[i].Value] + 1
-	}
-
-	for k, v := range cardCount {
-		if v == 2 {
-			doubleArr = append(doubleArr, int(k))
-		}
-	}
-
+	doubleArr := getHasNumsCard(handCards, 2)
 	if len(doubleArr) == 0 {
 		return nil, false
 	}
@@ -216,18 +198,7 @@ func findMinDouble(handCards []*Card) ([]*Card, bool) {
 func findMinTriple(handCards []*Card) ([]*Card, bool) {
 
 	// 先统计牌的张输
-	var triple []int
-	cardCount := make(map[int32]int, len(handCards))
-	for i := 0; i < len(handCards); i++ {
-		cardCount[handCards[i].Value] = cardCount[handCards[i].Value] + 1
-	}
-
-	for k, v := range cardCount {
-		if v == 3 {
-			triple = append(triple, int(k))
-		}
-	}
-
+	triple := getHasNumsCard(handCards, 3)
 	if len(triple) == 0 {
 		return nil, false
 	}
@@ -251,27 +222,16 @@ func findMinTriple(handCards []*Card) ([]*Card, bool) {
 */
 func findMinBoom(handCards []*Card) ([]*Card, bool) {
 	// 先统计牌的张输
-	var triple []int
-	cardCount := make(map[int32]int, len(handCards))
-	for i := 0; i < len(handCards); i++ {
-		cardCount[handCards[i].Value] = cardCount[handCards[i].Value] + 1
-	}
-
-	for k, v := range cardCount {
-		if v == 4 {
-			triple = append(triple, int(k))
-		}
-	}
-
-	if len(triple) == 0 {
+	boom := getHasNumsCard(handCards, 4)
+	if len(boom) == 0 {
 		return nil, false
 	}
 
-	sort.Ints(triple)
+	sort.Ints(boom)
 	var result []*Card
 
 	for i := 0; i < len(handCards); i++ {
-		if int(handCards[i].Value) == triple[0] {
+		if int(handCards[i].Value) == boom[0] {
 			result = append(result, handCards[i])
 		}
 		if len(result) == 4 {
@@ -279,6 +239,30 @@ func findMinBoom(handCards []*Card) ([]*Card, bool) {
 		}
 	}
 	return result, true
+}
+
+// 统计[]*card中 相同nums数量的牌有哪些
+/*
+	eg [{3},{3},{2},{2},{6}]
+	nums 2  返回  [3,2]   , nums 1  返回  [6]
+
+*/
+
+func getHasNumsCard(handCards []*Card, nums int) []int {
+	// 先统计牌的张输
+	var counts []int
+	cardCount := make(map[int32]int, len(handCards))
+	for i := 0; i < len(handCards); i++ {
+		cardCount[handCards[i].Value] = cardCount[handCards[i].Value] + 1
+	}
+
+	for k, v := range cardCount {
+		if v == nums {
+			counts = append(counts, int(k))
+		}
+	}
+
+	return counts
 }
 
 /* ================================= 托管必出牌抽取 ============================*/

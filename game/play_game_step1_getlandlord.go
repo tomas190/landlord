@@ -105,9 +105,17 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 	actionPlayer.LastAction = playerAction.NotCallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 不叫...")
 	if nextPlayer.LastAction == playerAction.NotCallLandlord { // 如果下一个玩家已经做了不叫的动作 重新发牌
-		logger.Debug("三个玩家都不叫 重新发牌")
-		emptyPlayerCardInfo(room) // 清空数据
-		PushPlayerStartGame(room)
+		if room.reStartNum >= 1 {
+			room.reStartNum = 0
+			// 随机以为地主
+			landPosition := int32(RandNum(1, 3))
+			landPlayer := getPlayerByPosition(room, landPosition)
+			ensureWhoIsLandlord(room, landPlayer, actionPlayer)
+		} else {
+			logger.Debug("三个玩家都不叫 重新发牌")
+			emptyPlayerCardInfo(room) // 清空数据
+			PushPlayerStartGame(room)
+		}
 	} else { // 则让下一个玩家叫地主
 		setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
 		pushCallLandlordHelp(room, actionPlayer, nextPlayer, playerAction.CallLandlord)
