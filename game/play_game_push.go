@@ -31,6 +31,8 @@ func PushRecoverRoom(session *melody.Session, room *Room, playerId string) {
 	resp.BottomPoint = room.RoomClass.BottomPoint
 	resp.Multi = room.MultiAll
 	resp.Countdown = player.WaitingTime
+	resp.LandLordPlayerId = room.LandlordPlayerId
+	resp.LandlordPosition = room.Players[room.LandlordPlayerId].PlayerPosition
 	resp.RoomStatus = room.Status
 	bytes, _ := proto.Marshal(&resp)
 	_ = session.WriteBinary(PkgMsg(msgIdConst.PushRoomRecover, bytes))

@@ -113,10 +113,12 @@ message PushSettlement {
 // 7.玩家在玩的过程中 退出房间  在进入 的房间数据信息推送
 message PushRoomRecover {
     repeated RecoverPlayer players = 1; // 房间用户信息
-    int32 Countdown = 2; // 倒计时
-    int32 Multi = 3; // 倍数 当前倍数房间倍数
-    double bottomPoint = 4; // 底分
-    int32 roomStatus = 5 ;  // 房间当前状态   1 叫地主  2抢地主  3 出牌
+    string landLordPlayerId =2;
+    int32 landlordPosition =3;
+    int32 countdown = 4; // 倒计时
+    int32 multi = 5; // 倍数 当前倍数房间倍数
+    double bottomPoint = 6; // 底分
+    int32 roomStatus = 7 ;  // 房间当前状态   1 叫地主  2抢地主  3 出牌
 
 }
 
@@ -199,12 +201,11 @@ message RecoverPlayer {
     RoomPlayer player = 1; //
     int32 LastAction = 2; // 上一个操作 1 叫地主 -1 不叫 2抢地主 -2 不抢 3 出牌 -3 不出
     repeated Card lastOutCard = 3; // 最后一首出的牌  // 如果 LastAction ==3 的时候才会有这个字段和数据
-    bool isLandLord = 4;
-    bool isAction = 5;
-    bool isMustPlay = 6; // 是否必须出牌(是否随便出牌)
-    bool isGameHosting = 7; // 是否托管
-    int32 cardsLen = 8; // 手牌剩余 张输
-    repeated Card cards = 9; // 手牌 // 如果是自己才会有这个字段
+    bool isAction = 4;
+    bool isMustPlay = 5; // 是否必须出牌(是否随便出牌)
+    bool isGameHosting = 6; // 是否托管
+    int32 cardsLen = 7; // 手牌剩余 张输
+    repeated Card cards = 8; // 手牌 // 如果是自己才会有这个字段
 }
 
 

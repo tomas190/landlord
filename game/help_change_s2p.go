@@ -86,7 +86,6 @@ func ChangePlayerToRecoverPlayer(mPlayers map[string]*Player, rPlayerId string) 
 		if rPlayerId == v.PlayerInfo.PlayerId { // 如果是恢复玩家则将手牌传值
 			rp.Cards = ChangeCardToProto(v.HandCards)
 		}
-		rp.IsLandLord = v.IsLandlord
 		resp = append(resp, &rp)
 
 	}
