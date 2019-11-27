@@ -34,15 +34,13 @@ var Server struct {
 	UrlSendLog string
 }
 
-
 var globalSession *mgo.Session
 var roomClassify *mproto.PushRoomClassify
-
 
 func InitConfig() {
 	initLogger()
 	initServerConf()
-	// initMongoDb()
+	initMongoDb()
 	initRoomClassify()
 }
 
@@ -159,5 +157,3 @@ func originalCardNum() map[int32]int32 {
 	}
 	return m
 }
-
-
