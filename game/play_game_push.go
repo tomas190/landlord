@@ -32,7 +32,14 @@ func PushRecoverRoom(session *melody.Session, room *Room, playerId string) {
 	resp.Multi = room.MultiAll
 	resp.Countdown = player.WaitingTime
 	resp.LandLordPlayerId = room.LandlordPlayerId
-	resp.LandlordPosition = room.Players[room.LandlordPlayerId].PlayerPosition
+	if room.LandlordPlayerId != "" {
+		landPlayer := room.Players[room.LandlordPlayerId]
+		if landPlayer != nil {
+			resp.LandlordPosition = landPlayer.PlayerPosition
+		}else{
+			logger.Error("该房间无玩家信息 !!!incredible")
+		}
+	}
 	resp.RoomStatus = room.Status
 	bytes, _ := proto.Marshal(&resp)
 	_ = session.WriteBinary(PkgMsg(msgIdConst.PushRoomRecover, bytes))
