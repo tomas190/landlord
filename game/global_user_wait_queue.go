@@ -385,10 +385,15 @@ func EmptyHighFieldWaitUser() {
 
 // 高级场 处理玩家进入高级场
 func DealPlayerEnterHighField(session *melody.Session, playerInfo PlayerInfo) {
+	// 1.判断
+
+
 	if len(HighFieldWaitUser.WaitUsers) < 2 { // 斗地主需要三个人才能玩
 		AddHighFieldWaitUser(session, playerInfo)
 	} else if len(HighFieldWaitUser.WaitUsers) == 2 {
 		HighFieldWaitUser.mu.Lock()
+
+
 		players := make(map[string]*Player)
 		room := NewRoom(roomType.HighField, nil)
 		var position int32

@@ -237,17 +237,20 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 
 // 处理用户断开连接
 func dealCloseConn(session *melody.Session) {
+
+	info, err := game.GetSessionPlayerInfo(session)
+	if err != nil {
+		logger.Debug("无用户session信息")
+		return
+	}
+
 	roomId := game.GetSessionRoomId(session)
 	if roomId == "" { // 证明用户不在游戏中
-
 		game.ClearClosePlayer(session)
+		game.RemoveWaitUser(info.PlayerId)
 	} else { // 设置清除标记
 		room := game.GetRoom(roomId)
-		info, err := game.GetSessionPlayerInfo(session)
-		if err != nil {
-			logger.Debug("无用户session信息")
-			return
-		}
+
 		for _, p := range room.Players {
 			if p.PlayerInfo.PlayerId == info.PlayerId {
 				p.IsGameHosting = true
