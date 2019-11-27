@@ -199,7 +199,7 @@ message MultipleInfo {
 // 恢复的玩家信息
 message RecoverPlayer {
     RoomPlayer player = 1; //
-    int32 LastAction = 2; // 上一个操作 1 叫地主 -1 不叫 2抢地主 -2 不抢 3 出牌 -3 不出
+    int32 lastAction = 2; // 上一个操作 1 叫地主 -1 不叫 2抢地主 -2 不抢 3 出牌 -3 不出
     repeated Card lastOutCard = 3; // 最后一首出的牌  // 如果 LastAction ==3 的时候才会有这个字段和数据
     bool isAction = 4;
     bool isMustPlay = 5; // 是否必须出牌(是否随便出牌)

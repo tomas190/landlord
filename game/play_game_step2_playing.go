@@ -26,7 +26,7 @@ func PlayingGame(room *Room, actionPlayerId string) {
 
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 	uptWtChin := make(chan struct{})
-	actionPlayer.WaitingTime = sysSet.GameDelayTimeInt
+
 	go updatePlayerWaitingTime(actionPlayer, uptWtChin)
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 
