@@ -28,23 +28,22 @@
 服务配置说明 {
 
 {
-  "Port": "1221",                               //     斗地主项目启动端口
-  "MaxConn": 1200,                              //     最大连接数
-  "CenterToken": "963258",                      //     中心服Token
-  "CenterDomain": "172.16.100.2:9502",          //     中心服域名
-  "CenterPort": "9502",                         //     中心服端口
-  "DevKey": "new_game_4",                       //     devKey
-  "DevName": "新游戏开发",                       //     devName
-  "GameId": "5b1f3a3cb76a591e7f251711",         //     gameId  
-  "GameTaxRate": 0.05,                          //     玩家赢钱税收比例
-  "WinGoldNotice": 100,                         //     玩家一局赢钱超过此设定将发送跑马灯通知
-  "MongoDBAddr": "172.16.100.5:27017",          //     mongo数据库连接地址
-  "MongoDBUser": "LANDLORD-game",               //     mongo连接用户名
-  "MongoDBPwd": "123456",                       //     mongo连接密码
-  "MongoDBAuth": "admin",                       //     mongo认证(可不填默认admin)
-  "MongoDBName": "LANDLORD-Game",               //     mongo连接游戏库名
-
-  "UrlSendLog": "http://172.16.100.7:4151/pub?topic=game-server"
+    "Port": "1221",                               //     斗地主项目启动端口
+    "MaxConn": 1200,                              //     最大连接数
+    "CenterToken": "963258",                      //     中心服Token
+    "CenterDomain": "172.16.100.2:9502",          //     中心服域名
+    "CenterPort": "9502",                         //     中心服端口
+    "DevKey": "new_game_4",                       //     devKey
+    "DevName": "新游戏开发",                       //     devName
+    "GameId": "5b1f3a3cb76a591e7f251711",         //     gameId  
+    "GameTaxRate": 0.05,                          //     玩家赢钱税收比例
+    "WinGoldNotice": 100,                         //     玩家一局赢钱超过此设定将发送跑马灯通知
+    "MongoDBAddr": "172.16.100.5:27017",          //     mongo数据库连接地址
+    "MongoDBUser": "LANDLORD-game",               //     mongo连接用户名
+    "MongoDBPwd": "123456",                       //     mongo连接密码
+    "MongoDBAuth": "admin",                       //     mongo认证(可不填默认admin)
+    "MongoDBName": "LANDLORD-Game",               //     mongo连接游戏库名
+    "UrlSendLog": "http://172.16.100.7:4151/pub?topic=game-server"  // 日志中心地址
 }
 
 日志配置说明 {
