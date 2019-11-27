@@ -40,7 +40,7 @@ var roomClassify *mproto.PushRoomClassify
 func InitConfig() {
 	initLogger()
 	initServerConf()
-	// initMongoDb()
+	initMongoDb()
 	initRoomClassify()
 }
 
