@@ -52,9 +52,32 @@ func canBeatIt(cs, eCs *CardSet) bool {
 
 /*
 	从手牌中找出能打过eCards的一组牌
+
+	CARD_PATTERN_SINGLE                                      // 3单张               from 3 (low) up to red joker (high)
+	CARD_PATTERN_PAIR                                        // 4对子               3-3, A-A
+	CARD_PATTERN_TRIPLET                                     // 5三不带             9-9-9.
+	CARD_PATTERN_TRIPLET_WITH_SINGLE                         // 6三带一             9-9-9-3 beats 8-8-8-A.
+	CARD_PATTERN_TRIPLET_WITH_PAIR                           // 7三带对             Q-Q-Q-6-6 beats 10-10-10-K-K.
+	CARD_PATTERN_SEQUENCE                                    // 8顺子               from 3 up to ace - for example 8-9-10-J-Q. 2 and jokers cannot be used.
+	CARD_PATTERN_SEQUENCE_OF_PAIRS                           // 9连对               10-10-J-J-Q-Q-K-K.
+	CARD_PATTERN_SEQUENCE_OF_TRIPLETS                        // 10飞机不带翅膀        4-4-4-5-5-5.
+	CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_SINGLES  // 11飞机带单翅膀        7-7-7-8-8-8-3-6.
+	CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS    // 12飞机带对翅膀        8-8-8-9-9-9-4-4-J-J.
+	CARD_PATTERN_BOMB                                        // 13炸弹
+	CARD_PATTERN_ROCKET                                      // 14火箭
+	CARD_PATTERN_QUADPLEX_WITH_SINGLES                       // 15四带两单            6-6-6-6-8-9,
+	CARD_PATTERN_QUADPLEX_WITH_PAIRS                         // 16四带两对            J-J-J-J-9-9-Q-Q.m
+
 */
-func FindCanBeatCards(handsCard, eCards []*Card) (bool, []*Card, int32) {
+func FindCanBeatCards(handsCard, eCards []*Card,eCardType int32) (bool, []*Card, int32) {
 	// todo
+	switch eCardType {
+	case cardConst.CARD_PATTERN_SINGLE:
+
+
+	}
+
+
 
 	return false, nil, 0
 }
@@ -62,7 +85,11 @@ func FindCanBeatCards(handsCard, eCards []*Card) (bool, []*Card, int32) {
 /*
 	桌面无牌，单张-对子-三张-炸弹出最小的牌型
 	尾牌符合一次性出完原则，则自动出完，比如三带一、顺子、三代二、四带二、火箭等等
+
 */
+
+/* ================================= 托管必出牌抽取 ==========================*/
+
 func FindMustBeOutCards(handsCard []*Card) ([]*Card, int32) {
 
 	if len(handsCard) <= 0 {
@@ -253,3 +280,5 @@ func findMinBoom(handCards []*Card) ([]*Card, bool) {
 	}
 	return result, true
 }
+
+/* ================================= 托管必出牌抽取 ============================*/

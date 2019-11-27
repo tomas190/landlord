@@ -90,7 +90,6 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		pushLastOutCard(room, actionPlayer, cards, cardsType)
 		logger.Debug("玩家胜利:", actionPlayer.PlayerInfo.PlayerId)
 
-
 		DelaySomeTime(2)
 		// 结算
 		Settlement(room, actionPlayer)
@@ -128,7 +127,7 @@ func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
 		// 取牌
 		cards, cType := FindMustBeOutCards(actionPlayer.HandCards)
 		OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
-	} else if b, bCards, bType := FindCanBeatCards(actionPlayer.HandCards, room.EffectiveCard); b {
+	} else if b, bCards, bType := FindCanBeatCards(actionPlayer.HandCards, room.EffectiveCard, room.EffectiveType); b {
 		//  判断出上家的牌型 如果有能大过上家的牌 则出没有则不出
 		OutCardsAction(room, actionPlayer, nextPlayer, bCards, bType)
 	} else {
