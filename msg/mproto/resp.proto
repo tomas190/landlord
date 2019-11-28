@@ -41,6 +41,12 @@ message RespSendMsg {
     SendMsg msg = 1;
 }
 
+// CLIENT REQ : MSG_ID 208
+// 8.提示
+message RespPrompt {
+    repeated Card card = 1; // 需要打过家牌 // 如果没有则为空
+}
+
 // ================================= SERVER 主动推送的正常消息 300 开始 ===================
 
 // SERVER PUSH : MSG_ID 300  // 推送房间类型列表
@@ -113,12 +119,12 @@ message PushSettlement {
 // 7.玩家在玩的过程中 退出房间  在进入 的房间数据信息推送
 message PushRoomRecover {
     repeated RecoverPlayer players = 1; // 房间用户信息
-    string landLordPlayerId =2;
-    int32 landlordPosition =3;
+    string landLordPlayerId = 2;
+    int32 landlordPosition = 3;
     int32 countdown = 4; // 倒计时
     int32 multi = 5; // 倍数 当前倍数房间倍数
     double bottomPoint = 6; // 底分
-    int32 roomStatus = 7 ;  // 房间当前状态   1 叫地主  2抢地主  3 出牌
+    int32 roomStatus = 7; // 房间当前状态   1 叫地主  2抢地主  3 出牌
 
 }
 
@@ -127,6 +133,13 @@ message PushRoomRecover {
 // 8.玩家记牌器
 message PushCardCount {
     map<int32, int32> cardCount = 1; // 第一个int32 改值 第二个int32 该值的张数
+}
+
+// SERVER PUSH : MSG_ID 308  // 更新玩家手牌 当玩家出牌后会推送
+// MSG_ROOM_INFO_PUSH = 308 ;
+// 9.更新手牌
+message PushCardUpdate {
+    repeated Card cards = 2; // 当玩家出牌后会推送
 }
 
 // =================================  SERVER 主动推送异常指令 500 开始 ======================
@@ -216,7 +229,7 @@ message CardCount {
 }
 
 
-message SendMsg{
+message SendMsg {
     int32 msgType = 1; // 1 发送文字消息 , 2 发送表情消息 3.玩家互动消息
     string sendPlayerId = 2; // 发送方玩家的消息Id
     int32 sendPlayerPosition = 3; // 发送方玩家的座位号

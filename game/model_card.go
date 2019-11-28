@@ -26,7 +26,6 @@ func CreateBrokenCard() []*Card {
 	return result
 }
 
-
 func initOriginalCard() []*Card {
 	var result []*Card
 	for i := 1; i <= 4; i++ {
@@ -56,7 +55,7 @@ func OutOfCard(arr []*Card) {
 	}
 }
 
-// 排序
+// 排序  从大到小
 func SortCard(cards []*Card) {
 	v := func(c1, c2 *Card) bool {
 		return c1.Value > c2.Value
@@ -68,6 +67,17 @@ func SortCard(cards []*Card) {
 	OrderedBy(v, s).Sort(cards)
 }
 
+// 排序从小到大
+func SortCardSL(cards []*Card) {
+	v := func(c1, c2 *Card) bool {
+		return c1.Value < c2.Value
+	}
+
+	s := func(c1, c2 *Card) bool {
+		return c1.Suit > c2.Suit
+	}
+	OrderedBy(v, s).Sort(cards)
+}
 
 func PrintCard(cards []*Card) {
 	for i := 0; i < len(cards); i++ {

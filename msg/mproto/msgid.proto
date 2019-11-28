@@ -24,9 +24,11 @@ enum MessageID {
     MSG_CHECK_ROOM = 106; // 检查这个房间是否能进
     MSG_CHECK_ROOM_RESP = 206; // 检查房间是否能进返回
 
-    MSG_SEND_MSG = 107 ; // 发送消息请求
-    MSG_SEND_MSG_RESP = 207 ; // 发送消息请求返回
+    MSG_SEND_MSG = 107; // 发送消息请求
+    MSG_SEND_MSG_RESP = 207; // 发送消息请求返回
 
+    MSG_PROMPT_MSG = 108; // 提示
+    MSG_PROMPT_MSG_RESP = 109; // 提示返回
 
     /* SERVER PUSH  MSG - FROM 300 */
     MSG_ROOM_CLASSIFY_PUSH = 300; // 推送房间分类信息  用户登录认证成功之后 推送
@@ -40,6 +42,7 @@ enum MessageID {
 
     MSG_ROOM_RECOVER_PUSH = 307; // 玩家在玩的过程中 退出房间  在进入 的房间数据信息推送  new
     MSG_CARD_COUNT_PUSH = 308; // 记牌器推送
+    MSG_CARD_UPDATE_PUSH = 309; // 更新手牌
 
     /* SERVER PUSH ERROR MSG - FROM 500 */
     MSG_CLOSE_CONN_PUSH = 500; // s-c 服务器主动断开

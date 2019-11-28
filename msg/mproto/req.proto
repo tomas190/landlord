@@ -67,4 +67,10 @@ message ReqSendMsg {
     SendMsg msg = 1;
 }
 
+// CLIENT REQ : MSG_ID 108
+// 8.提示
+message ReqPrompt {
+    repeated Card card = 1; // 需要打过家牌
+    repeated Card lastCompareCard = 2; // 上次比较的牌 // 如果首次 则不传
+}
 
