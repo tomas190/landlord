@@ -927,7 +927,6 @@ func HostingBeatBombWithSingles(handCards, eCards []*Card) ([]*Card, bool) {
 		}
 	}
 
-	
 	bomb, b := findMinBoom(handCards)
 	if b {
 		return bomb, true

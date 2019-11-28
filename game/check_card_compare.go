@@ -72,9 +72,9 @@ func FindCanBeatCards(handsCard, eCards []*Card, eCardType int32) ([]*Card, int3
 	// todo
 	switch eCardType {
 	case cardConst.CARD_PATTERN_SINGLE:
-		return HostingBeatSingle(handsCard, eCards)
+		//return HostingBeatSingle(handsCard, eCards)
 
 	}
 
-	return false, nil, 0
+	return nil, 0, false
 }
