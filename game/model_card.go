@@ -22,14 +22,14 @@ func CreateSortCard() []*Card {
 // 创建一副乱序的牌
 func CreateBrokenCard() []*Card {
 	result := initOriginalCard()
-	OutOfCardNotDeep(result, 5)
+	OutOfCardNotDeep(result, 30)
 	return result
 }
 
 func initOriginalCard() []*Card {
 	var result []*Card
-	for i := 1; i <= 4; i++ {
-		for j := 1; j <= 13; j++ {
+	for j := 1; j <= 13; j++ {
+		for i := 1; i <= 4; i++ {
 			var card Card
 			card.Value = int32(j)
 			card.Suit = int32(i)

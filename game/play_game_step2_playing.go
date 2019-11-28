@@ -55,8 +55,14 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		// todo 进入托管
 		actionPlayer.IsGameHosting = true
 		RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
-		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer) // 走托管逻辑
-		//NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer) // 走不出逻辑
+		if actionPlayer.IsMustDo {
+			//DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer) // 走托管逻辑
+			cards, cType := FindMustBeOutCards(actionPlayer.HandCards)
+			OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
+		}else {
+			NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer) // 走不出逻辑
+		}
+
 	}
 }
 

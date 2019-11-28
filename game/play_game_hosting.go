@@ -737,6 +737,27 @@ func tripletsHelpRemove(cards []*Card) []int {
 	return result
 }
 
+func eTripletsHelpRemove(cards []*Card) []int {
+	// 先统计牌的张输
+	cardCount := make(map[int32]int, len(cards))
+	for i := 0; i < len(cards); i++ {
+		if !(cards[i].Value >= cardConst.CARD_RANK_TWO) {
+			cardCount[cards[i].Value] = cardCount[cards[i].Value] + 1
+		}
+	}
+
+	var result []int
+	for k, v := range cardCount {
+		if v >= 3 {
+			result = append(result, int(k))
+		}
+	}
+
+	// 排好序
+	sort.Ints(result)
+	return result
+}
+
 // CARD_PATTERN_SEQUENCE_OF_TRIPLETS                        // 10飞机不带翅膀        4-4-4-5-5-5.
 /*
 
@@ -756,7 +777,11 @@ func HostingBeatTripletsWithSingle(handCards, eCards []*Card) ([]*Card, bool, in
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
-	eChangeCards := tripletsHelpRemove(eCards)
+	eChangeCards := eTripletsHelpRemove(eCards)
+	if len(eChangeCards)<=0{
+		logger.Error("")
+		return nil, false, cardConst.CARD_PATTERN_TODO
+	}
 
 	// 1.先去掉手牌中的重复值 要去掉 2 以上大的牌 (2 以上大的牌不能组成 飞机)
 	canTripletsCards := tripletsHelpRemove(handCards)
@@ -814,7 +839,11 @@ func HostingBeatTripletsWithDouble(handCards, eCards []*Card) ([]*Card, bool, in
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
-	eChangeCards := tripletsHelpRemove(eCards)
+	eChangeCards := eTripletsHelpRemove(eCards)
+	if len(eChangeCards)<=0{
+		logger.Error("牌数量不满足检测条件...")
+		return nil, false, cardConst.CARD_PATTERN_TODO
+	}
 
 	// 1.先去掉手牌中的重复值 要去掉 2 以上大的牌 (2 以上大的牌不能组成 飞机)
 	canTripletsCards := tripletsHelpRemove(handCards)
