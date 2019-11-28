@@ -133,7 +133,7 @@ func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
 		// 取牌
 		cards, cType := FindMustBeOutCards(actionPlayer.HandCards)
 		OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
-	} else if bCards, bType, b := FindCanBeatCards(actionPlayer.HandCards, room.EffectiveCard, room.EffectiveType); b {
+	} else if bCards, b, bType := FindCanBeatCards(actionPlayer.HandCards, room.EffectiveCard, room.EffectiveType); b {
 		//  判断出上家的牌型 如果有能大过上家的牌 则出没有则不出
 		OutCardsAction(room, actionPlayer, nextPlayer, bCards, bType)
 	} else {

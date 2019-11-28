@@ -68,13 +68,52 @@ func canBeatIt(cs, eCs *CardSet) bool {
 	CARD_PATTERN_QUADPLEX_WITH_PAIRS                         // 16四带两对            J-J-J-J-9-9-Q-Q.m
 
 */
-func FindCanBeatCards(handsCard, eCards []*Card, eCardType int32) ([]*Card, int32, bool) {
+func FindCanBeatCards(handsCard, eCards []*Card, eCardType int32) ([]*Card, bool, int32) {
 	// todo
 	switch eCardType {
-	case cardConst.CARD_PATTERN_SINGLE:
-		//return HostingBeatSingle(handsCard, eCards)
+	case cardConst.CARD_PATTERN_SINGLE: // 3
+		return HostingBeatSingle(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_PAIR: // 3
+		return HostingBeatDouble(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_TRIPLET: // 3
+		return HostingBeatTriple(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_TRIPLET_WITH_SINGLE: // 3
+		return HostingBeatTripleWithSingle(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_TRIPLET_WITH_PAIR: // 3
+		return HostingBeatTripleWithDouble(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_SEQUENCE: // 3
+		return HostingBeatJunko(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_SEQUENCE_OF_PAIRS: // 3
+		return HostingBeatContinuouslyDouble(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS: // 飞机
+		return HostingBeatTriplets(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_SINGLES: // 3
+		return HostingBeatTripletsWithSingle(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS: // 3
+		return HostingBeatTripletsWithDouble(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_BOMB: // 3
+		return HostingBeatBomb(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_QUADPLEX_WITH_SINGLES: // 3
+		return HostingBeatBombWithSingles(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS: // 3
+		return HostingBeatBombWithDouble(handsCard, eCards)
+
+	case cardConst.CARD_PATTERN_ROCKET: //  // 火箭直接返回不能大过
+		return nil, false, cardConst.CARD_PATTERN_TODO
 
 	}
 
-	return nil, 0, false
+	return nil, false, cardConst.CARD_PATTERN_TODO
 }

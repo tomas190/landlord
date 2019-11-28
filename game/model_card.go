@@ -22,7 +22,7 @@ func CreateSortCard() []*Card {
 // 创建一副乱序的牌
 func CreateBrokenCard() []*Card {
 	result := initOriginalCard()
-	OutOfCard(result)
+	OutOfCardNotDeep(result, 5)
 	return result
 }
 
@@ -50,6 +50,14 @@ func initOriginalCard() []*Card {
 // 随机乱序
 func OutOfCard(arr []*Card) {
 	for i := len(arr) - 1; i > 0; i-- {
+		num := RandNum(0, 53)
+		arr[i], arr[num] = arr[num], arr[i]
+	}
+}
+
+// 随机乱序
+func OutOfCardNotDeep(arr []*Card, deepLevel int) {
+	for i := len(arr) - 1; i > deepLevel; i-- {
 		num := RandNum(0, 53)
 		arr[i], arr[num] = arr[num], arr[i]
 	}

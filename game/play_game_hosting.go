@@ -161,9 +161,9 @@ func getHasNumsCard(handCards []*Card, nums int) []int {
 /* ================================= 托管必出牌抽取 ============================*/
 
 // 判断是否有王炸 有王炸
-func hasRacket(handCards []*Card) ([]*Card, bool) {
+func hasRacket(handCards []*Card) ([]*Card, bool, int32) {
 	if len(handCards) < 2 {
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	var flag int
@@ -176,10 +176,10 @@ func hasRacket(handCards []*Card) ([]*Card, bool) {
 	}
 
 	if flag == 2 {
-		return rackets, true
+		return rackets, true, cardConst.CARD_PATTERN_ROCKET
 	}
 
-	return nil, false
+	return nil, false, cardConst.CARD_PATTERN_TODO
 
 }
 
@@ -255,10 +255,10 @@ func findMinBoom(handCards []*Card) ([]*Card, bool) {
 
 */
 // 单张
-func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool) {
+func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 1 || len(handCards) <= 0 {
 		logger.Error("无效牌值 !!!incredible")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 如果最后一张牌是大王  则改成和小王同级
@@ -280,7 +280,7 @@ func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool) {
 				}
 			}
 			result := findThisValueCard(numSingle[i], handCards, 1)
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_SINGLE
 		}
 	}
 
@@ -289,7 +289,7 @@ func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool) {
 	for i := 0; i < len(numDouble); i++ {
 		if numDouble[i] > int(eCards[0].Value) {
 			result := findThisValueCard(numDouble[i], handCards, 1)
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_SINGLE
 		}
 	}
 
@@ -298,14 +298,14 @@ func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool) {
 	for i := 0; i < len(numTriple); i++ {
 		if numTriple[i] > int(eCards[0].Value) {
 			result := findThisValueCard(numTriple[i], handCards, 1)
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_SINGLE
 		}
 	}
 
 	// 4.如果没有单张 和对 三 找炸弹直接炸
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 
 	// 如果没有炸弹 找王炸
@@ -323,10 +323,10 @@ func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool) {
 
 */
 // 对子
-func HostingBeatDouble(handCards, eCards []*Card) ([]*Card, bool) {
+func HostingBeatDouble(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 2 || len(handCards) <= 1 {
 		logger.Error("无效牌值 !!!incredible")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 2.获取所有对
@@ -334,7 +334,7 @@ func HostingBeatDouble(handCards, eCards []*Card) ([]*Card, bool) {
 	for i := 0; i < len(numDouble); i++ {
 		if int(numDouble[i]) > int(eCards[0].Value) {
 			result := findThisValueCard(numDouble[i], handCards, 2)
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_PAIR
 		}
 	}
 
@@ -343,14 +343,14 @@ func HostingBeatDouble(handCards, eCards []*Card) ([]*Card, bool) {
 	for i := 0; i < len(numTriple); i++ {
 		if numTriple[i] > int(eCards[0].Value) {
 			result := findThisValueCard(numTriple[i], handCards, 2)
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_PAIR
 		}
 	}
 
 	// 4.如果没有单张 和对 三 找炸弹直接炸
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 
 	// 如果没有炸弹 找王炸
@@ -366,10 +366,10 @@ func HostingBeatDouble(handCards, eCards []*Card) ([]*Card, bool) {
 
 */
 // 三张
-func HostingBeatTriple(handCards, eCards []*Card) ([]*Card, bool) {
+func HostingBeatTriple(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 3 {
 		logger.Error("无效牌值 !!!incredible")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 3.获取所有三张
@@ -377,14 +377,14 @@ func HostingBeatTriple(handCards, eCards []*Card) ([]*Card, bool) {
 	for i := 0; i < len(numTriple); i++ {
 		if numTriple[i] > int(eCards[0].Value) {
 			result := findThisValueCard(numTriple[i], handCards, 3)
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_TRIPLET
 		}
 	}
 
 	// 4.如果没有三张 和对 三 找炸弹直接炸
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 
 	// 如果没有炸弹 找王炸
@@ -424,11 +424,11 @@ func getCardManyOne(cards []*Card) int32 {
 
 */
 // 三带一
-func HostingBeatTripleWithSingle(handCards, eCards []*Card) ([]*Card, bool) {
-	cards, hasRacket := hasRacket(handCards)
+func HostingBeatTripleWithSingle(handCards, eCards []*Card) ([]*Card, bool, int32) {
+	cards, hasRacket, rType := hasRacket(handCards)
 	if len(eCards) != 4 || (!hasRacket && len(handCards) <= 3) {
 		logger.Error("牌数量不满足检测条件...")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 3.获取所有三张
@@ -439,23 +439,23 @@ func HostingBeatTripleWithSingle(handCards, eCards []*Card) ([]*Card, bool) {
 			result := findThisValueCard(numTriple[i], handCards, 3)
 			// 寻找一张最小单牌
 			tmpCards := removeCards(handCards, result) // 先移除掉已经找到的三张牌
-			cards, b := HostingBeatSingle(tmpCards, []*Card{{0, 0,}})
+			cards, b, _ := HostingBeatSingle(tmpCards, []*Card{{0, 0,}})
 			if !b {
-				return nil, false
+				return nil, false, cardConst.CARD_PATTERN_TODO
 			}
 			result = append(result, cards[0])
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_TRIPLET_WITH_SINGLE
 		}
 	}
 
 	// 4.如果没有三张 和对 三 找炸弹直接炸
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 
 	// 如果没有炸弹 找王炸
-	return cards, hasRacket
+	return cards, hasRacket, rType
 }
 
 /*
@@ -467,11 +467,11 @@ func HostingBeatTripleWithSingle(handCards, eCards []*Card) ([]*Card, bool) {
 
 */
 // 三带对
-func HostingBeatTripleWithDouble(handCards, eCards []*Card) ([]*Card, bool) {
-	cards, containRacket := hasRacket(handCards)
+func HostingBeatTripleWithDouble(handCards, eCards []*Card) ([]*Card, bool, int32) {
+	cards, containRacket, rType := hasRacket(handCards)
 	if len(eCards) != 5 || (!containRacket && len(handCards) <= 4) {
 		logger.Error("牌数量不满足检测条件...")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	mainKey := getCardManyOne(eCards)
@@ -483,17 +483,17 @@ func HostingBeatTripleWithDouble(handCards, eCards []*Card) ([]*Card, bool) {
 			result := findThisValueCard(numTriple[i], handCards, 3)
 			// 寻找一张最小单牌
 			tmpCards := removeCards(handCards, result) // 先移除掉已经找到的三张牌
-			cards, b := HostingBeatDouble(tmpCards, []*Card{{0, 0,}, {0, 0,}})
+			cards, b, dType := HostingBeatDouble(tmpCards, []*Card{{0, 0,}, {0, 0,}})
 			PrintCard(tmpCards)
 
 			if !b {
-				return nil, false
-			} else if _, b := hasRacket(cards); b { // 如果返回的是王炸
+				return nil, false, cardConst.CARD_PATTERN_TODO
+			} else if dType == cardConst.CARD_PATTERN_ROCKET { // 如果返回的是王炸
 				goto bomb
 			}
 
 			result = append(result, cards[:2]...)
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_TRIPLET_WITH_PAIR
 		}
 	}
 
@@ -501,11 +501,11 @@ bomb:
 	// 4.如果没有三张 和对 三 找炸弹直接炸
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 
 	// 如果没有炸弹 找王炸
-	return cards, containRacket
+	return cards, containRacket, rType
 }
 
 /*
@@ -517,12 +517,12 @@ bomb:
 
 */
 // 顺子
-func HostingBeatJunko(handCards, eCards []*Card) ([]*Card, bool) {
-	cards, hasRacket := hasRacket(handCards)
+func HostingBeatJunko(handCards, eCards []*Card) ([]*Card, bool, int32) {
+	cards, hasRacket, rType := hasRacket(handCards)
 	junkoLen := len(eCards)
 	if junkoLen < 5 || (!hasRacket && len(handCards) < junkoLen) {
 		logger.Error("牌数量不满足检测条件...")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 1.先去掉手牌中的重复值 要去掉 2 以上大的牌 (2 以上大的牌不能组成顺子)
@@ -546,7 +546,7 @@ func HostingBeatJunko(handCards, eCards []*Card) ([]*Card, bool) {
 						tmpCard := findThisValueCard(singleCards[t], handCards, 1)
 						result = append(result, tmpCard...)
 					}
-					return result, true
+					return result, true, cardConst.CARD_PATTERN_SEQUENCE
 				}
 			}
 		}
@@ -554,10 +554,10 @@ func HostingBeatJunko(handCards, eCards []*Card) ([]*Card, bool) {
 	//
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 	// 如果没有炸弹 找王炸
-	return cards, hasRacket
+	return cards, hasRacket, rType
 }
 
 // 去掉重复值 如果有四个一样的则直接排除 2 大王 小王
@@ -592,13 +592,13 @@ func junkoHelpRemove(cards []*Card) []int {
 
 */
 // 连对
-func HostingBeatContinuouslyDouble(handCards, eCards []*Card) ([]*Card, bool) {
-	cards, hasRacket := hasRacket(handCards)
+func HostingBeatContinuouslyDouble(handCards, eCards []*Card) ([]*Card, bool, int32) {
+	cards, hasRacket, rType := hasRacket(handCards)
 	cDoubleLen := len(eCards)
 	cDoubleJunkoLen := len(eCards) / 2
 	if cDoubleLen < 6 || (!hasRacket && len(handCards) < cDoubleLen) {
 		logger.Error("牌数量不满足检测条件...")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 1.先去掉手牌中的重复值 要去掉 2 以上大的牌 (2 以上大的牌不能组成 连队)
@@ -622,7 +622,7 @@ func HostingBeatContinuouslyDouble(handCards, eCards []*Card) ([]*Card, bool) {
 						tmpCard := findThisValueCard(canDoubleCards[t], handCards, 2)
 						result = append(result, tmpCard...)
 					}
-					return result, true
+					return result, true, cardConst.CARD_PATTERN_SEQUENCE_OF_PAIRS
 				}
 			}
 		}
@@ -631,10 +631,10 @@ func HostingBeatContinuouslyDouble(handCards, eCards []*Card) ([]*Card, bool) {
 	//
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 	// 如果没有炸弹 找王炸
-	return cards, hasRacket
+	return cards, hasRacket, rType
 }
 
 // 连队移除帮助
@@ -671,13 +671,13 @@ func continuouslyDoubleHelpRemove(cards []*Card) []int {
 
 */
 // 飞机 不带牌
-func HostingBeatTriplets(handCards, eCards []*Card) ([]*Card, bool) {
-	cards, hasRacket := hasRacket(handCards)
+func HostingBeatTriplets(handCards, eCards []*Card) ([]*Card, bool, int32) {
+	cards, hasRacket, rType := hasRacket(handCards)
 	cTripletsLen := len(eCards)
 	cTripletsJunkoLen := len(eCards) / 3
 	if cTripletsLen < 6 || (!hasRacket && len(handCards) < cTripletsLen) {
 		logger.Error("牌数量不满足检测条件...")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 1.先去掉手牌中的重复值 要去掉 2 以上大的牌 (2 以上大的牌不能组成 飞机)
@@ -701,7 +701,7 @@ func HostingBeatTriplets(handCards, eCards []*Card) ([]*Card, bool) {
 						tmpCard := findThisValueCard(canTripletsCards[t], handCards, 3)
 						result = append(result, tmpCard...)
 					}
-					return result, true
+					return result, true, cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS
 				}
 			}
 		}
@@ -710,10 +710,10 @@ func HostingBeatTriplets(handCards, eCards []*Card) ([]*Card, bool) {
 	//
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 	// 如果没有炸弹 找王炸
-	return cards, hasRacket
+	return cards, hasRacket, rType
 }
 
 func tripletsHelpRemove(cards []*Card) []int {
@@ -747,13 +747,13 @@ func tripletsHelpRemove(cards []*Card) []int {
 
 */
 // 飞机 带单
-func HostingBeatTripletsWithSingle(handCards, eCards []*Card) ([]*Card, bool) {
-	cards, hasRacket := hasRacket(handCards)
+func HostingBeatTripletsWithSingle(handCards, eCards []*Card) ([]*Card, bool, int32) {
+	cards, hasRacket, rType := hasRacket(handCards)
 	cTripletsLen := len(eCards)
 	cTripletsJunkoLen := len(eCards) / 4
 	if cTripletsLen < 6 || (!hasRacket && len(handCards) < cTripletsLen) {
 		logger.Error("牌数量不满足检测条件...")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	eChangeCards := tripletsHelpRemove(eCards)
@@ -782,14 +782,14 @@ func HostingBeatTripletsWithSingle(handCards, eCards []*Card) ([]*Card, bool) {
 					tmpCards := removeCards(handCards, result)
 					// 在寻找飞机数量的单牌
 					for i := 0; i < cTripletsJunkoLen; i++ {
-						cards, b := HostingBeatSingle(tmpCards, []*Card{{0, 0,}})
+						cards, b, _ := HostingBeatSingle(tmpCards, []*Card{{0, 0,}})
 						if !b {
-							return nil, false
+							return nil, false, cardConst.CARD_PATTERN_TODO
 						}
 						result = append(result, cards[0])
 						tmpCards = removeCards(handCards, result)
 					}
-					return result, true
+					return result, true, cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_SINGLES
 				}
 			}
 		}
@@ -798,20 +798,20 @@ func HostingBeatTripletsWithSingle(handCards, eCards []*Card) ([]*Card, bool) {
 	//
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 	// 如果没有炸弹 找王炸
-	return cards, hasRacket
+	return cards, hasRacket, rType
 }
 
 // 飞机 带一对
-func HostingBeatTripletsWithDouble(handCards, eCards []*Card) ([]*Card, bool) {
-	cards, containRacket := hasRacket(handCards)
+func HostingBeatTripletsWithDouble(handCards, eCards []*Card) ([]*Card, bool, int32) {
+	cards, containRacket, rType := hasRacket(handCards)
 	cTripletsLen := len(eCards)
 	cTripletsJunkoLen := len(eCards) / 5
 	if cTripletsLen < 6 || (!containRacket && len(handCards) < cTripletsLen) {
 		logger.Error("牌数量不满足检测条件...")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	eChangeCards := tripletsHelpRemove(eCards)
@@ -840,17 +840,17 @@ func HostingBeatTripletsWithDouble(handCards, eCards []*Card) ([]*Card, bool) {
 					tmpCards := removeCards(handCards, result)
 					// 在寻找飞机数量的单牌
 					for i := 0; i < cTripletsJunkoLen; i++ {
-						cards, b := HostingBeatDouble(tmpCards, []*Card{{0, 0,}, {0, 0,}})
+						cards, b, dType := HostingBeatDouble(tmpCards, []*Card{{0, 0,}, {0, 0,}})
 						if !b {
-							return nil, false
-						} else if _, b := hasRacket(cards); b { // 如果返回的是王炸
+							return nil, false, cardConst.CARD_PATTERN_TODO
+						} else if dType == cardConst.CARD_PATTERN_ROCKET { // 如果返回的是王炸
 							goto bomb
 						}
 
 						result = append(result, cards[:2]...)
 						tmpCards = removeCards(handCards, result)
 					}
-					return result, true
+					return result, true, cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS
 				}
 			}
 		}
@@ -860,10 +860,10 @@ bomb:
 	//
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 	// 如果没有炸弹 找王炸
-	return cards, containRacket
+	return cards, containRacket, rType
 }
 
 /*
@@ -874,10 +874,10 @@ bomb:
 
 */
 // 炸弹
-func HostingBeatBomb(handCards, eCards []*Card) ([]*Card, bool) {
+func HostingBeatBomb(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 4 {
 		logger.Error("无效牌值 !!!incredible")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 3.获取所有四张
@@ -885,7 +885,7 @@ func HostingBeatBomb(handCards, eCards []*Card) ([]*Card, bool) {
 	for i := 0; i < len(numTriple); i++ {
 		if numTriple[i] > int(eCards[0].Value) {
 			result := findThisValueCard(numTriple[i], handCards, 4)
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_BOMB
 		}
 	}
 
@@ -901,10 +901,10 @@ func HostingBeatBomb(handCards, eCards []*Card) ([]*Card, bool) {
 
 */
 // 四带二单
-func HostingBeatBombWithSingles(handCards, eCards []*Card) ([]*Card, bool) {
+func HostingBeatBombWithSingles(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 6 {
 		logger.Error("无效牌值 !!!incredible")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 3.获取所有四张
@@ -915,21 +915,21 @@ func HostingBeatBombWithSingles(handCards, eCards []*Card) ([]*Card, bool) {
 			tmpCards := removeCards(handCards, result)
 			// 继续找两张单牌
 			for i := 0; i < 2; i++ {
-				cards, b := HostingBeatSingle(tmpCards, []*Card{{0, 0,}})
+				cards, b, _ := HostingBeatSingle(tmpCards, []*Card{{0, 0,}})
 				if !b {
-					return nil, false
+					return nil, false, cardConst.CARD_PATTERN_TODO
 				}
 				result = append(result, cards[0])
 				tmpCards = removeCards(handCards, result)
 			}
 
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_QUADPLEX_WITH_SINGLES
 		}
 	}
 
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 
 	// 如果没有炸弹 找王炸
@@ -944,10 +944,10 @@ func HostingBeatBombWithSingles(handCards, eCards []*Card) ([]*Card, bool) {
 
 */
 // 四带二对
-func HostingBeatBombWithDouble(handCards, eCards []*Card) ([]*Card, bool) {
+func HostingBeatBombWithDouble(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 8 {
 		logger.Error("无效牌值 !!!incredible")
-		return nil, false
+		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
 	// 3.获取所有四张
@@ -958,22 +958,22 @@ func HostingBeatBombWithDouble(handCards, eCards []*Card) ([]*Card, bool) {
 			tmpCards := removeCards(handCards, result)
 			// 继续找两张单牌
 			for i := 0; i < 2; i++ {
-				cards, b := HostingBeatDouble(tmpCards, []*Card{{0, 0,}, {0, 0,}})
+				cards, b, dType := HostingBeatDouble(tmpCards, []*Card{{0, 0,}, {0, 0,}})
 				if !b {
-					return nil, false
-				} else if _, b := hasRacket(cards); b { // 如果返回的是王炸
+					return nil, false, cardConst.CARD_PATTERN_TODO
+				} else if dType == cardConst.CARD_PATTERN_ROCKET { // 如果返回的是王炸
 					goto bomb
 				}
 				result = append(result, cards[:2]...)
 				tmpCards = removeCards(handCards, result)
 			}
-			return result, true
+			return result, true, cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS
 		}
 	}
 bomb:
 	bomb, b := findMinBoom(handCards)
 	if b {
-		return bomb, true
+		return bomb, true, cardConst.CARD_PATTERN_BOMB
 	}
 	// 如果没有炸弹 找王炸
 	return hasRacket(handCards)

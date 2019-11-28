@@ -34,10 +34,11 @@ func TestHostingBeatSingle(t *testing.T) {
 	}
 
 	//cards, b := HostingBeatBombWithDouble(hands, eCard)
-	cards, b := HostingBeatBombWithSingles(hands, eCard)
+	cards, b ,rType:= HostingBeatBombWithSingles(hands, eCard)
 
 	if b {
 		PrintCard(cards)
+		logger.Debug("返回类型",rType)
 		return
 	}
 	fmt.Println("打不过")
@@ -59,7 +60,7 @@ func TestHostingBeatDouble(t *testing.T) {
 		//{14, 1}, {15, 2},
 	}
 
-	cards, b := HostingBeatDouble(hands, []*Card{{0, 0,}, {0, 0,}})
+	cards, b ,_:= HostingBeatDouble(hands, []*Card{{0, 0,}, {0, 0,}})
 	if b {
 		PrintCard(cards)
 		return
