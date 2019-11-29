@@ -113,9 +113,12 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 			landPlayer := getPlayerByPosition(room, landPosition)
 			ensureWhoIsLandlord(room, landPlayer, actionPlayer)
 		} else {
-			room.reStartNum = room.reStartNum+1
+			room.reStartNum = room.reStartNum + 1
 			logger.Debug("三个玩家都不叫 重新发牌")
+			pushLastCallLandlord(room, actionPlayer)
 			emptyPlayerCardInfo(room) // 清空数据
+
+			DelaySomeTime(1)
 			PushPlayerStartGame(room)
 		}
 	} else { // 则让下一个玩家叫地主
@@ -221,11 +224,14 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 	logger.Debug("=============== 玩牌开始 ===========")
 	logger.Debug("地主玩家:", landlordPlayer.PlayerInfo.PlayerId)
 	pushLastCallLandlord(room, actionPlayer)
+
+	DelaySomeTime(1)
 	pushWhoIsLandlord(room, landlordPlayer)
 
 	//
 	reSetOutRoomToOut(room, landlordPlayer.PlayerInfo.PlayerId)         // 清空玩家动作
 	setCurrentPlayerOut(room, landlordPlayer.PlayerInfo.PlayerId, true) // 设置位当前操作玩家
+
 	pushMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
 	pushCardCount(room)
 	PlayingGame(room, landlordPlayer.PlayerInfo.PlayerId)

@@ -53,3 +53,16 @@ func RemoveRoom(roomId string) {
 	}
 	logger.Debug("清除"+roomId+"房间后 的房间数量:", len(globalRooms.roomMaps))
 }
+
+func IsPlayerInRoom(playerId string) (*Room, bool) {
+	globalRooms.rwMutex.Lock()
+	defer globalRooms.rwMutex.Unlock()
+
+	for _, room := range globalRooms.roomMaps {
+		if _, ok := room.Players[playerId]; ok {
+			return room, true
+		}
+	}
+
+	return nil, false
+}

@@ -8,6 +8,7 @@ import (
 	"landlord/mconst/cardConst"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/playerAction"
+	"landlord/mconst/roomStatus"
 	"landlord/mconst/roomType"
 	"landlord/msg/mproto"
 )
@@ -36,11 +37,10 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		return
 	}
 
-	roomId := GetSessionRoomId(session)
-	if roomId != "" {
-		room := GetRoom(roomId)
+	room, b := IsPlayerInRoom(playerInfo.PlayerId)
+	if b {
 		if room.RoomClass.RoomType == req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
-			//todo  用户waitTime 和上一个操作 上一个牌 待处理
+			room.Players[playerInfo.PlayerId].Session = session
 			PushRecoverRoom(session, room, playerInfo.PlayerId)
 		}
 		return
@@ -232,7 +232,7 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 		return
 	}
 
-	if roomId!=req.RoomId { // 如果请求的roomId 和 自己的roomId 不一样 ze
+	if roomId != req.RoomId { // 如果请求的roomId 和 自己的roomId 不一样 ze
 		SendErrMsg(session, msgIdConst.ReqExitRoom, "roomId不一致！")
 		return
 	}
@@ -290,8 +290,12 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 		return
 	}
 
-	// todo 如果玩家在自己出牌阶段没出牌 点击了托管 则根据是否必出 进行托管托管逻辑出牌
+	if room.Status != roomStatus.Playing {
+		logger.Error("ReqGameHosting:当前房间状态不允许玩家托管", info.PlayerId)
+		SendErrMsg(session, msgIdConst.ReqGameHosting, "当前房间状态不允许玩家托管:"+info.PlayerId)
+	}
 
+	// todo 如果玩家在自己出牌阶段没出牌 点击了托管 则根据是否必出 进行托管托管逻辑出牌
 
 	// 设置退出房间标记
 	// 并设置托管操作
