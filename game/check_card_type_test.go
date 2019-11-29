@@ -41,15 +41,15 @@ func TestCalPattern(t *testing.T) {
 		//{9, 1}, {9, 2}, {9, 3}, {9, 4},
 		//{10, 1}, //{10, 2}, {10, 3}, {10, 4},
 		//{11, 1}, {11, 2}, {11, 3}, {11, 4},
-		{12, 1}, {12, 2}, {12, 3},// {12, 4},
-		//{13, 1}, {13, 2}, {13, 3}, {13, 4},
+		//{12, 1}, {12, 2}, {12, 3},// {12, 4},
+		{13, 1}, {13, 2}, {13, 3}, //{13, 4},
 	}
 	//outCard := []*Card{{14, 1}, {14, 2}, {14, 4}, {14, 3}}
 
 	//logger.Debug(CanBeat(lastCard, outCard))
 	cardsType := GetCardsType(lastCard)
 	//cardsType := IsSeqOfTriWithPairsFix(lastCard)
-	cardsType := IsSeqOfTriWithSinglesFix(lastCard)
+	//cardsType := IsSeqOfTriWithSinglesFix(lastCard)
 	fmt.Println("===========:", cardsType)
 
 }
