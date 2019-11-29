@@ -26,6 +26,13 @@ func CreateBrokenCard() []*Card {
 	return result
 }
 
+// 创建一副乱序的牌
+func CreatecustomizeCard() []*Card {
+	result := initOriginalCard()
+	OutOfCardNotDeep(result, 30)
+	return result
+}
+
 func initOriginalCard() []*Card {
 	var result []*Card
 	for j := 1; j <= 13; j++ {

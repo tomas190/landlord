@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/wonderivan/logger"
 	"landlord/mconst/cardConst"
 	"sort"
 )
@@ -47,7 +48,6 @@ func GetCardsType(cards []*Card) int32 {
 // 荷官计算牌型并赋值
 // tip 牌型计算这里挖的坑比较大
 func CalPattern(cs *CardSet) int {
-
 	if len(cs.Cards) < 1 || len(cs.Cards) > 20 {
 		return cardConst.CARD_PATTERN_ERROR
 	}
@@ -97,10 +97,12 @@ func CalPattern(cs *CardSet) int {
 		cs.SeqCount = len(cs.Cards) / 3
 		cs.SubCount = 0
 		// tip 这里比较复杂了
-	} else if IsSeqOfTriWithSingles(cs.Cards) {
+	//} else if IsSeqOfTriWithSingles(cs.Cards) {
+	} else if IsSeqOfTriWithSinglesFix(cs.Cards) {
 		cs.Pattern = cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_SINGLES
 		cs.Rank, cs.SeqCount, cs.SubCount = RCCSeqOfTriWithSingles(cs.Cards)
-	} else if IsSeqOfTriWithPairs(cs.Cards) {
+	//} else if IsSeqOfTriWithPairs(cs.Cards) {
+	} else if IsSeqOfTriWithPairsFix(cs.Cards) {
 		cs.Pattern = cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS
 		cs.Rank, cs.SeqCount, cs.SubCount = RCCSeqOfTriWithPairs(cs.Cards)
 	} else if IsBomb(cs.Cards) {
@@ -600,5 +602,155 @@ func Include(arr []int32, target int32) bool {
 		}
 	}
 
+	return false
+}
+
+/*
+ 2019年11月29日14:42:50  优化fix  飞机监测
+*/
+
+func IsSeqOfTriWithSinglesFix(cards []*Card) bool {
+	// 张数小于8或者张数不是4的倍数
+	cardsLen := len(cards)
+	if cardsLen < 8 || cardsLen%4 != 0 {
+		return false
+	}
+	seqLen := cardsLen / 4
+	seqNums := tripletsHelpRemoveFix(cards)
+	logger.Debug("len:", len(seqNums))
+	logger.Debug("seq:", seqLen)
+	if len(seqNums) > seqLen {
+		seqNums = removeNotSeq(seqNums)
+	}
+	if len(seqNums) == seqLen {
+		for i := 0; i < seqLen; i++ {
+			if i+1 == seqLen {
+				break
+			}
+			if seqNums[i+1]-seqNums[i] != 1 || seqNums[i+1] >= cardConst.CARD_RANK_TWO {
+				return false
+			}
+		}
+	} else {
+		return false
+	}
+	return true
+}
+
+// 测试
+func IsSeqOfTriWithPairsFix(cards []*Card) bool {
+	// 张数小于10或者张数不是5的倍数
+	cardsLen := len(cards)
+	if cardsLen < 10 || cardsLen%5 != 0 {
+		return false
+	}
+	seqLen := cardsLen / 5
+	seqNums := tripletsHelpRemoveFix(cards)
+	//logger.Debug("len:", len(seqNums))
+	//logger.Debug("seq:", seqLen)
+	if len(seqNums) >= seqLen {
+		if len(seqNums) == seqLen {
+			if tdHelp(seqLen, seqNums, cards) {
+				return true
+			}
+		} else {
+			rReqNums := seqNums[1:]
+			if tdHelp(seqLen, rReqNums, cards) {
+				return true
+			}
+
+			eReqNums := seqNums[:len(seqNums)-1]
+			if tdHelp(seqLen, eReqNums, cards) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// 移除一个数组和其他 数据不连续的
+/*
+	// 前提是排好序的数组
+	eg :{4,5,6,7,8,10}    把10移除掉
+   res :{4,5,6,7,8}
+*/
+func removeNotSeq(arr []int) []int {
+	if len(arr) <= 2 {
+		return arr
+	}
+
+	if arr[len(arr)-1]-arr[len(arr)-2] != 1 {
+		return arr[:len(arr)-1]
+	} else {
+		return arr[1:]
+	}
+
+}
+
+func tripletsHelpRemoveFix(cards []*Card) []int {
+	// 先统计牌的张输
+	cardCount := make(map[int32]int, len(cards))
+	for i := 0; i < len(cards); i++ {
+		if !(cards[i].Value >= cardConst.CARD_RANK_TWO) {
+			cardCount[cards[i].Value] = cardCount[cards[i].Value] + 1
+		}
+	}
+
+	var result []int
+	for k, v := range cardCount {
+		if v >= 3 {
+			result = append(result, int(k))
+		}
+	}
+
+	// 排好序
+	sort.Ints(result)
+	return result
+}
+
+// 获取牌中对子的数量
+// [1,1,2,2,3,3,4,4] 返回4
+// [1,1,2,2,4,4,5,6] 返回 3
+func getAllDoubleNum(cards []*Card) int {
+	//if len(cards)%2 != 0 {
+	//	logger.Debug("sssssssss",len(cards))
+	//	return -1
+	//}
+
+	var result int
+	for i := 0; i < len(cards); i++ {
+		if i+1 == len(cards) {
+			break
+		}
+
+		if cards[i].Value == cards[i+1].Value {
+			result++
+			i++
+		}
+	}
+	return result
+}
+
+func tdHelp(seqLen int, seqNums []int, cards []*Card) bool {
+	//logger.Debug(seqNums)
+	//PrintCard(cards)
+	for i := 0; i < seqLen; i++ {
+		if i+1 == seqLen {
+			break
+		}
+		if seqNums[i+1]-seqNums[i] == 1 && seqNums[i+1] < cardConst.CARD_RANK_TWO {
+			var threes []*Card
+			for i := 0; i < len(seqNums); i++ {
+				tmp := findThisValueCard(seqNums[i], cards, 3)
+				threes = append(threes, tmp...)
+			}
+			remains := removeCards(cards, threes)
+			//logger.Debug("remains:")
+			PrintCard(remains)
+			if getAllDoubleNum(remains) == seqLen {
+				return true
+			}
+		}
+	}
 	return false
 }

@@ -27,7 +27,7 @@ func PushRecoverRoom(session *melody.Session, room *Room, playerId string) {
 	}
 
 	var countDown int32
-	countDown = 10
+	countDown = 19
 	for _, v := range room.Players {
 		if v.IsCanDo {
 			logger.Debug("=============== 当前正在操作的玩家:", v.PlayerInfo.PlayerId, "====================")

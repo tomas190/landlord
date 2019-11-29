@@ -100,6 +100,14 @@ func EmptyExpFieldWaitUser() {
 
 // 体验场 处理玩家进入体验场
 func DealPlayerEnterExpField(session *melody.Session, playerInfo PlayerInfo) {
+
+	isExist := IsPlayerInExpField(playerInfo.PlayerId)
+	if isExist {
+		logger.Debug("体验场等待的用户:", ExpFieldWaitUser.WaitUsers)
+		AddExpFieldWaitUser(session, playerInfo)
+		return
+	}
+
 	if len(ExpFieldWaitUser.WaitUsers) < 2 { // 斗地主需要三个人才能玩
 		AddExpFieldWaitUser(session, playerInfo)
 	} else if len(ExpFieldWaitUser.WaitUsers) == 2 {
@@ -195,6 +203,14 @@ func EmptyLowFieldWaitUser() {
 
 // 低级场 处理玩家进入体验场
 func DealPlayerEnterLowField(session *melody.Session, playerInfo PlayerInfo) {
+
+	isExist := IsPlayerInLowField(playerInfo.PlayerId)
+	if isExist {
+		logger.Debug("低级场等待的用户:", LowFieldWaitUser.WaitUsers)
+		AddLowFieldWaitUser(session, playerInfo)
+		return
+	}
+
 	if len(LowFieldWaitUser.WaitUsers) < 2 { // 斗地主需要三个人才能玩
 		AddLowFieldWaitUser(session, playerInfo)
 	} else if len(LowFieldWaitUser.WaitUsers) == 2 {
@@ -290,6 +306,14 @@ func EmptyMidFieldWaitUser() {
 
 // 中级场 处理玩家进入中级场
 func DealPlayerEnterMidField(session *melody.Session, playerInfo PlayerInfo) {
+
+	isExist := IsPlayerInMidField(playerInfo.PlayerId)
+	if isExist {
+		logger.Debug("中级场等待的用户:", MidFieldWaitUser.WaitUsers)
+		AddMidFieldWaitUser(session, playerInfo)
+		return
+	}
+
 	if len(MidFieldWaitUser.WaitUsers) < 2 { // 斗地主需要三个人才能玩
 		AddMidFieldWaitUser(session, playerInfo)
 	} else if len(MidFieldWaitUser.WaitUsers) == 2 {
@@ -386,13 +410,18 @@ func EmptyHighFieldWaitUser() {
 // 高级场 处理玩家进入高级场
 func DealPlayerEnterHighField(session *melody.Session, playerInfo PlayerInfo) {
 	// 1.判断
+	isExist := IsPlayerInHighField(playerInfo.PlayerId)
+	if isExist {
+		logger.Debug("高级场等待的用户:", HighFieldWaitUser.WaitUsers)
+		AddHighFieldWaitUser(session, playerInfo)
+		return
+	}
 
 
 	if len(HighFieldWaitUser.WaitUsers) < 2 { // 斗地主需要三个人才能玩
 		AddHighFieldWaitUser(session, playerInfo)
 	} else if len(HighFieldWaitUser.WaitUsers) == 2 {
 		HighFieldWaitUser.mu.Lock()
-
 
 		players := make(map[string]*Player)
 		room := NewRoom(roomType.HighField, nil)
@@ -440,3 +469,60 @@ func DealPlayerEnterHighField(session *melody.Session, playerInfo PlayerInfo) {
 }
 
 /*=================  高级场 ===============*/
+
+
+
+
+
+
+
+
+
+
+// help
+// 用户是否在等待队列
+func IsPlayerInExpField(playerId string) bool {
+	ExpFieldWaitUser.mu.Lock()
+	defer ExpFieldWaitUser.mu.Unlock()
+
+	if _, ok := ExpFieldWaitUser.WaitUsers[playerId]; ok {
+		return true
+	}
+	return false
+}
+
+// 用户是否在等待队列
+func IsPlayerInLowField(playerId string) bool {
+	LowFieldWaitUser.mu.Lock()
+	defer LowFieldWaitUser.mu.Unlock()
+
+	if _, ok := LowFieldWaitUser.WaitUsers[playerId]; ok {
+		return true
+	}
+	return false
+}
+
+// 用户是否在等待队列
+func IsPlayerInMidField(playerId string) bool {
+	MidFieldWaitUser.mu.Lock()
+	defer MidFieldWaitUser.mu.Unlock()
+
+	if _, ok := MidFieldWaitUser.WaitUsers[playerId]; ok {
+		return true
+	}
+	return false
+}
+
+// 用户是否在等待队列
+func IsPlayerInHighField(playerId string) bool {
+	HighFieldWaitUser.mu.Lock()
+	defer HighFieldWaitUser.mu.Unlock()
+
+	if _, ok := HighFieldWaitUser.WaitUsers[playerId]; ok {
+		return true
+	}
+	return false
+}
+
+
+
