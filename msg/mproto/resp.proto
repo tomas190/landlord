@@ -119,12 +119,14 @@ message PushSettlement {
 // 7.玩家在玩的过程中 退出房间  在进入 的房间数据信息推送
 message PushRoomRecover {
     repeated RecoverPlayer players = 1; // 房间用户信息
-    string landLordPlayerId = 2;
-    int32 landlordPosition = 3;
-    int32 countdown = 4; // 倒计时
-    int32 multi = 5; // 倍数 当前倍数房间倍数
-    double bottomPoint = 6; // 底分
-    int32 roomStatus = 7; // 房间当前状态   1 叫地主  2抢地主  3 出牌
+    repeated Card EffectiveCard = 2; // 有效牌
+    int32 EffectiveCardType = 3; // 有效牌类型
+    string landLordPlayerId = 4;
+    int32 landlordPosition = 5;
+    int32 countdown = 6; // 倒计时
+    int32 multi = 7; // 倍数 当前倍数房间倍数
+    double bottomPoint = 8; // 底分
+    int32 roomStatus = 9; // 房间当前状态   1 叫地主  2抢地主  3 出牌
 
 }
 

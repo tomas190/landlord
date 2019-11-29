@@ -26,17 +26,28 @@ func PushRecoverRoom(session *melody.Session, room *Room, playerId string) {
 		return
 	}
 
+	var countDown int32
+	countDown = 10
+	for _, v := range room.Players {
+		if v.IsCanDo {
+			logger.Debug("=============== 当前正在操作的玩家:", v.PlayerInfo.PlayerId, "====================")
+			countDown = v.WaitingTime
+		}
+	}
+
 	var resp mproto.PushRoomRecover
 	resp.Players = ChangePlayerToRecoverPlayer(room.Players, playerId)
 	resp.BottomPoint = room.RoomClass.BottomPoint
 	resp.Multi = room.MultiAll
-	resp.Countdown = player.WaitingTime
+	resp.Countdown = countDown
 	resp.LandLordPlayerId = room.LandlordPlayerId
+	resp.EffectiveCard = ChangeCardToProto(room.EffectiveCard)
+	resp.EffectiveCardType = room.EffectiveType
 	if room.LandlordPlayerId != "" {
 		landPlayer := room.Players[room.LandlordPlayerId]
 		if landPlayer != nil {
 			resp.LandlordPosition = landPlayer.PlayerPosition
-		}else{
+		} else {
 			logger.Error("该房间无玩家信息 !!!incredible")
 		}
 	}

@@ -27,7 +27,7 @@ func CallLandlord(room *Room, playerId string) {
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 	uptWtChin := make(chan struct{})
 
-	go updatePlayerWaitingTime(actionPlayer, uptWtChin)
+	go updatePlayerWaitingTime(actionPlayer, uptWtChin, sysSet.GameDelayGetLandlordTimeInt)
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
@@ -49,7 +49,7 @@ func CallLandlord(room *Room, playerId string) {
 		case playerAction.NotGetLandlord: // 不抢
 			NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
 		}
-	case <-time.After(time.Second * sysSet.GameDelayTime): // 自动进行不叫或者不抢
+	case <-time.After(time.Second * sysSet.GameDelayGetLandlordTime): // 自动进行不叫或者不抢
 		uptWtChin <- struct{}{}
 		if room.Status == roomStatus.CallLandlord {
 			NotCallLandlordAction(room, actionPlayer, nextPlayer) // 不叫
@@ -159,7 +159,7 @@ func pushFirstCallLandlord(room *Room) string {
 
 	actionPosition := getNextPosition(lastPosition)
 	actionPlayer := getPlayerByPosition(room, actionPosition)
-
+	setCurrentPlayer(room, actionPlayer.PlayerInfo.PlayerId)
 	pushCallLandlordHelp(room, lastPlayer, actionPlayer, playerAction.CallLandlord)
 	return actionPlayer.PlayerInfo.PlayerId
 }
@@ -174,7 +174,7 @@ func pushLastCallLandlord(room *Room, lastPlayer *Player) {
 	push.LastPlayerPosition = lastPlayer.PlayerPosition
 	push.LastPlayerId = lastPlayer.PlayerInfo.PlayerId
 	push.LastPlayerAction = lastPlayer.LastAction
-	push.Countdown = sysSet.GameDelayTimeInt
+	push.Countdown = sysSet.GameDelayGetLandlordTimeInt
 	push.Multi = room.MultiAll
 
 	bytes, _ := proto.Marshal(&push)
@@ -192,7 +192,7 @@ func pushCallLandlordHelp(room *Room, lastPlayer, nextPlayer *Player, showAction
 
 	push.PlayerPosition = nextPlayer.PlayerPosition
 	push.PlayerId = nextPlayer.PlayerInfo.PlayerId
-	push.Countdown = sysSet.GameDelayTimeInt
+	push.Countdown = sysSet.GameDelayGetLandlordTimeInt
 	push.Action = showAction
 	push.Multi = room.MultiAll
 
@@ -239,13 +239,13 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 }
 
 // 叫地主阶段 保存更新用户等待时间点
-func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}) {
-	actionPlayer.WaitingTime = sysSet.GameDelayTimeInt
+func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTime int32) {
+	actionPlayer.WaitingTime = waitTime
 	for {
 		select {
 		case <-tmpChan:
 			logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
-			actionPlayer.WaitingTime = sysSet.GameDelayTimeInt
+			actionPlayer.WaitingTime = waitTime
 			close(tmpChan)
 			runtime.Goexit()
 			break
@@ -259,7 +259,7 @@ func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}) {
 				runtime.Goexit()
 				break
 			}
-			logger.Debug("更新一次时间:", actionPlayer.WaitingTime)
+		//	logger.Debug("更新一次时间:", actionPlayer.WaitingTime)
 			actionPlayer.WaitingTime = actionPlayer.WaitingTime - 1
 		}
 	}

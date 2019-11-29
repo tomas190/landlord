@@ -293,6 +293,7 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 	if room.Status != roomStatus.Playing {
 		logger.Error("ReqGameHosting:当前房间状态不允许玩家托管", info.PlayerId)
 		SendErrMsg(session, msgIdConst.ReqGameHosting, "当前房间状态不允许玩家托管:"+info.PlayerId)
+		return
 	}
 
 	// todo 如果玩家在自己出牌阶段没出牌 点击了托管 则根据是否必出 进行托管托管逻辑出牌
