@@ -58,6 +58,7 @@ const (
 	PushSettlement           = 306 // 推送结算你教习
 	PushRoomRecover          = 307 // 恢复房间
 	PushCardCount            = 308 // 记牌器推送
+	PushSpring            = 309 // 春天推送
 )
 
 // 主动推送 Error

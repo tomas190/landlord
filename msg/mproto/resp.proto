@@ -137,11 +137,10 @@ message PushCardCount {
     map<int32, int32> cardCount = 1; // 第一个int32 改值 第二个int32 该值的张数
 }
 
-// SERVER PUSH : MSG_ID 308  // 更新玩家手牌 当玩家出牌后会推送
-// MSG_ROOM_INFO_PUSH = 308 ;
-// 9.更新手牌
-message PushCardUpdate {
-    repeated Card cards = 2; // 当玩家出牌后会推送
+// SERVER PUSH : MSG_ID 309  // 更新玩家手牌 当玩家出牌后会推送
+// MSG_ROOM_INFO_PUSH = 309 ;
+// 9.春天特效播放
+message PushSpring {
 }
 
 // =================================  SERVER 主动推送异常指令 500 开始 ======================

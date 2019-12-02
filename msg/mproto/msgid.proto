@@ -42,7 +42,7 @@ enum MessageID {
 
     MSG_ROOM_RECOVER_PUSH = 307; // 玩家在玩的过程中 退出房间  在进入 的房间数据信息推送  new
     MSG_CARD_COUNT_PUSH = 308; // 记牌器推送
-    MSG_CARD_UPDATE_PUSH = 309; // 更新手牌
+    MSG_SPRING_PUSH = 309; // 春天特效
 
     /* SERVER PUSH ERROR MSG - FROM 500 */
     MSG_CLOSE_CONN_PUSH = 500; // s-c 服务器主动断开

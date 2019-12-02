@@ -27,7 +27,7 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 	uptWtChin := make(chan struct{})
 
-	go updatePlayerWaitingTime(actionPlayer, uptWtChin,sysSet.GameDelayTimeInt)
+	go updatePlayerWaitingTime(actionPlayer, uptWtChin, sysSet.GameDelayTimeInt)
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
@@ -59,7 +59,7 @@ func PlayingGame(room *Room, actionPlayerId string) {
 			//DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer) // 走托管逻辑
 			cards, cType := FindMustBeOutCards(actionPlayer.HandCards)
 			OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
-		}else {
+		} else {
 			NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer) // 走不出逻辑
 		}
 
@@ -98,10 +98,15 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	if len(actionPlayer.HandCards) == 0 {
 		//pushOutCardHelp(room, nil, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType)
 		// 判断是否春天
-		CheckSpring(room, actionPlayer)
+		isSpring := CheckSpring(room, actionPlayer)
 		pushLastOutCard(room, actionPlayer, cards, cardsType)
 		logger.Debug("玩家胜利:", actionPlayer.PlayerInfo.PlayerId)
 
+		if isSpring {
+			DelaySomeTime(2)
+			pushSpring(room)
+			DelaySomeTime(1)
+		}
 		DelaySomeTime(2)
 		// 结算
 		Settlement(room, actionPlayer)
@@ -242,7 +247,7 @@ func removeCard(cards []*Card, removeCard *Card) []*Card {
 }
 
 // 判断是否春天
-func CheckSpring(room *Room, player *Player) {
+func CheckSpring(room *Room, player *Player) bool {
 	// 1. 判断玩家是否地主
 	_, f1, f2 := getPlayerClass(room)
 	if player.IsLandlord == true {
@@ -259,6 +264,11 @@ func CheckSpring(room *Room, player *Player) {
 			room.MultiSpring = 2
 		}
 	}
+
+	if room.MultiSpring == 2 {
+		return true
+	}
+	return false
 }
 
 /*

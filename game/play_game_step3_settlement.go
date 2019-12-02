@@ -10,6 +10,13 @@ import (
 	"time"
 )
 
+func pushSpring(room *Room) {
+	var push mproto.PushSpring
+	bytes, _ := proto.Marshal(&push)
+	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushSpring, bytes))
+
+}
+
 // 结算
 // 最小金额计算 玩家只有这么多金币 则 只能输或者赢这么多
 func Settlement(room *Room, winPlayer *Player) {
