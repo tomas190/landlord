@@ -120,7 +120,7 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		return
 	}
 
-	if msgId != msgIdConst.PushRoomRecover {
+	if msgId != msgIdConst.PushSettlement {
 		return
 	}
 	// todo  huck
