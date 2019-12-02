@@ -103,9 +103,9 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		logger.Debug("玩家胜利:", actionPlayer.PlayerInfo.PlayerId)
 
 		if isSpring {
-			DelaySomeTime(2)
-			pushSpring(room)
 			DelaySomeTime(1)
+			pushSpring(room)
+			//DelaySomeTime(1)
 		}
 		DelaySomeTime(2)
 		// 结算

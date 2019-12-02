@@ -43,8 +43,8 @@ func PushPlayerEnterRoom(room *Room) {
 
 // 2.给玩家发牌
 func PushPlayerStartGame(room *Room) {
-	cards := CreateBrokenCard()
-	//cards := CreateSortCard()
+	//cards := CreateBrokenCard()
+	cards := CreateSortCard()
 	players := room.Players
 	for _, v := range players {
 		v.HandCards = append([]*Card{}, cards[:17]...)
