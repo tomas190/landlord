@@ -253,7 +253,7 @@ func dealCloseConn(session *melody.Session) {
 
 		for _, p := range room.Players {
 			if p.PlayerInfo.PlayerId == info.PlayerId {
-				p.IsGameHosting = true
+
 				p.IsCloseSession = true
 			}
 		}
