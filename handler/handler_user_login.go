@@ -36,7 +36,7 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	// 转换成 proto 对象
 	//protoPlayerInfo := game.ChangePlayerInfoToProto(playerInfo)
 	// 重复登录 挤下线机制 (如果该账号已经登录 则断开连接并清楚map)
-	userRepeatLogin(m, currentSession, req.UserId)
+	userRepeatLogin(m, session, req.UserId)
 
 	// 返回玩家信息
 	var loginResp mproto.RespLogin
