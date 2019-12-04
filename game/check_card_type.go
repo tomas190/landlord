@@ -187,10 +187,11 @@ func IsTripletWithPair(set []*Card) bool {
 		set[2].Value == set[0].Value && IsPair(set[3:5]) && IsTriplet(set[0:3]) {
 		return true
 		// 带王对的情况
-	} else if set[2].Value == set[4].Value && IsRocket(set[0:2]) && IsTriplet(set[2:5]) ||
-		set[2].Value == set[0].Value && IsRocket(set[3:5]) && IsTriplet(set[0:3]) {
-		return true
-	}
+	}  // 2019年12月4日15:42:02 不允许三带对王
+	//else if set[2].Value == set[4].Value && IsRocket(set[0:2]) && IsTriplet(set[2:5]) ||
+	//	set[2].Value == set[0].Value && IsRocket(set[3:5]) && IsTriplet(set[0:3]) {
+	//	return true
+	//}
 
 	return false
 }
