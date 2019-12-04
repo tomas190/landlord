@@ -36,7 +36,7 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	// 转换成 proto 对象
 	//protoPlayerInfo := game.ChangePlayerInfoToProto(playerInfo)
 	// 重复登录 挤下线机制 (如果该账号已经登录 则断开连接并清楚map)
-	userRepeatLogin(m, session, req.UserId)
+	userRepeatLogin(m, session, playerInfo)
 
 	// 返回玩家信息
 	var loginResp mproto.RespLogin
@@ -93,7 +93,7 @@ func userLoginVerify(userId, password, token string) (*mproto.PlayerInfo, error)
 }
 
 // 你已经被挤下线
-func userRepeatLogin(m *melody.Melody, currentSession *melody.Session, userId string) {
+func userRepeatLogin(m *melody.Melody, currentSession *melody.Session, playerInfo *mproto.PlayerInfo) {
 
 	var push mproto.CloseConn
 	push.Code = userSessionStatus.LoginTimeOutClose
@@ -101,20 +101,27 @@ func userRepeatLogin(m *melody.Melody, currentSession *melody.Session, userId st
 
 	bytes, _ := proto.Marshal(&push)
 
-	oldSession := game.GetAgent(userId)
+	oldSession := game.GetAgent(playerInfo.PlayerId)
 	if oldSession != nil {
 		// 如果旧的连接在房间中游戏  则需要同步session信息
-		syncSessionInfo(oldSession, currentSession)
+		syncSessionInfo(oldSession, currentSession, playerInfo)
 		_ = oldSession.CloseWithMsg(game.PkgMsg(msgIdConst.CloseConn, bytes))
-		game.RemoveAgent(userId)
+		game.RemoveAgent(playerInfo.PlayerId)
 	}
 
 }
 
 // 同步session的房间信息
-func syncSessionInfo(oldSession, session *melody.Session) {
+func syncSessionInfo(oldSession, session *melody.Session, info *mproto.PlayerInfo) {
 	roomId := game.GetSessionRoomId(oldSession)
 	if roomId != "" {
+
+		room := game.GetRoom(roomId)
+		if player, ok := room.Players[info.PlayerId]; ok {
+			player.PlayerInfo.Name = info.PlayerName
+			player.PlayerInfo.HeadImg = info.PlayerImg
+			player.Session = session
+		}
 		game.SetSessionRoomId(session, roomId)
 	}
 

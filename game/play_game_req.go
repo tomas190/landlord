@@ -40,7 +40,7 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 	room, b := IsPlayerInRoom(playerInfo.PlayerId)
 	if b {
 		if room.RoomClass.RoomType == req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
-			room.Players[playerInfo.PlayerId].Session = session
+			//room.Players[playerInfo.PlayerId].Session = session
 			PushRecoverRoom(session, room, playerInfo.PlayerId)
 		}
 		return
