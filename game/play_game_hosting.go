@@ -527,7 +527,7 @@ func HostingBeatJunko(handCards, eCards []*Card) ([]*Card, bool, int32) {
 
 	// 1.先去掉手牌中的重复值 要去掉 2 以上大的牌 (2 以上大的牌不能组成顺子)
 	singleCards := junkoHelpRemove(handCards)
-	logger.Debug(singleCards)
+	//logger.Debug(singleCards)
 	// 有机会组成大过的顺子
 	if len(singleCards) >= junkoLen {
 		// logger.Debug("step1....")
@@ -540,7 +540,7 @@ func HostingBeatJunko(handCards, eCards []*Card) ([]*Card, bool, int32) {
 				// logger.Debug("step2....")
 				if i+junkoLen <= len(singleCards) && int(startValue)-singleCards[i] == int(endValue)-singleCards[i+junkoLen-1] {
 					// logger.Debug("step3....")
-					logger.Debug("胜利在望")
+					//logger.Debug("胜利在望")
 					var result []*Card
 					for t := i; t <= i+junkoLen-1; t++ {
 						tmpCard := findThisValueCard(singleCards[t], handCards, 1)

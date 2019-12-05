@@ -187,12 +187,27 @@ func setCurrentPlayerOut(room *Room, playerId string, isMustDo bool) {
 
 }
 
+// 推送确定完必须出牌的消息 (第一次出牌开始 / 玩家出牌后 后面两个玩家都不要)
+func pushFirstMustOutCard(room *Room, playerId string) string {
+	actionPlayer := getPlayerByPlayerId(room, playerId)
+	var push mproto.PushOutCard
+	push.PlayerPosition = actionPlayer.PlayerPosition
+	push.PlayerId = actionPlayer.PlayerInfo.PlayerId
+	push.Countdown = sysSet.GameDelayTimeInt
+	push.IsMustPlay = true
+	push.Multi = room.MultiAll
+	bytes, _ := proto.Marshal(&push)
+	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushOutCard, bytes))
+	return actionPlayer.PlayerInfo.PlayerId
+}
+
 // 推送必须出牌的消息 (第一次出牌开始 / 玩家出牌后 后面两个玩家都不要)
 func pushMustOutCard(room *Room, playerId string) string {
 	actionPlayer := getPlayerByPlayerId(room, playerId)
 	lastPlayer := getPlayerByPosition(room, getLastPosition(actionPlayer.PlayerPosition))
 
-	pushOutCardHelp(room, actionPlayer, lastPlayer, playerAction.NoAction, true, nil, 0)
+	//pushOutCardHelp(room, actionPlayer, lastPlayer, playerAction.NoAction, true, nil, 0)
+	pushOutCardHelp(room, actionPlayer, lastPlayer, lastPlayer.LastAction, true, nil, 0)
 	return actionPlayer.PlayerInfo.PlayerId
 }
 
@@ -222,7 +237,7 @@ func pushOutCardHelp(room *Room, actionPlayer, lastPlayer *Player, lastAction in
 
 // 推送玩家出的最后一首牌张牌
 func pushLastOutCard(room *Room, actionPlayer *Player, lastCards []*Card, cardType int32) {
-	pushOutCardHelp(room, nil, actionPlayer, playerAction.NoAction, false, lastCards, cardType)
+	pushOutCardHelp(room, nil, actionPlayer, actionPlayer.LastAction, false, lastCards, cardType)
 }
 
 // 将牌送 牌队中移除
