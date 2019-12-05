@@ -232,10 +232,10 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 		return
 	}
 
-	if roomId != req.RoomId { // 如果请求的roomId 和 自己的roomId 不一样 ze
-		SendErrMsg(session, msgIdConst.ReqExitRoom, "roomId不一致！")
-		return
-	}
+	//if roomId != req.RoomId { // 如果请求的roomId 和 自己的roomId 不一样 ze
+	//	SendErrMsg(session, msgIdConst.ReqExitRoom, "roomId不一致！")
+	//	return
+	//}
 
 	// 2. 如果玩家在游戏中 则设置退出房间标记
 	room := GetRoom(roomId)
