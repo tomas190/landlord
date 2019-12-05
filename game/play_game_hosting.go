@@ -529,7 +529,7 @@ func HostingBeatJunko(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	singleCards := junkoHelpRemove(handCards)
 	logger.Debug(singleCards)
 	// 有机会组成大过的顺子
-	if len(singleCards) > junkoLen {
+	if len(singleCards) >= junkoLen {
 		// logger.Debug("step1....")
 		SortCardSL(eCards) // 将比过牌 从小到大排序
 		startValue := eCards[0].Value
