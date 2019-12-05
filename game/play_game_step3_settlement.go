@@ -139,6 +139,12 @@ func syncWinGold(player *Player, gold, goldPay float64, roundId string) float64 
 		logger.Error("同步进步到session失败: !!!incredible")
 	}
 	UserSyncWinScore(player.PlayerInfo.PlayerId, gold, roundId, orderId) // 同步到中心服务
+
+	// 赢钱超过设定值发送 跑马灯
+	if !player.IsRobot && goldPay > Server.WinGoldNotice {
+		NoticeWinMoreThan(player.PlayerInfo.PlayerId, player.PlayerInfo.Name, goldPay)
+	}
+
 	return player.PlayerInfo.Gold
 }
 

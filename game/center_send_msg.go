@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"github.com/wonderivan/logger"
 	"time"
 )
@@ -129,6 +130,28 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId, orderId stri
 
 	WriteMsgToCenter(baseData)
 }
+
+func NoticeWinMoreThan(playerId, playerName string, winGold float64) {
+	logger.Debug("<-------- NoticeWinMoreThan  -------->")
+
+	//style := `<size=20><color=YELLOW>恭喜!</color><color=orange>888888888</color><color=YELLOW>在</color></><color=WHITE><b><size=25>龙虎斗</color></b></><color=YELLOW><size=20>中一把赢了</color></><color=YELLOW><b><size=35>8888.88</color></b></><color=YELLOW><size=20>金币！</color></>`
+
+	msg := fmt.Sprintf("<size=20><color=YELLOW>恭喜!</color><color=orange>%s</color><color=YELLOW>在</color></><color=WHITE><b><size=25>百家乐</color></b></><color=YELLOW><size=20>中一把赢了</color></><color=YELLOW><b><size=35>%.2f</color></b></><color=YELLOW><size=20>金币！</color></>", playerName, winGold)
+
+	base := &ToCenterMessage{}
+	base.Event = msgWinMoreThanNotice
+	base.Data = &Notice{
+		DevName: Server.DevName,
+		DevKey:  Server.DevKey,
+		ID:      playerId,
+		GameId:  Server.GameId,
+		Type:    2000,
+		Message: msg,
+		Topic:   "系统提示",
+	}
+	WriteMsgToCenter(base)
+}
+
 
 func canLoginOut(userId string) bool {
 	agent := GetAgent(userId)

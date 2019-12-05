@@ -24,6 +24,7 @@ var Server struct {
 	DevName     string
 	GameId      string
 	GameTaxRate float64
+	WinGoldNotice float64
 
 	MongoDBAddr string
 	MongoDBUser string

@@ -6,6 +6,7 @@ const (
 	msgUserLogout    string = "/GameServer/GameUser/loginout"
 	msgUserWinScore  string = "/GameServer/GameUser/winSettlement"
 	msgUserLoseScore string = "/GameServer/GameUser/loseSettlement"
+	msgWinMoreThanNotice string = "/GameServer/Notice/notice" // 赢钱超过发送通知
 )
 
 
@@ -84,4 +85,15 @@ type UserReq struct {
 type UserLoginCallBack struct {
 	Player PlayerInfo
 	LoginStatus bool    `json:"login_status"`
+}
+
+
+type Notice struct {
+	DevName string `json:"dev_name"`
+	DevKey  string `json:"dev_key"`
+	ID      string `json:"id"`
+	GameId  string `json:"game_id"`
+	Type    int    `json:"type"`
+	Message string `json:"message"`
+	Topic   string `json:"topic"`
 }
