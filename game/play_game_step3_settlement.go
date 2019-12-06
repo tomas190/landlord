@@ -33,6 +33,12 @@ func Settlement(room *Room, winPlayer *Player) {
 	// 如果赢家是地主
 	if winPlayer.IsLandlord == true {
 		var landRealWinGold float64 // 地主实际赢钱 税前
+		// 1.如果地主的钱小于赢钱  自己本身多少钱 就只能赢这么多钱
+		if landPlayer.PlayerInfo.Gold < settlementGold*2 {
+			settlementGold = landPlayer.PlayerInfo.Gold / 2
+		}
+
+		// 2.如果玩家一的钱不够开
 		if fp1.PlayerInfo.Gold < settlementGold { // 如果玩家1 的钱不够开
 			showWinLossGold := fmt.Sprintf("-%.2f", fp1.PlayerInfo.Gold)
 			landRealWinGold += fp1.PlayerInfo.Gold
@@ -49,6 +55,7 @@ func Settlement(room *Room, winPlayer *Player) {
 			sPush.Settlement = append(sPush.Settlement, ss)
 		}
 
+		// 如果玩家2的钱不够开
 		if fp2.PlayerInfo.Gold < settlementGold { // 如果玩家2 的钱不够开
 			showWinLossGold := fmt.Sprintf("-%.2f", fp2.PlayerInfo.Gold)
 			landRealWinGold += fp2.PlayerInfo.Gold
@@ -73,8 +80,21 @@ func Settlement(room *Room, winPlayer *Player) {
 		sPush.Settlement = append(sPush.Settlement, ss)
 
 	} else { // 如果玩家不是地主
-		// 1. 判断地主金币是否够开
-		if landPlayer.PlayerInfo.Gold/2 < settlementGold {
+		// 1.如果农民的钱小于结算赢钱
+		fp1S := settlementGold
+		fp2S := settlementGold
+		if fp1.PlayerInfo.Gold < settlementGold || fp2.PlayerInfo.Gold < settlementGold {
+			if fp1.PlayerInfo.Gold < settlementGold {
+				fp1S = fp1.PlayerInfo.Gold
+			}
+
+			if fp2.PlayerInfo.Gold < settlementGold {
+				fp2S = fp2.PlayerInfo.Gold
+			}
+		}
+
+		// 2. 判断地主金币是否够开
+		if landPlayer.PlayerInfo.Gold < fp1S+fp2S {
 			landShowWinLossGold := fmt.Sprintf("-%.2f", landPlayer.PlayerInfo.Gold)
 
 			farmerRealWinGold := landPlayer.PlayerInfo.Gold / 2
@@ -100,20 +120,24 @@ func Settlement(room *Room, winPlayer *Player) {
 
 		} else {
 			// 正常结算
-			winGoldPay := settlementGold * (1 - Server.GameTaxRate)
-			syncWinGold(fp1, settlementGold, winGoldPay, roundId)
-			syncWinGold(fp2, settlementGold, winGoldPay, roundId)
-			syncLossGold(landPlayer, settlementGold*2, roundId)
+			fp1WinGoldPay := fp1S * (1 - Server.GameTaxRate)
+			syncWinGold(fp1, fp1S, fp1WinGoldPay, roundId)
 
-			showWinLossGold := fmt.Sprintf("%.2f", winGoldPay)
-			fs1 := getSelfSettlement(room, fp1, 1, showWinLossGold, false)
+			fp2WinGoldPay := fp2S * (1 - Server.GameTaxRate)
+			syncWinGold(fp2, fp2S, fp2WinGoldPay, roundId)
+
+			syncLossGold(landPlayer, fp1S+fp2S, roundId)
+
+			fp1ShowWinLossGold := fmt.Sprintf("%.2f", fp1WinGoldPay)
+			fs1 := getSelfSettlement(room, fp1, 1, fp1ShowWinLossGold, fp1S < settlementGold)
 			sPush.Settlement = append(sPush.Settlement, fs1)
 
-			fs2 := getSelfSettlement(room, fp2, 1, showWinLossGold, false)
+			fp2ShowWinLossGold := fmt.Sprintf("%.2f", fp2WinGoldPay)
+			fs2 := getSelfSettlement(room, fp2, 1, fp2ShowWinLossGold, fp2S < settlementGold)
 			sPush.Settlement = append(sPush.Settlement, fs2)
 
-			landShowWinLossGold := fmt.Sprintf("-%.2f", settlementGold*2)
-			ls := getSelfSettlement(room, landPlayer, -1, landShowWinLossGold, false)
+			landShowWinLossGold := fmt.Sprintf("-%.2f", fp1S+fp2S)
+			ls := getSelfSettlement(room, landPlayer, -1, landShowWinLossGold, (fp1S + fp2S) < settlementGold*2)
 			sPush.Settlement = append(sPush.Settlement, ls)
 		}
 
