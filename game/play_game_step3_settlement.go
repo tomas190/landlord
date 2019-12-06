@@ -24,6 +24,7 @@ func Settlement(room *Room, winPlayer *Player) {
 
 	mult := room.MultiAll
 	settlementGold := room.RoomClass.BottomPoint * float64(mult)
+	origiSettlementGold := settlementGold
 
 	landPlayer, fp1, fp2 := getPlayerClass(room)
 	roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
@@ -76,7 +77,7 @@ func Settlement(room *Room, winPlayer *Player) {
 		syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId) // 同步金币 到中心服务 session
 
 		showWinLossGold := fmt.Sprintf("%.2f", landRealWinGoldPay)
-		ss := getSelfSettlement(room, landPlayer, 1, showWinLossGold, landRealWinGold < settlementGold*2)
+		ss := getSelfSettlement(room, landPlayer, 1, showWinLossGold, landRealWinGold < origiSettlementGold*2)
 		sPush.Settlement = append(sPush.Settlement, ss)
 
 	} else { // 如果玩家不是地主
