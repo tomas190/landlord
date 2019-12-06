@@ -20,11 +20,12 @@ var Server struct {
 	CenterPort   string // 中心服端口
 	APIGetToken  string // 中心服获取端口Api
 
-	DevKey      string
-	DevName     string
-	GameId      string
-	GameTaxRate float64
+	DevKey        string
+	DevName       string
+	GameId        string
+	GameTaxRate   float64
 	WinGoldNotice float64
+	UseRobot      bool	 // 启用机器人
 
 	MongoDBAddr string
 	MongoDBUser string

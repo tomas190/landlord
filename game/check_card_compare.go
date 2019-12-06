@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/wonderivan/logger"
 	"landlord/mconst/cardConst"
 )
 
@@ -70,6 +71,12 @@ func canBeatIt(cs, eCs *CardSet) bool {
 */
 func FindCanBeatCards(handsCard, eCards []*Card, eCardType int32) ([]*Card, bool, int32) {
 	// todo
+	logger.Debug("托管蜜汁操作。。。。。。。")
+	PrintCard(eCards)
+	logger.Debug(eCardType)
+	PrintCard(handsCard)
+	logger.Debug("托管蜜汁操作。。。。。。。")
+
 	switch eCardType {
 	case cardConst.CARD_PATTERN_SINGLE: // 3
 		return HostingBeatSingle(handsCard, eCards)

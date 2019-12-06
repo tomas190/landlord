@@ -37,6 +37,11 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	lastPlayer := getPlayerByPosition(room, lastPosition)
 	// 阻塞等待当前玩家的动作 超过系统设置时间后自动处理
 
+	if actionPlayer.IsRobot {
+		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer)
+		return
+	}
+
 	// todo 用户托管动作
 	if actionPlayer.IsGameHosting {
 		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer)
@@ -312,6 +317,10 @@ func getPlayerClass(room *Room) (*Player, *Player, *Player) {
 func clearRoomAndPlayer(room *Room) {
 	players := room.Players
 	for _, player := range players {
+		if player.IsRobot {
+			continue
+		}
+
 		if player.IsCloseSession { // 如果玩家已经断线 登出中心服
 			ClearClosePlayer(player.Session)
 		} else {

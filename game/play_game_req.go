@@ -46,6 +46,11 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		return
 	}
 
+	if Server.UseRobot { // 如果是开启机器人模式
+		DealPlayerEnterRoomWithRobot(session, *playerInfo, req.RoomType)
+		return
+	}
+
 	switch req.RoomType {
 	case roomType.ExperienceField: // 如果是体验场
 		DealPlayerEnterExpField(session, *playerInfo)

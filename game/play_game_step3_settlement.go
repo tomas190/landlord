@@ -159,28 +159,32 @@ func Settlement(room *Room, winPlayer *Player) {
 func syncWinGold(player *Player, gold, goldPay float64, roundId string) float64 {
 	orderId := fmt.Sprintf("%s-%s-win", roundId, player.PlayerInfo.PlayerId)
 	player.PlayerInfo.Gold = player.PlayerInfo.Gold + goldPay // 同步到房间id
-	err := SetSessionGold(player.Session, goldPay)            // 同步到session
-	if err != nil {
-		logger.Error("同步进步到session失败: !!!incredible")
-	}
-	UserSyncWinScore(player.PlayerInfo.PlayerId, gold, roundId, orderId) // 同步到中心服务
 
-	// 赢钱超过设定值发送 跑马灯
-	if !player.IsRobot && goldPay > Server.WinGoldNotice {
-		NoticeWinMoreThan(player.PlayerInfo.PlayerId, player.PlayerInfo.Name, goldPay)
-	}
+	if !player.IsRobot { // 如果不是机器人则同步session信息
+		err := SetSessionGold(player.Session, goldPay) // 同步到session
+		if err != nil {
+			logger.Error("同步进步到session失败: !!!incredible")
+		}
+		UserSyncWinScore(player.PlayerInfo.PlayerId, gold, roundId, orderId) // 同步到中心服务
 
+		// 赢钱超过设定值发送 跑马灯
+		if !player.IsRobot && goldPay > Server.WinGoldNotice {
+			NoticeWinMoreThan(player.PlayerInfo.PlayerId, player.PlayerInfo.Name, goldPay)
+		}
+	}
 	return player.PlayerInfo.Gold
 }
 
 func syncLossGold(player *Player, gold float64, roundId string) float64 {
 	orderId := fmt.Sprintf("%s-%s-loss", roundId, player.PlayerInfo.PlayerId)
 	player.PlayerInfo.Gold = player.PlayerInfo.Gold - gold
-	err := SetSessionGold(player.Session, -gold) // 同步到session
-	if err != nil {
-		logger.Error("同步进步到session失败: !!!incredible")
+	if !player.IsRobot { // 如果不是机器人则同步session信息
+		err := SetSessionGold(player.Session, -gold) // 同步到session
+		if err != nil {
+			logger.Error("同步进步到session失败: !!!incredible")
+		}
+		UserSyncLoseScore(player.PlayerInfo.PlayerId, -gold, roundId, orderId)
 	}
-	UserSyncLoseScore(player.PlayerInfo.PlayerId, -gold, roundId, orderId)
 	return player.PlayerInfo.Gold
 }
 

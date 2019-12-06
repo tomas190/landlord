@@ -57,12 +57,19 @@ func findMinSingle(handCards []*Card) ([]*Card, bool) {
 	}
 
 	// 如果最后一张牌是大王  则改成和小王同级
-	if handCards[0].Value == cardConst.CARD_RANK_RED_JOKER {
+	//if handCards[0].Value == cardConst.CARD_RANK_RED_JOKER {
+	//	handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
+	//	defer func() {
+	//		handCards[0].Value = cardConst.CARD_RANK_RED_JOKER
+	//	}()
+	//}
+	if _, b, _ := hasRacket(handCards); b {
 		handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
 		defer func() {
 			handCards[0].Value = cardConst.CARD_RANK_RED_JOKER
 		}()
 	}
+
 	// 先统计牌的张输
 	singleCards := getHasNumsCard(handCards, 1)
 
@@ -262,7 +269,14 @@ func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	}
 
 	// 如果最后一张牌是大王  则改成和小王同级
-	if handCards[0].Value == cardConst.CARD_RANK_RED_JOKER {
+	//if handCards[0].Value == cardConst.CARD_RANK_RED_JOKER {
+	//	handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
+	//	defer func() {
+	//		handCards[0].Value = cardConst.CARD_RANK_RED_JOKER
+	//	}()
+	//}
+
+	if _, b, _ := hasRacket(handCards); b {
 		handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
 		defer func() {
 			handCards[0].Value = cardConst.CARD_RANK_RED_JOKER
@@ -778,7 +792,7 @@ func HostingBeatTripletsWithSingle(handCards, eCards []*Card) ([]*Card, bool, in
 	}
 
 	eChangeCards := eTripletsHelpRemove(eCards)
-	if len(eChangeCards)<=0{
+	if len(eChangeCards) <= 0 {
 		logger.Error("")
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
@@ -840,7 +854,7 @@ func HostingBeatTripletsWithDouble(handCards, eCards []*Card) ([]*Card, bool, in
 	}
 
 	eChangeCards := eTripletsHelpRemove(eCards)
-	if len(eChangeCards)<=0{
+	if len(eChangeCards) <= 0 {
 		logger.Error("牌数量不满足检测条件...")
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}

@@ -9,6 +9,7 @@
   "GameId": "5b1f3a3cb76a591e7f251711",
   "GameTaxRate": 0.05,
   "WinGoldNotice": 100,
+  "UseRobot": false,
 
   "MongoDBAddr": "10.63.90.28:27017",
   "MongoDBUser": "fido",

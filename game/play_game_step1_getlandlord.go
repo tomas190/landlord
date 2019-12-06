@@ -35,6 +35,12 @@ func CallLandlord(room *Room, playerId string) {
 
 	lastPosition := getLastPosition(actionPlayer.PlayerPosition)
 	lastPlayer := getPlayerByPosition(room, lastPosition)
+
+	if actionPlayer.IsRobot { // 如果是机器人
+		RobotGetLandlordAction(room, actionPlayer, nextPlayer,lastPlayer)
+		return
+	}
+
 	// 阻塞等待当前玩家的动作 超过系统设置时间后自动处理
 	select {
 	case action := <-actionPlayer.ActionChan:
@@ -233,7 +239,7 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 	setCurrentPlayerOut(room, landlordPlayer.PlayerInfo.PlayerId, true) // 设置位当前操作玩家
 
 	//pushMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
-	pushFirstMustOutCard(room,landlordPlayer.PlayerInfo.PlayerId)
+	pushFirstMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
 	pushCardCount(room)
 	PlayingGame(room, landlordPlayer.PlayerInfo.PlayerId)
 
@@ -260,7 +266,7 @@ func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTi
 				runtime.Goexit()
 				break
 			}
-		//	logger.Debug("更新一次时间:", actionPlayer.WaitingTime)
+			//	logger.Debug("更新一次时间:", actionPlayer.WaitingTime)
 			actionPlayer.WaitingTime = actionPlayer.WaitingTime - 1
 		}
 	}
