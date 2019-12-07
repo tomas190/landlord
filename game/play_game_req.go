@@ -254,7 +254,9 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 	player := room.Players[info.PlayerId]
 	if player != nil {
 		player.IsExitRoom = true
-		player.IsGameHosting = true
+		if room.Status == roomStatus.Playing {  // 只有在玩阶段才可以托管
+			player.IsGameHosting = true
+		}
 	} else {
 		logger.Error("该房间无玩家信息 !!!incredible")
 	}
