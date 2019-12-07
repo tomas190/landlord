@@ -420,8 +420,10 @@ func getCardManyOne(cards []*Card) int32 {
 		cardCount[cards[i].Value] = cardCount[cards[i].Value] + 1
 	}
 	var mostNum int
+	//logger.Debug(cardCount)
 	for l, v := range cardCount {
 		if v > mostNum {
+			mostNum = v
 			mostCountKey = l
 		}
 	}
