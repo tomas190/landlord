@@ -1,15 +1,29 @@
 package game
 
 import (
+	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
 	"time"
 )
 
-func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32) {
+// 处理玩家进入房间 和机器人玩
+func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32, waitChan chan struct{}) {
 
-	num := RandNum(3, 15)
-	DelaySomeTime(time.Duration(num))
+	delayTime := RandNum(10, 15)
 
+	select {
+	case <-waitChan:
+		logger.Debug("============= 玩家不想玩了 =============")
+		close(waitChan)
+		// do nothing
+	case <-time.After(time.Second * time.Duration(delayTime)):
+		logger.Debug("============= ... =============")
+		PlayWithRobot(session, playerInfo, roomType)
+	}
+
+}
+
+func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32) {
 	/*
 		todo 是否宰羊模式
 	*/
@@ -39,6 +53,5 @@ func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo
 	SaveRoom(room.RoomId, room)
 
 	// 开启线程 游戏开始
-	go PlayGame(room)
-
+	go PlayGameWithRobot(room)
 }

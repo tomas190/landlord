@@ -44,6 +44,13 @@ func OnConnect(m *melody.Melody, session *melody.Session) {
 // onDisconnection
 func OnDisconnect(m *melody.Melody, session *melody.Session) {
 	// 如果客户端断开连接
+	if game.Server.UseRobot {
+		value, exists := session.Get("waitChan")
+		if exists {
+			wc := value.(chan struct{})
+			wc <- struct{}{}
+		}
+	}
 	dealCloseConn(session)
 	logger.Info("Handler OnDisconnect :")
 }

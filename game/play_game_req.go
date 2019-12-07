@@ -47,7 +47,9 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 	}
 
 	if Server.UseRobot { // 如果是开启机器人模式
-		DealPlayerEnterRoomWithRobot(session, *playerInfo, req.RoomType)
+		wc := make(chan struct{})
+		session.Set("waitChan", wc)
+		go DealPlayerEnterRoomWithRobot(session, *playerInfo, req.RoomType, wc)
 		return
 	}
 
@@ -232,8 +234,16 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 	roomId := GetSessionRoomId(session)
 	// 1. 如果roomId为空代表玩家是在等待队列 则移除等待队列
 	if roomId == "" {
-		logger.Debug(info.PlayerId, "当前在等待队列中..")
-		RemoveWaitUser(info.PlayerId)
+		if Server.UseRobot {
+			value, exists := session.Get("waitChan")
+			if exists {
+				wc := value.(chan struct{})
+				wc <- struct{}{}
+			}
+		} else {
+			logger.Debug(info.PlayerId, "当前在等待队列中..")
+			RemoveWaitUser(info.PlayerId)
+		}
 		return
 	}
 
@@ -254,7 +264,7 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 	player := room.Players[info.PlayerId]
 	if player != nil {
 		player.IsExitRoom = true
-		if room.Status == roomStatus.Playing {  // 只有在玩阶段才可以托管
+		if room.Status == roomStatus.Playing { // 只有在玩阶段才可以托管
 			player.IsGameHosting = true
 		}
 	} else {
