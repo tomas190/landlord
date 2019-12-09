@@ -38,6 +38,7 @@
     "GameId": "5b1f3a3cb76a591e7f251711",         //     gameId  
     "GameTaxRate": 0.05,                          //     玩家赢钱税收比例
     "WinGoldNotice": 100,                         //     玩家一局赢钱超过此设定将发送跑马灯通知
+    "UseRobot": true,
     "MongoDBAddr": "172.16.100.5:27017",          //     mongo数据库连接地址
     "MongoDBUser": "LANDLORD-game",               //     mongo连接用户名
     "MongoDBPwd": "123456",                       //     mongo连接密码
