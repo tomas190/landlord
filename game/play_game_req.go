@@ -238,7 +238,10 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 			value, exists := session.Get("waitChan")
 			if exists {
 				wc := value.(chan struct{})
-				wc <- struct{}{}
+				_, ok := <-wc
+				if ok {
+					wc <- struct{}{}
+				}
 			}
 		} else {
 			logger.Debug(info.PlayerId, "当前在等待队列中..")
@@ -421,17 +424,6 @@ func verifyOutCard(room *Room, actionPlayer *Player, outCards []*Card) (int32, e
 		if err != nil {
 			return 0, err
 		}
-	}
-
-	// 14火箭
-	if cardType == cardConst.CARD_PATTERN_BOMB || cardType == cardConst.CARD_PATTERN_ROCKET {
-		room.MultiAll = room.MultiAll * 2
-		if room.MultiBoom == 0 {
-			room.MultiBoom = 2
-		} else {
-			room.MultiBoom = room.MultiBoom * 2
-		}
-
 	}
 
 	room.EffectiveCard = outCards

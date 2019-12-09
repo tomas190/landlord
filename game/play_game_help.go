@@ -91,3 +91,55 @@ func getPlayerByPlayerId(room *Room, playerId string) *Player {
 	logger.Debug("getPlayerByPlayerId !!!incredible")
 	return nil
 }
+
+/*
+	返回第一个地主玩家
+	后面两个农民玩家
+*/
+func getPlayerClass(room *Room) (*Player, *Player, *Player) {
+	if len(room.Players) != 3 {
+		logger.Error("房间用户数量异常,!!!incredible")
+		return nil, nil, nil
+	}
+	var landPlayer *Player
+	var fPlayers []*Player
+	for _, p := range room.Players {
+		if p.IsLandlord == true {
+			landPlayer = p
+		} else {
+			fPlayers = append(fPlayers, p)
+		}
+	}
+
+	if len(fPlayers) != 2 || fPlayers == nil {
+		logger.Error("分类玩家失败: !!!incredible")
+		return nil, nil, nil
+	}
+	return landPlayer, fPlayers[0], fPlayers[1]
+}
+
+/*
+	返回第一个是真实玩家
+	第二个和第三个是机器人
+*/
+func getPlayersWithRobot(room *Room) (*Player, *Player, *Player) {
+	if len(room.Players) != 3 {
+		logger.Error("房间用户数量异常,!!!incredible")
+		return nil, nil, nil
+	}
+	var player *Player
+	var robots []*Player
+	for _, p := range room.Players {
+		if p.IsRobot == false {
+			player = p
+		} else {
+			robots = append(robots, p)
+		}
+	}
+
+	if len(robots) != 2 || robots == nil {
+		logger.Error("房间用户数量异常: !!!incredible")
+		return nil, nil, nil
+	}
+	return player, robots[0], robots[1]
+}

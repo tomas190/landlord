@@ -37,7 +37,7 @@ func CallLandlord(room *Room, playerId string) {
 	lastPlayer := getPlayerByPosition(room, lastPosition)
 
 	if actionPlayer.IsRobot { // 如果是机器人
-		RobotGetLandlordAction(room, actionPlayer, nextPlayer,lastPlayer)
+		RobotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
 		return
 	}
 
@@ -125,7 +125,11 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 			emptyPlayerCardInfo(room) // 清空数据
 
 			DelaySomeTime(1)
-			PushPlayerStartGame(room)
+			if Server.UseRobot {
+				PushPlayerStartGameWithRobot(room)
+			} else {
+				PushPlayerStartGame(room)
+			}
 		}
 	} else { // 则让下一个玩家叫地主
 		setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)

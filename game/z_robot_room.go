@@ -9,20 +9,20 @@ import (
 // 处理玩家进入房间 和机器人玩
 func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32, waitChan chan struct{}) {
 
-	delayTime := RandNum(10, 15)
-
 	select {
 	case <-waitChan:
 		logger.Debug("============= 玩家不想玩了 =============")
 		close(waitChan)
 		// do nothing
-	case <-time.After(time.Second * time.Duration(delayTime)):
+	case <-time.After(getWaitTimePlayerEnterRoom()):
 		logger.Debug("============= ... =============")
+		close(waitChan)
 		PlayWithRobot(session, playerInfo, roomType)
 	}
 
 }
 
+// 匹配机器人并创建房间
 func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32) {
 	/*
 		todo 是否宰羊模式
@@ -53,5 +53,19 @@ func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int3
 	SaveRoom(room.RoomId, room)
 
 	// 开启线程 游戏开始
-	go PlayGameWithRobot(room)
+	PlayGameWithRobot(room)
+}
+
+// 开始和机器人玩游戏
+func PlayGameWithRobot(room *Room) {
+
+	// 1. 玩家进入房间如果有玩家正待等待则与之开始游戏
+	PushPlayerEnterRoom(room)
+	DelaySomeTime(1)
+
+	// 2.给玩家发牌
+	PushPlayerStartGameWithRobot(room)
+
+	// ..．流程控制到这里结束　发牌  抢地主  玩牌 直接由 PushPlayerStartGame 开始 且循环
+
 }

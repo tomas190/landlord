@@ -56,39 +56,26 @@ func findMinSingle(handCards []*Card) ([]*Card, bool) {
 		return nil, false
 	}
 
-	// 如果最后一张牌是大王  则改成和小王同级
-	//if handCards[0].Value == cardConst.CARD_RANK_RED_JOKER {
-	//	handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
-	//	defer func() {
-	//		handCards[0].Value = cardConst.CARD_RANK_RED_JOKER
-	//	}()
-	//}
-	if _, b, _ := hasRacket(handCards); b {
-		handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
-		defer func() {
-			handCards[0].Value = cardConst.CARD_RANK_RED_JOKER
-		}()
-	}
-
 	// 先统计牌的张输
 	singleCards := getHasNumsCard(handCards, 1)
+
+	logger.Debug("去除大小王之前的单张:",singleCards)
+	// 将同时又大小王的情况下 将其移除
+	if len(singleCards) >= 2 {
+		if singleCards[len(singleCards)-1] == cardConst.CARD_RANK_RED_JOKER &&
+			singleCards[len(singleCards)-2] == cardConst.CARD_RANK_BLACK_JOKER {
+			singleCards = append([]int{}, singleCards[:len(singleCards)-2]...)
+		}
+	}
+
+	logger.Debug("去除大小王之后的单张:",singleCards)
 
 	if len(singleCards) == 0 {
 		return nil, false
 	}
 
-	sort.Ints(singleCards)
-	var result []*Card
-
-	for i := 0; i < len(handCards); i++ {
-		if int(handCards[i].Value) == singleCards[0] {
-			result = append(result, handCards[i])
-		}
-		if len(result) == 1 {
-			break
-		}
-	}
-	return result, true
+	card := findThisValueCard(singleCards[0], handCards, 1)
+	return card, true
 }
 
 /*
@@ -266,21 +253,6 @@ func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 1 || len(handCards) <= 0 {
 		logger.Error("无效牌值 !!!incredible")
 		return nil, false, cardConst.CARD_PATTERN_TODO
-	}
-
-	// 如果最后一张牌是大王  则改成和小王同级
-	//if handCards[0].Value == cardConst.CARD_RANK_RED_JOKER {
-	//	handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
-	//	defer func() {
-	//		handCards[0].Value = cardConst.CARD_RANK_RED_JOKER
-	//	}()
-	//}
-
-	if _, b, _ := hasRacket(handCards); b {
-		handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
-		defer func() {
-			handCards[0].Value = cardConst.CARD_RANK_RED_JOKER
-		}()
 	}
 
 	// 1.获取所有单张

@@ -1,6 +1,8 @@
 package game
 
-import "strconv"
+import (
+	"strconv"
+)
 
 func CreateRobot() *Player {
 	var player Player
@@ -20,3 +22,6 @@ func getRobotImg() string {
 		"11.png", "12.png", "13.png", "14.png", "15.png", "16.png", "17.png", "18.png", "19.png", "20.png"}
 	return img[RandNum(0, len(img)-1)]
 }
+
+
+

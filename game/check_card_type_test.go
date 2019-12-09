@@ -43,16 +43,19 @@ func TestCalPattern(t *testing.T) {
 		//{11, 1}, {11, 2}, {11, 3}, {11, 4},
 		//{12, 1}, {12, 2}, {12, 3},// {12, 4},
 		//{13, 1}, {13, 2}, {13, 3}, //{13, 4},
-		//{14, 1}, {15, 2},
+		//{14, 1},
+		{15, 2},
 	}
-	outCard := []*Card{{13, 1}, {13, 2}, {13, 3},}
+	outCard := []*Card{{11, 1},
+	//	{13, 2}, {13, 3},
+	}
 
 	//logger.Debug(CanBeat(lastCard, outCard))
 	//cardsType := GetCardsType(lastCard)
 	//cardsType := IsSeqOfTriWithPairsFix(lastCard)
 	//cardsType := IsSeqOfTriWithSinglesFix(lastCard)
-	beat := CanBeat(outCard,lastCard)
-	fmt.Println("===========:", beat)
+	beat,_,_ := HostingBeatSingle(lastCard,outCard,)
+	PrintCard(beat)
 
 }
 
@@ -71,7 +74,10 @@ func TestCardCount(t *testing.T) {
 
 }
 func TestFindMinSingle(t *testing.T) {
-	hands := []*Card{{11, 1}, {12, 1}, {12, 2}, {12, 2}, {14, 1}, {15, 1},}
+	hands := []*Card{
+		//{11, 1},
+		{12, 1}, {12, 2}, {12, 2},
+		{14, 1}, {15, 1},}
 
 	SortCard(hands)
 	PrintCard(hands)

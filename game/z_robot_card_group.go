@@ -175,20 +175,24 @@ func FindAllSingle(handCards []*Card) ([]*ReCard, []*Card) {
 		return nil, handCards
 	}
 	SortCard(handCards)
-	// 如果最后一张牌是大王  则改成和小王同级
-	if _, has, _ := hasRacket(handCards); has {
-		handCards[0].Value = cardConst.CARD_RANK_BLACK_JOKER
-		defer func() {
-			handCards[0].Value = cardConst.CARD_RANK_RED_JOKER
-		}()
+
+	singles := getHasNumsCard(handCards, 1)
+
+	// 移除同时存在大小鬼的单张
+	// 将同时又大小王的情况下 将其移除
+	if len(singles) >= 2 {
+		if singles[len(singles)-1] == cardConst.CARD_RANK_RED_JOKER &&
+			singles[len(singles)-2] == cardConst.CARD_RANK_BLACK_JOKER {
+			singles = append([]int{}, singles[:len(singles)-2]...)
+		}
 	}
 
-	bomb := getHasNumsCard(handCards, 1)
+
 	var reCards []*ReCard
-	if len(bomb) > 0 {
+	if len(singles) > 0 {
 		remainCard := append([]*Card{}, handCards...)
-		for i := 0; i < len(bomb); i++ {
-			card := findThisValueCard(bomb[i], handCards, 1)
+		for i := 0; i < len(singles); i++ {
+			card := findThisValueCard(singles[i], handCards, 1)
 			var re ReCard
 			re.Wight = card[0].Value
 			re.Card = card

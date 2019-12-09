@@ -4,6 +4,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
+	"landlord/mconst/cardConst"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/playerAction"
 	"landlord/mconst/playerStatus"
@@ -45,6 +46,8 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	// todo 用户托管动作
 	if actionPlayer.IsGameHosting {
 		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer)
+		// todo 如果机器人假装断线托管 根据70%的几率恢复
+
 		return
 	}
 
@@ -79,6 +82,16 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		room.LandlordOutNum++
 	}
 
+	// 炸弹计算翻倍
+	if cardsType == cardConst.CARD_PATTERN_BOMB || cardsType == cardConst.CARD_PATTERN_ROCKET {
+		room.MultiAll = room.MultiAll * 2
+		if room.MultiBoom == 0 {
+			room.MultiBoom = 2
+		} else {
+			room.MultiBoom = room.MultiBoom * 2
+		}
+
+	}
 	room.ThrowCards = append(room.ThrowCards, cards...)
 	/*after*/
 	after := actionPlayer.HandCards
@@ -289,28 +302,6 @@ func CheckSpring(room *Room, player *Player) bool {
 		return true
 	}
 	return false
-}
-
-/*
-	返回第一个地主玩家
-	后面两个农民玩家
-*/
-func getPlayerClass(room *Room) (*Player, *Player, *Player) {
-	var landPlayer *Player
-	var fPlayers []*Player
-	for _, p := range room.Players {
-		if p.IsLandlord == true {
-			landPlayer = p
-		} else {
-			fPlayers = append(fPlayers, p)
-		}
-	}
-
-	if len(fPlayers) != 2 || fPlayers == nil {
-		logger.Error("分类玩家失败: !!!incredible")
-		return nil, nil, nil
-	}
-	return landPlayer, fPlayers[0], fPlayers[1]
 }
 
 // 清空房间 和用户 的session
