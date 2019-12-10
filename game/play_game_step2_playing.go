@@ -38,18 +38,19 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	lastPlayer := getPlayerByPosition(room, lastPosition)
 	// 阻塞等待当前玩家的动作 超过系统设置时间后自动处理
 
+	// todo 用户托管动作
+	if actionPlayer.IsGameHosting {
+		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer)
+		// todo 如果机器人假装断线托管 根据70%的几率恢复
+		return
+	}
+
 	if actionPlayer.IsRobot {
 		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer)
 		return
 	}
 
-	// todo 用户托管动作
-	if actionPlayer.IsGameHosting {
-		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer)
-		// todo 如果机器人假装断线托管 根据70%的几率恢复
 
-		return
-	}
 
 	select {
 	case action := <-actionPlayer.ActionChan:

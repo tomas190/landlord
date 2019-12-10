@@ -351,6 +351,7 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 }
 
 func RespGameHosting(room *Room, ghType, position int32, PlayerId string) {
+	logger.Debug("resp发送托管。。。。。")
 	var resp mproto.RespGameHosting
 	resp.GameHostType = ghType
 	resp.PlayerId = PlayerId

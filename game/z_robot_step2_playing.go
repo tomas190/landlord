@@ -9,17 +9,20 @@ import (
 func RobotPlayAction(room *Room, robot, nextPlayer, lastPlayer *Player) {
 	// 机器人打牌了
 	isFakerDisconnection := delayDestiny()
-	if isFakerDisconnection && !robot.IsMustDo { // 如果概率出现了 假装掉线 则配合不出操作 并且机器人以后走托管流程
-		logger.Debug("机器人打牌阶段 中2%概率掉线托管...")
+	logger.Debug("机器人打牌阶段...")
+	if isFakerDisconnection { // 如果概率出现了 假装掉线 则配合不出操作 并且机器人以后走托管流程
+		logger.Debug("机器人打牌阶段 中1%概率掉线托管...")
 		robot.IsGameHosting = true
 		RespGameHosting(room, playerStatus.GameHosting, robot.PlayerPosition, robot.PlayerInfo.PlayerId)
-		NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
+		if robot.IsMustDo {
+			DoGameHosting(room, robot, nextPlayer, lastPlayer)
+		}else {
+			NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
+		}
 		return
 	}
-	logger.Debug("机器人打牌阶段...")
 	DoGameHosting(room, robot, nextPlayer, lastPlayer)
 }
-
 
 // 机器人出牌决策等待时间
 func delayDestiny() bool {
@@ -47,7 +50,7 @@ func delayDestiny() bool {
 		DelaySomeTime(getWaitTimeOutCardSoSlowly())
 		return false
 	}
-	logger.Debug("机器人打牌阶段决策时间:假装短线 30s")
+	logger.Debug("机器人打牌阶段决策时间:假装断线 30s")
 	DelaySomeTime(getWaitTimeOutCardFakerToDisconnection())
 	return true
 }
