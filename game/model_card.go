@@ -21,15 +21,18 @@ func CreateSortCard() []*Card {
 
 // 创建一副乱序的牌
 func CreateBrokenCard() []*Card {
-	result := initOriginalCard()
-	OutOfCardNotDeep(result, 30)
-	return result
-}
+	var result []*Card
+	destiny := RandNum(0, 90)
+	if destiny >= 0 || destiny <= 30 {
+		result = initOriginalCard()
+	} else if destiny >= 31 || destiny <= 60 {
+		result = initOriginalCard2()
+	} else {
+		result = initOriginalCard3()
+	}
 
-// 创建一副乱序的牌
-func CreatecustomizeCard() []*Card {
-	result := initOriginalCard()
-	OutOfCardNotDeep(result, 30)
+	dSort := RandNum(25, 35)
+	OutOfCardNotDeep(result, dSort)
 	return result
 }
 
@@ -50,6 +53,57 @@ func initOriginalCard() []*Card {
 	smlCard.Value = cardConst.CARD_RANK_BLACK_JOKER
 	smlCard.Suit = cardConst.CARD_SUIT_JOKER
 
+	result = append(result, &bigCard, &smlCard)
+	return result
+}
+
+func initOriginalCard2() []*Card {
+	var result []*Card
+
+	for i := 1; i <= 4; i++ {
+		for j := 1; j <= 13; j++ {
+			var card Card
+			card.Value = int32(j)
+			card.Suit = int32(i)
+			result = append(result, &card)
+		}
+	}
+	var bigCard Card
+	var smlCard Card
+	bigCard.Value = cardConst.CARD_RANK_RED_JOKER
+	bigCard.Suit = cardConst.CARD_SUIT_JOKER
+	smlCard.Value = cardConst.CARD_RANK_BLACK_JOKER
+	smlCard.Suit = cardConst.CARD_SUIT_JOKER
+
+	result = append(result, &bigCard, &smlCard)
+	return result
+}
+
+func initOriginalCard3() []*Card {
+	var result []*Card
+	var bigCard Card
+	var smlCard Card
+	bigCard.Value = cardConst.CARD_RANK_RED_JOKER
+	bigCard.Suit = cardConst.CARD_SUIT_JOKER
+	smlCard.Value = cardConst.CARD_RANK_BLACK_JOKER
+	smlCard.Suit = cardConst.CARD_SUIT_JOKER
+	for i := 1; i <= 4; i++ {
+		for j := 7; j <= 13; j++ {
+			var card Card
+			card.Value = int32(j)
+			card.Suit = int32(i)
+			result = append(result, &card)
+		}
+	}
+
+	for i := 1; i <= 4; i++ {
+		for j := 1; j <= 6; j++ {
+			var card Card
+			card.Value = int32(j)
+			card.Suit = int32(i)
+			result = append(result, &card)
+		}
+	}
 	result = append(result, &bigCard, &smlCard)
 	return result
 }

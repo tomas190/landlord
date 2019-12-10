@@ -12,18 +12,6 @@ import (
 func PushPlayerStartGameWithRobot(room *Room) {
 	cards := CreateBrokenCard()
 	//cards := CreateSortCard()
-	//players := room.Players
-	//for _, v := range players {
-	//	v.HandCards = append([]*Card{}, cards[:17]...)
-	//	SortCard(v.HandCards)
-	//	logger.Debug("玩家" + v.PlayerInfo.PlayerId + "的牌：")
-	//	PrintCard(v.HandCards)
-	//	cards = append([]*Card{}, cards[17:]...)
-	//	var push mproto.PushStartGame
-	//	push.Cards = ChangeCardToProto(v.HandCards)
-	//	bytes, _ := proto.Marshal(&push)
-	//	PlayerSendMsg(v, PkgMsg(msgIdConst.PushStartGame, bytes))
-	//}
 
 	player, r1, r2 := getPlayersWithRobot(room)
 	// todo 玩家发牌策略
