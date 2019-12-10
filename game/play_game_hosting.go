@@ -251,7 +251,7 @@ func findMinBoom(handCards []*Card) ([]*Card, bool) {
 // 单张
 func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 1 || len(handCards) <= 0 {
-		logger.Error("无效牌值 !!!incredible")
+		logger.Debug("牌数量不满足检测条件...")
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
@@ -311,7 +311,7 @@ func HostingBeatSingle(handCards, eCards []*Card) ([]*Card, bool, int32) {
 // 对子
 func HostingBeatDouble(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 2 || len(handCards) <= 1 {
-		logger.Error("无效牌值 !!!incredible")
+		logger.Debug("牌数量不满足检测条件...")
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
@@ -354,7 +354,7 @@ func HostingBeatDouble(handCards, eCards []*Card) ([]*Card, bool, int32) {
 // 三张
 func HostingBeatTriple(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	if len(eCards) != 3 {
-		logger.Error("无效牌值 !!!incredible")
+		logger.Debug("牌数量不满足检测条件...")
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
@@ -382,7 +382,7 @@ func HostingBeatTriple(handCards, eCards []*Card) ([]*Card, bool, int32) {
 func getCardManyOne(cards []*Card) int32 {
 
 	if len(cards) <= 0 {
-		logger.Error("建议不要这样调用 !!!incredible")
+		logger.Debug("牌数量不满足检测条件...")
 		return 0
 	}
 
@@ -415,7 +415,7 @@ func getCardManyOne(cards []*Card) int32 {
 func HostingBeatTripleWithSingle(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	cards, hasRacket, rType := hasRacket(handCards)
 	if len(eCards) != 4 || (!hasRacket && len(handCards) <= 3) {
-		logger.Error("牌数量不满足检测条件...")
+		logger.Debug("牌数量不满足检测条件...")
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 

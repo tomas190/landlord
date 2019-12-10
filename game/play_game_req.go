@@ -48,8 +48,10 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 
 	if Server.UseRobot { // 如果是开启机器人模式
 		wc := make(chan struct{})
-		session.Set("waitChan", wc)
-		go DealPlayerEnterRoomWithRobot(session, *playerInfo, req.RoomType, wc)
+		var wr WaitRoomChan
+		wr.WaitChan = wc
+		session.Set("WaitChan", &wr)
+		go DealPlayerEnterRoomWithRobot(session, *playerInfo, req.RoomType, &wr)
 		return
 	}
 
@@ -237,15 +239,14 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 		logger.Debug("退出房间.....")
 		if Server.UseRobot {
 			logger.Debug("退出房间.....1")
-			value, exists := session.Get("waitChan")
+			value, exists := session.Get("WaitChan")
 			if exists {
 				logger.Debug("退出房间.....2")
-				wc := value.(chan struct{})
-				//_, ok := <-wc
-				//if ok {
-				//	logger.Debug("退出房间.....3")
-				wc <- struct{}{}
-				//}
+				wc := value.(*WaitRoomChan)
+				if !wc.IsClose {
+					logger.Debug("退出房间.....3")
+					wc.WaitChan <- struct{}{}
+				}
 			}
 		} else {
 			logger.Debug(info.PlayerId, "当前在等待队列中..")

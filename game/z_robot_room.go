@@ -6,17 +6,21 @@ import (
 	"time"
 )
 
-// 处理玩家进入房间 和机器人玩
-func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32, waitChan chan struct{}) {
+type WaitRoomChan struct {
+	IsClose  bool
+	WaitChan chan struct{}
+}
 
+// 处理玩家进入房间 和机器人玩
+func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32, waitRoom *WaitRoomChan) {
 	select {
-	case <-waitChan:
-		logger.Debug("============= 玩家不想玩了 =============")
-		//close(waitChan)
-		// do nothing
-	case <-time.After(getWaitTimePlayerEnterRoom()):
-		logger.Debug("============= ... =============")
-		//close(waitChan)
+	case <-waitRoom.WaitChan:
+		logger.Debug("============= 玩家在等待过程中退出了房间 =============")
+		waitRoom.IsClose = true
+		close(waitRoom.WaitChan)
+	case <-time.After(time.Second * getWaitTimePlayerEnterRoom()):
+		waitRoom.IsClose = true
+		close(waitRoom.WaitChan)
 		PlayWithRobot(session, playerInfo, roomType)
 	}
 

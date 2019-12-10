@@ -23,11 +23,6 @@ func OnClose(m *melody.Melody, session *melody.Session, i int, s string) error {
 
 // onConnection
 func OnConnect(m *melody.Melody, session *melody.Session) {
-
-	defer func() {
-		logger.Info("当前连接数:", m.Len())
-	}()
-
 	if m.Len() >= game.Server.MaxConn {
 		logger.Debug("连接数已经超过限制:", m.Len())
 		var m mproto.ErrMsg
@@ -38,7 +33,7 @@ func OnConnect(m *melody.Melody, session *melody.Session) {
 	}
 	// 处理新的连接
 	DealOnConnect(session)
-
+	logger.Info("当前连接数:", m.Len())
 }
 
 // onDisconnection
@@ -47,12 +42,10 @@ func OnDisconnect(m *melody.Melody, session *melody.Session) {
 	if game.Server.UseRobot {
 		value, exists := session.Get("waitChan")
 		if exists {
-			wc := value.(chan struct{})
-			//_, ok := <-wc
-			//if ok {
-			wc <- struct{}{}
-			//}
-
+			wc := value.(*game.WaitRoomChan)
+			if !wc.IsClose {
+				wc.WaitChan <- struct{}{}
+			}
 		}
 	}
 	dealCloseConn(session)

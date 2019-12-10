@@ -7,12 +7,11 @@ import (
 
 func TestName(t *testing.T) {
 
-	cards := initOriginalCard()
-	PrintCard(cards)
-	OutOfCard(cards)
-	PrintCard(cards)
-	SortCard(cards)
-	PrintCard(cards)
+	for i:=0;i<10 ;i++  {
+		card := CreateBrokenCard()
+
+		PrintCard(card)
+	}
 
 }
 

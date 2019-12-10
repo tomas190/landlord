@@ -72,7 +72,7 @@ func userLoginVerify(userId, password, token string) (*mproto.PlayerInfo, error)
 	defer func() {
 		close(loginChan)
 		game.RemoveUserLoginCallBack(userId)
-		logger.Debug("userLogin:", game.GetUserLoginCallBackLen())
+		logger.Debug("userLoginChan:", game.GetUserLoginCallBackLen())
 	}()
 	game.UserLogin(userId, password, token)
 	select {

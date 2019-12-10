@@ -23,13 +23,17 @@ func CreateSortCard() []*Card {
 func CreateBrokenCard() []*Card {
 	var result []*Card
 	destiny := RandNum(0, 90)
-	if destiny >= 0 || destiny <= 30 {
+	if destiny >= 0 && destiny <= 30 {
 		result = initOriginalCard()
-	} else if destiny >= 31 || destiny <= 60 {
+	//	logger.Debug("initOriginalCard 111111111111")
+	} else if destiny >= 31 && destiny <= 60 {
 		result = initOriginalCard2()
+	//	logger.Debug("initOriginalCard2 222222222")
 	} else {
 		result = initOriginalCard3()
+		//logger.Debug("initOriginalCard3 3333333333")
 	}
+
 
 	dSort := RandNum(25, 35)
 	OutOfCardNotDeep(result, dSort)
