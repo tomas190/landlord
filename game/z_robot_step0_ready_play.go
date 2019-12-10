@@ -38,9 +38,10 @@ func PushPlayerStartGameWithRobot(room *Room) {
 	room.BottomCards = append([]*Card{}, cards[51:]...)
 	logger.Debug("底牌:")
 	PrintCard(room.BottomCards)
+
 	room.Status = roomStatus.CallLandlord
 
-	// 随机叫地主写在发牌里面 是因为三个玩家如果都不叫 则可以直接调用 PushPlayerStartGame 重新开始发牌逻辑
+	// 随机叫地主写在发牌里面 是因为三个玩家如果都不叫 则可以直接调用 PushPlayerStartGameWithRobot 重新开始发牌逻辑
 	DelaySomeTime(4)
 	// 3.随机叫地主
 	actionPlayerId := pushFirstCallLandlord(room)

@@ -16,18 +16,18 @@ import (
 func getWaitTimePlayerEnterRoom() time.Duration {
 	destiny := RandNum(1, 100)
 	if destiny <= 60 {
-		logger.Debug("============ 正常几率 ============ ", destiny)
 		delayTime := RandNum(1, 5)
+		logger.Debug("============ 正常机率 ============ ", delayTime)
 		return time.Second * time.Duration(delayTime)
 	}
 
 	if destiny <= 95 {
-		logger.Debug("============  35几率 ============ ", destiny)
 		delayTime := RandNum(5, 10)
+		logger.Debug("============  35机率 ============ ", delayTime)
 		return time.Second * time.Duration(delayTime)
 	}
-	logger.Debug("============  5几率  ============ ", destiny)
 	delayTime := RandNum(10, 15)
+	logger.Debug("============  5机率  ============ ", delayTime)
 	return time.Second * time.Duration(delayTime)
 }
 
@@ -91,7 +91,7 @@ func getWaitTimeOutCardMedium() time.Duration {
 // 为让用户感觉更加真实 增加等待时间计算
 // 玩家一般玩牌 在正常情况会 在6到15秒 做出选择
 // 机器人慢出牌速度
-func getWaitTimeOutCardSlowy() time.Duration {
+func getWaitTimeOutCardSlowly() time.Duration {
 	delayTime := RandNum(6, 15)
 	return time.Duration(delayTime)
 }
@@ -100,7 +100,7 @@ func getWaitTimeOutCardSlowy() time.Duration {
 // 为让用户感觉更加真实 增加等待时间计算
 // 玩家一般玩牌 在正常情况会 在5到10秒 做出选择
 // 机器人极慢出牌速度
-func getWaitTimeOutCardSoSlowy() time.Duration {
+func getWaitTimeOutCardSoSlowly() time.Duration {
 	delayTime := RandNum(16, 29)
 	return time.Duration(delayTime)
 }

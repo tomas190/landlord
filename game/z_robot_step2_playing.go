@@ -38,13 +38,13 @@ func delayDestiny() bool {
 
 	if destiny <= 92 {
 		logger.Debug("机器人打牌阶段决策时间:慢速 6-15s")
-		DelaySomeTime(getWaitTimeOutCardSlowy())
+		DelaySomeTime(getWaitTimeOutCardSlowly())
 		return false
 	}
 
 	if destiny <= 98 {
 		logger.Debug("机器人打牌阶段决策时间:超慢 15-29s")
-		DelaySomeTime(getWaitTimeOutCardSoSlowy())
+		DelaySomeTime(getWaitTimeOutCardSoSlowly())
 		return false
 	}
 	logger.Debug("机器人打牌阶段决策时间:假装短线 30s")

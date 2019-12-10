@@ -12,11 +12,11 @@ func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo
 	select {
 	case <-waitChan:
 		logger.Debug("============= 玩家不想玩了 =============")
-		close(waitChan)
+		//close(waitChan)
 		// do nothing
 	case <-time.After(getWaitTimePlayerEnterRoom()):
 		logger.Debug("============= ... =============")
-		close(waitChan)
+		//close(waitChan)
 		PlayWithRobot(session, playerInfo, roomType)
 	}
 
@@ -53,7 +53,7 @@ func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int3
 	SaveRoom(room.RoomId, room)
 
 	// 开启线程 游戏开始
-	PlayGameWithRobot(room)
+	go PlayGameWithRobot(room)
 }
 
 // 开始和机器人玩游戏

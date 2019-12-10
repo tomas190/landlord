@@ -48,10 +48,10 @@ func OnDisconnect(m *melody.Melody, session *melody.Session) {
 		value, exists := session.Get("waitChan")
 		if exists {
 			wc := value.(chan struct{})
-			_, ok := <-wc
-			if ok {
-				wc <- struct{}{}
-			}
+			//_, ok := <-wc
+			//if ok {
+			wc <- struct{}{}
+			//}
 
 		}
 	}

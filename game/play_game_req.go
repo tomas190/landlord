@@ -234,14 +234,18 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 	roomId := GetSessionRoomId(session)
 	// 1. 如果roomId为空代表玩家是在等待队列 则移除等待队列
 	if roomId == "" {
+		logger.Debug("退出房间.....")
 		if Server.UseRobot {
+			logger.Debug("退出房间.....1")
 			value, exists := session.Get("waitChan")
 			if exists {
+				logger.Debug("退出房间.....2")
 				wc := value.(chan struct{})
-				_, ok := <-wc
-				if ok {
-					wc <- struct{}{}
-				}
+				//_, ok := <-wc
+				//if ok {
+				//	logger.Debug("退出房间.....3")
+				wc <- struct{}{}
+				//}
 			}
 		} else {
 			logger.Debug(info.PlayerId, "当前在等待队列中..")
