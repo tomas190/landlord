@@ -54,6 +54,7 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	game.SetSessionIsLogin(session)
 	game.SetSessionPassword(session, req.UserPassword)
 	game.SaveAgent(playerInfo.PlayerId, session)
+	logger.Info("当前连接数:", m.Len())
 
 }
 

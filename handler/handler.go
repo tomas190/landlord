@@ -33,7 +33,7 @@ func OnConnect(m *melody.Melody, session *melody.Session) {
 	}
 	// 处理新的连接
 	DealOnConnect(session)
-	logger.Info("当前连接数:", m.Len())
+
 }
 
 // onDisconnection
