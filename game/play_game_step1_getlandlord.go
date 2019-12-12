@@ -231,6 +231,9 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 	setCurrentPlayer(room, landlordPlayer.PlayerInfo.PlayerId)
 	landlordPlayer.IsLandlord = true
 	room.Status = roomStatus.Playing
+
+	room.LandlordPlayerId = landlordPlayer.PlayerInfo.PlayerId
+
 	logger.Debug("=============== 玩牌开始 ===========")
 	logger.Debug("地主玩家:", landlordPlayer.PlayerInfo.PlayerId)
 	pushLastCallLandlord(room, actionPlayer)

@@ -1,23 +1,25 @@
 package game
 
 import (
-	"github.com/wonderivan/logger"
 	"landlord/mconst/cardConst"
+	"strconv"
+	"strings"
 )
 
 type GroupCard struct {
 	OriginCards      []*Card // 原始手牌
 	Score            int     // 原始牌得分
-	WeightScore      int     // 大牌得分  - 火箭为8分，炸弹为6分，大王4分，小王3分，一个2为2分
+	WeightScore      int     // 得分
 	OriginCardsNums  int     // 原始牌多少次能出完
 	CurrentHandCards []*Card // 当前手牌
 
-	Single []*ReCard // 单张
-	Double []*ReCard // 对子
-	Triple []*ReCard // 三张 不安排三代一 或者三带二
-	Bomb   []*ReCard // 炸弹
-	Junko  []*ReCard // 顺子
-	Rocket []*ReCard // 火箭
+	Single      []*ReCard // 单张
+	Double      []*ReCard // 对子
+	Triple      []*ReCard // 三张 不安排三代一 或者三带二
+	Bomb        []*ReCard // 炸弹
+	Junko       []*ReCard // 顺子
+	JunkoDouble []*ReCard // 连对
+	Rocket      []*ReCard // 火箭
 }
 
 //
@@ -26,30 +28,104 @@ type ReCard struct {
 	Card  []*Card // 卡牌组
 }
 
-func GetOriginCardsScore(handCards []*Card) int {
-	var score int
-	// 牌分估值
+/*
+	机器人不会主动出四带二
+	todo 所有的组牌策略 均用不拆炸弹原则
+*/
 
-	return score
+// 1.顺子优先组牌策略
+// todo 分成保三张 和不保 三张拆法
+func PriorityJunko(handCards []*Card) GroupCard {
+	// 先无限取最小5连 后续合并
+	junkos, remainCards := unlimitedJunko(handCards)
+
+	// 1.在从剩余牌中找出所有炸弹
+	bombs, remainCards := FindAllBomb(remainCards)
+
+	// 2.单牌看能不能组成更大的顺子
+	junkoWithSingles, remainCards := mergeJunkoWithSingle(junkos, remainCards)
+
+	// 3.顺子于顺子合并
+	mergeJunkos := mergeJunkoWithJunko(junkoWithSingles)
+
+	// 分析剩余牌型
+	group := CreateGroupCard(remainCards)
+	group.Bomb = bombs
+	group.Junko = mergeJunkos
+	return group
+
+}
+
+// 1.顺子优先组牌策略
+// todo 分成保三张 和不保 三张拆法
+func PriorityJunkoProtectTriple(handCards []*Card) GroupCard {
+
+	triples, remainCards := FindAllTriplet(handCards)
+
+	// 先无限取最小5连 后续合并
+	junkos, remainCards := unlimitedJunko(remainCards)
+
+	// 1.在从剩余牌中找出所有炸弹
+	bombs, remainCards := FindAllBomb(remainCards)
+
+	// 2.单牌看能不能组成更大的顺子
+	junkoWithSingles, remainCards := mergeJunkoWithSingle(junkos, remainCards)
+
+	// 3.顺子于顺子合并
+	mergeJunkos := mergeJunkoWithJunko(junkoWithSingles)
+
+	// 分析剩余牌型
+	group := CreateGroupCard(remainCards)
+	group.Bomb = bombs
+	group.Junko = mergeJunkos
+	group.Triple = triples
+	return group
+
+}
+
+// 1.连对 优先组牌策略
+func PriorityJunkoDouble(handCards []*Card) GroupCard {
+	//	doubles, remainCards := FindAllDouble(handCards)
+
+	group := CreateGroupCard(handCards)
+	return group
+
+}
+
+// 1.三张 优先组牌策略
+func PriorityTriple(handCards []*Card) GroupCard {
+
+	group := CreateGroupCard(handCards)
+	return group
+
+}
+
+// 4.尽量少单的拆法
+func possiblyLessSingle(handCards []*Card) GroupCard {
+
+	group := CreateGroupCard(handCards)
+	return group
 
 }
 
 // 根据手牌分析
-func CreateGroupCard(handCards []*Card) *GroupCard {
+// 将手牌分成 单张 对子 三张(不带任何) 炸弹 火箭
+// 这个方法不组成顺子 连对 飞机等牌型
+func CreateGroupCard(handCards []*Card) GroupCard {
 	var gc GroupCard
 	gc.CurrentHandCards = handCards
 	gc.OriginCards = handCards
 
 	rocket, remainCards := FindRocket(handCards)
-	PrintCard(remainCards)
+	//	PrintCard(remainCards)
 	bombCards, remainCards := FindAllBomb(remainCards)
-	PrintCard(remainCards)
+	//PrintCard(remainCards)
 	triplets, remainCards := FindAllTriplet(remainCards)
-	PrintCard(remainCards)
+	//	PrintCard(remainCards)
 	doubles, remainCards := FindAllDouble(remainCards)
-	PrintCard(remainCards)
+	//PrintCard(remainCards)
 	singles, remainCards := FindAllSingle(remainCards)
-	PrintCard(remainCards)
+	//PrintCard(remainCards)
 	gc.OriginCards = handCards
 	gc.CurrentHandCards = handCards
 	gc.Rocket = rocket
@@ -58,7 +134,7 @@ func CreateGroupCard(handCards []*Card) *GroupCard {
 	gc.Double = doubles
 	gc.Single = singles
 
-	return &gc
+	return gc
 }
 
 // 找出火箭
@@ -187,7 +263,6 @@ func FindAllSingle(handCards []*Card) ([]*ReCard, []*Card) {
 		}
 	}
 
-
 	var reCards []*ReCard
 	if len(singles) > 0 {
 		remainCard := append([]*Card{}, handCards...)
@@ -207,22 +282,43 @@ func FindAllSingle(handCards []*Card) ([]*ReCard, []*Card) {
 
 }
 
-// 组牌策略 顺子开始
-
-// 寻找尽可能长的顺子
+// 找到所有顺子组合
 /*
 	return
 		[]*ReCard 需要找的牌
 		[]*Card   剩余手牌
 */
-func FindPossibleLongSingleJunko(handCards []*Card) ([]*ReCard, []*Card) {
+func FindAllJunkos(hands []*Card) ([]*ReCard, []*Card) {
+	remainCards := hands
+	var junkos []*ReCard
+	for {
+		var junko *ReCard
+		junko, remainCards = FindPossibleLongSingleJunko(remainCards)
+		if junko == nil {
+			break
+		}
+		junkos = append(junkos, junko)
+	}
+
+	return junkos, remainCards
+}
+
+// 组牌策略 顺子开始
+
+// 寻找尽可能长的顺子 炸弹不会在此方法里面计算
+/*
+	return
+		[]*ReCard 需要找的牌
+		[]*Card   剩余手牌
+*/
+func FindPossibleLongSingleJunko(handCards []*Card) (*ReCard, []*Card) {
 
 	// 1.先去掉手牌中的重复值 要去掉 2 以上大的牌 (2 以上大的牌不能组成顺子) 炸弹的不包含在内
 	singleCards := junkoHelpRemove(handCards)
 	if len(singleCards) < 5 {
 		return nil, handCards
 	}
-	logger.Debug("去重:", singleCards)
+	//	logger.Debug("去重:", singleCards)
 
 	var psj []int
 	hLen := len(singleCards)
@@ -231,7 +327,7 @@ func FindPossibleLongSingleJunko(handCards []*Card) ([]*ReCard, []*Card) {
 			// 最先组成的一定是最长的
 			if isJunko(singleCards[i:j]) {
 				// 已经找到
-				logger.Debug("find:", singleCards[i:j])
+				//	logger.Debug("find:", singleCards[i:j])
 				psj = singleCards[i:j]
 				goto dre
 			}
@@ -239,7 +335,7 @@ func FindPossibleLongSingleJunko(handCards []*Card) ([]*ReCard, []*Card) {
 	}
 
 dre:
-	if len(psj) <= 5 {
+	if len(psj) < 5 {
 		return nil, handCards
 	}
 
@@ -254,7 +350,8 @@ dre:
 	rc.Wight = junko[len(junko)-1].Value
 
 	result := removeCards(handCards, junko)
-	return append([]*ReCard{}, &rc), result
+
+	return &rc, result
 
 }
 
@@ -271,15 +368,10 @@ func isJunko(arr []int) bool {
 	return false
 }
 
-// 顺子优先组牌策略
-//func priorityJunko(handCards []*Card) []*ReCard {
-//	junkos, remainCards := unlimitedJunko(handCards)
-//
-//}
-
 // ============================
 
 // 无限取最小5连
+// 并从权值从从小到达追加
 func unlimitedJunko(handCards []*Card) ([]*ReCard, []*Card) {
 	//min := []*Card{{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}}
 	min := []*Card{{0, 1}, {1, 1}, {2, 1}, {3, 1}, {4, 1}}
@@ -289,6 +381,9 @@ func unlimitedJunko(handCards []*Card) ([]*ReCard, []*Card) {
 	for {
 		//logger.Debug("tmphands:")
 		//PrintCard(tmpHands)
+		if len(tmpHands) < 5 {
+			break
+		}
 		var rc ReCard
 		cards, b, i := HostingBeatJunko(tmpHands, min)
 		if !b || i != cardConst.CARD_PATTERN_SEQUENCE || len(cards) < 5 {
@@ -305,28 +400,122 @@ func unlimitedJunko(handCards []*Card) ([]*ReCard, []*Card) {
 
 // 顺子于顺子合并
 /*
-	保准junkos 是顺子 并且从小到大依次排序
+	保准junkos是顺子
 */
-func mergeJunko(junkos []*ReCard) []*ReCard {
+func mergeJunkoWithJunko(junkos []*ReCard) []*ReCard {
 
 	if len(junkos) <= 1 {
 		return junkos
 	}
-	var newJunkos []*ReCard
-	for i := 0; i < len(junkos); i++ {
-		var newJunko ReCard
-		if i == len(junkos)-1 {
-			break
-		}
-		cJunko := junkos[i].Card
-		nJunko := junkos[i+1].Card
-		if cJunko[len(junkos[i].Card)-1].Value+1 == nJunko[0].Value {
-			newJunko.Card = append(newJunko.Card, cJunko...)
-			newJunko.Card = append(newJunko.Card, nJunko...)
-			newJunko.Wight = nJunko[len(nJunko)-1].Value
-			newJunkos = append(newJunkos, &newJunko)
+	copyJunkos := append([]*ReCard{}, junkos...)
+
+	var mergeIndexs string
+	var mergeJunkos []*ReCard
+	for i := 0; i < len(copyJunkos)-1; i++ {
+		for j := i + 1; j < len(copyJunkos); j++ {
+			if strings.Contains(mergeIndexs, strconv.Itoa(i)) ||
+				strings.Contains(mergeIndexs, strconv.Itoa(j)) {
+				continue
+			}
+			card, b := canMergeJunkos(copyJunkos[i], copyJunkos[j])
+			if b {
+				//添加index标记
+				mergeIndexs = mergeIndexs + strconv.Itoa(i) + strconv.Itoa(j)
+				mergeJunkos = append(mergeJunkos, card)
+				break
+			}
 		}
 	}
 
-	return newJunkos
+	//	logger.Debug("合并的index", mergeIndexs)
+	for i := 0; i < len(junkos); i++ {
+		if !strings.Contains(mergeIndexs, strconv.Itoa(i)) {
+			mergeJunkos = append(mergeJunkos, junkos[i])
+		}
+	}
+	return mergeJunkos
+
+}
+
+// 两个顺子是否可以合并
+// 如果可以合并则组合好返回
+func canMergeJunkos(card1, card2 *ReCard) (*ReCard, bool) {
+	if len(card1.Card) < 5 ||
+		len(card2.Card) < 5 {
+		return nil, false
+	}
+
+	if card1.Card[0].Value-card2.Card[len(card2.Card)-1].Value == 1 ||
+		card2.Card[0].Value-card1.Card[len(card1.Card)-1].Value == 1 {
+		card1.Card = append(card1.Card, card2.Card...)
+		SortCardSL(card1.Card)
+		card1.Wight = card1.Card[len(card1.Card)-1].Value
+		return card1, true
+	}
+	return nil, false
+}
+
+// 顺子于单张合并
+/*
+	保准junkos 顺子
+	return :更大的顺子
+			剩余的牌
+*/
+func mergeJunkoWithSingle(junkos []*ReCard, singles []*Card) ([]*ReCard, []*Card) {
+	var mergeIndexs string
+	//logger.Debug("last I:==================len:", len(singles))
+	for i := 0; i < len(junkos); i++ {
+		for j := 0; j < len(singles); j++ {
+			if strings.Contains(mergeIndexs, strconv.Itoa(j)) || singles[j].Value >= cardConst.CARD_RANK_TWO {
+				continue
+			}
+			//logger.Debug("i===", i)
+			card, b := canMergeJunkoWithSingle(junkos[i], singles[j])
+			if b {
+				mergeIndexs = mergeIndexs + "," + strconv.Itoa(j) + ","
+				junkos[i] = card
+			}
+		}
+	}
+
+	var remain []*Card
+	for i := 0; i < len(singles); i++ {
+		if !strings.Contains(mergeIndexs, strconv.Itoa(i)) {
+			remain = append(remain, singles[i])
+		}
+	}
+
+	return junkos, remain
+}
+
+// 顺子和单排是否可以合并
+// 如果可以合并则组合好返回
+func canMergeJunkoWithSingle(card1 *ReCard, single *Card) (*ReCard, bool) {
+
+	if single.Value >= cardConst.CARD_RANK_TWO ||
+		single.Value < cardConst.CARD_RANK_THREE ||
+		len(card1.Card) < 5 {
+		return nil, false
+	}
+
+	if card1.Card[0].Value-1 == single.Value ||
+		card1.Card[len(card1.Card)-1].Value+1 == single.Value {
+		card1.Card = append(card1.Card, single)
+		SortCardSL(card1.Card)
+		return card1, true
+	}
+
+	return nil, false
+}
+
+// 将所有牌装换成类型的单牌
+func changeCardToReCard(cards []*Card) []*ReCard {
+	var result []*ReCard
+	for i := 0; i < len(cards); i++ {
+		var r ReCard
+		r.Card = append(r.Card, cards[i])
+		result = append(result, &r)
+	}
+
+	return result
 }
