@@ -24,8 +24,9 @@ type GroupCard struct {
 
 //
 type ReCard struct {
-	Wight int32   // 该牌组权重
-	Card  []*Card // 卡牌组
+	Wight    int32   // 该牌组权重
+	CardType int32   // 该牌类型
+	Card     []*Card // 卡牌组
 }
 
 /*
