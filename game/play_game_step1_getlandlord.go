@@ -126,7 +126,8 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 
 			DelaySomeTime(1)
 			if Server.UseRobot {
-				PushPlayerStartGameWithRobot(room)
+				// PushPlayerStartGameWithRobot(room)
+				PushPlayerStartGameWithRobot2(room)
 			} else {
 				PushPlayerStartGame(room)
 			}

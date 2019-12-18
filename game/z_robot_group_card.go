@@ -18,11 +18,37 @@ type cardInfo struct {
 	cardNum   int32
 }
 
-func groupCard(hands []*Card) {
+func GroupHandsCard(hands []*Card) GroupCard {
+	var tmpGroup GroupCard
+	remainCards := hands
 	countGroup := continuouslyCountGroup(hands)
 	for i := 0; i < len(countGroup); i++ {
-
+		var reCards []*ReCard
+		reCards, remainCards = groupGroup(remainCards, countGroup[i])
+		if len(reCards) > 0 {
+			for j := 0; j < len(reCards); j++ {
+				switch reCards[j].CardType {
+				case cardConst.CARD_PATTERN_SEQUENCE:
+					tmpGroup.Junko = append(tmpGroup.Junko, reCards[j])
+				case cardConst.CARD_PATTERN_SEQUENCE_OF_PAIRS:
+					tmpGroup.JunkoDouble = append(tmpGroup.Junko, reCards[j])
+				case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS:
+					tmpGroup.junkTriple = append(tmpGroup.Junko, reCards[j])
+				default:
+					logger.Debug(reCards[j].CardType)
+					PrintCard(reCards[j].Card)
+					logger.Error("!!!无此组牌类型")
+				}
+			}
+		}
 	}
+
+	// 组剩余牌
+	groupCards := CreateGroupCard(remainCards)
+	groupCards.JunkoDouble = tmpGroup.JunkoDouble
+	groupCards.Junko = tmpGroup.Junko
+	groupCards.junkTriple = tmpGroup.junkTriple
+	return groupCards
 
 }
 
@@ -44,12 +70,13 @@ func groupGroup(hands []*Card, g group) ([]*ReCard, []*Card) {
 		return groupLen4(hands, g)
 	} else if groupLen == 5 { // 去重后张数为5  groupLen 最大为15 及每张牌为3张的情况下
 		return groupLen5(hands, g)
-
-	} else if groupLen == 6 { // 去重后张数为5  groupLen 最大为18 及每张牌为3张的情况下
+	} else if groupLen == 6 { // 去重后张数为6  groupLen 最大为18 及每张牌为3张的情况下
 		return groupLen6(hands, g)
-
+	} else if groupLen == 7 { // 去重后张数为7  groupLen 最大为21 取20 及每张牌为3张的情况下
+		return groupLen7(hands, g)
 	}
 
+	logger.Debug("==============  超出预测范围 =============")
 	return nil, hands
 }
 

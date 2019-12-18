@@ -21,6 +21,8 @@ type Player struct {
 	WaitingTime    int32           // 等待时间 // 当改玩家操作的时候 不托管的情况下 从系统设置时间开始
 	// 每秒-1 来防止用户在叫地主阶段退出 用于恢复时间点
 	ActionChan chan PlayerActionChan
+	GroupCard  GroupCard // 组牌信息 只有机器人才有
+	HandsValue float32   // 手牌评分
 }
 
 type PlayerInfo struct {

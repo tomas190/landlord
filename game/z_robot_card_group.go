@@ -13,12 +13,14 @@ type GroupCard struct {
 	OriginCardsNums  int     // 原始牌多少次能出完
 	CurrentHandCards []*Card // 当前手牌
 
-	Single      []*ReCard // 单张
-	Double      []*ReCard // 对子
-	Triple      []*ReCard // 三张 不安排三代一 或者三带二
-	Bomb        []*ReCard // 炸弹
+	Single []*ReCard // 单张
+	Double []*ReCard // 对子
+	Triple []*ReCard // 三张 不安排三代一 或者三带二
+	Bomb   []*ReCard // 炸弹
+
 	Junko       []*ReCard // 顺子
 	JunkoDouble []*ReCard // 连对
+	junkTriple  []*ReCard // 飞机
 	Rocket      []*ReCard // 火箭
 }
 
@@ -348,6 +350,7 @@ dre:
 
 	var rc ReCard
 	rc.Card = junko
+	rc.CardType =cardConst.CARD_PATTERN_SEQUENCE
 	rc.Wight = junko[len(junko)-1].Value
 
 	result := removeCards(handCards, junko)
@@ -391,6 +394,7 @@ func unlimitedJunko(handCards []*Card) ([]*ReCard, []*Card) {
 			break
 		}
 		rc.Card = cards
+		rc.CardType = cardConst.CARD_PATTERN_SEQUENCE
 		rc.Wight = cards[len(cards)-1].Value
 		result = append(result, &rc)
 		tmpHands = removeCards(tmpHands, cards)

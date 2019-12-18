@@ -36,13 +36,14 @@ func groupLen3(hands []*Card, g group) ([]*ReCard, []*Card) {
 	}
 
 	seqArr, isContinuously, num = howManyCardByX(g, 2)
-	if isContinuously && num >= 3{
+	if isContinuously && num >= 3 {
 		re, remainCards := groupJunkoDouble(hands, seqArr[0], seqArr[len(seqArr)-1])
 		r = append(r, re)
 		return r, remainCards
 	}
 	return nil, hands
 }
+
 //
 //
 func groupLen4(hands []*Card, g group) ([]*ReCard, []*Card) {
@@ -52,7 +53,6 @@ func groupLen4(hands []*Card, g group) ([]*ReCard, []*Card) {
 	if cardLen < 6 {
 		return nil, hands
 	}
-
 
 	// 值需要判断三连 二连  和连对
 	// 1. 判断4连
@@ -65,23 +65,23 @@ func groupLen4(hands []*Card, g group) ([]*ReCard, []*Card) {
 	}
 
 	// 2. 判断3连
-	seqNum, has:= hasContinuouslyLonger(seqArr, 3)
-	if has  {
+	seqNum, has := hasContinuouslyLonger(seqArr, 3)
+	if has {
 		re, remainCards := groupJunkoTriple(hands, seqNum[0], seqNum[len(seqNum)-1])
 		r = append(r, re)
 		return r, remainCards
 	}
 
 	// 2. 判断2连
-	seqNum, has= hasContinuouslyLonger(seqArr, 2)
-	if has  {
+	seqNum, has = hasContinuouslyLonger(seqArr, 2)
+	if has {
 		re, remainCards := groupJunkoTriple(hands, seqNum[0], seqNum[len(seqNum)-1])
 		r = append(r, re)
 		return r, remainCards
 	}
 
 	seqArr, isContinuously, num = howManyCardByX(g, 2)
-	if isContinuously && num >= 3{
+	if isContinuously && num >= 3 {
 		re, remainCards := groupJunkoDouble(hands, seqArr[0], seqArr[len(seqArr)-1])
 		r = append(r, re)
 		return r, remainCards
@@ -407,19 +407,30 @@ func groupLen6(hands []*Card, g group) ([]*ReCard, []*Card) {
 	var r []*ReCard
 	cardLen := g.cardLen // 牌的总张数
 	if cardLen <= 9 { // 如果总长度小于9 则组成顺子
-		cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+		cards, remainCards := groupLen6less9(hands, g)
+		if cards!=nil {
+			r = append(r, cards)
+		}
 		r = append(r, cards)
 		return r, remainCards
 	} else if cardLen == 10 { // 如果总长度等于10
 		cards, remainCards := groupLen6Has10(hands, g)
+		if cards!=nil {
+			r = append(r, cards)
+		}
 		r = append(r, cards)
 		return r, remainCards
 	} else if cardLen == 11 { // 如果总长度等于10
 		cards, remainCards := groupLen6Has11(hands, g)
-		r = append(r, cards)
+		if cards!=nil {
+			r = append(r, cards)
+		}
 		return r, remainCards
 	} else if cardLen == 12 {
 		cards, remainCards := groupLen6Has12(hands, g)
+		if cards!=nil {
+			r = append(r, cards)
+		}
 		r = append(r, cards)
 		return r, remainCards
 	} else if cardLen == 13 {
@@ -439,6 +450,23 @@ func groupLen6(hands []*Card, g group) ([]*ReCard, []*Card) {
 }
 
 /*============ 6 ==============*/
+
+func groupLen6less9(hands []*Card, g group) (*ReCard, []*Card) {
+	seqNum, _, num := howManyCardByX(g, 3) // 有则num必定为1
+	if num == 1 { // 如果有三张的情况 要判断是否在两边 是则移除
+		if seqNum[0] == int(g.cardGroup[0].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[5].cardValue))
+
+			return cards, remainCards
+		} else if seqNum[0] == int(g.cardGroup[5].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[4].cardValue))
+			return cards, remainCards
+		}
+	}
+	cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+	return cards, remainCards
+}
+
 // finish
 func groupLen6Has10(hands []*Card, g group) (*ReCard, []*Card) {
 	seqArr, isContinuously, num := howManyCardByX(g, 3)
@@ -963,3 +991,197 @@ func groupLen6Has18(hands []*Card, g group, ) ([]*ReCard, []*Card) {
 }
 
 /*============ 6 ==============*/
+
+/*============ 7 ==============*/
+// 牌去重张数为6的情况下
+// finish
+func groupLen7(hands []*Card, g group) ([]*ReCard, []*Card) {
+	var r []*ReCard
+	cardLen := g.cardLen // 牌的总张数
+	if cardLen <= 8 { // 如果总长度小于9 则组成顺子
+		cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+		r = append(r, cards)
+		return r, remainCards
+	} else if cardLen == 9 {
+		cards, remainCards := groupLen7Has9(hands, g)
+		r = append(r, cards)
+		return r, remainCards
+	} else if cardLen == 10 { // 如果总长度等于10
+		return groupLen7Has10(hands, g)
+	} else if cardLen == 11 {
+		return groupLen7Has11(hands, g)
+	} else if cardLen == 12 {
+		return groupLen7Has12(hands, g)
+	} else if cardLen == 13 {
+		return groupLen6Has13(hands, g)
+	} else if cardLen == 14 {
+		return groupLen6Has14(hands, g)
+	} else if cardLen == 15 {
+		return groupLen6Has15(hands, g)
+	} else if cardLen == 16 {
+		return groupLen6Has16(hands, g)
+	} else if cardLen == 17 {
+		return groupLen6Has17(hands, g)
+	} else if cardLen == 18 {
+		return groupLen6Has18(hands, g)
+	}
+	return nil, hands
+}
+
+/*============ 7 ==============*/
+func groupLen7Has9(hands []*Card, g group) (*ReCard, []*Card) {
+	seqNum, _, num := howManyCardByX(g, 3) // 有则num必定为1
+	if num == 1 { // 如果有三张的情况 要判断是否在两边 是则移除
+		if seqNum[0] == int(g.cardGroup[0].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[6].cardValue))
+
+			return cards, remainCards
+		} else if seqNum[0] == int(g.cardGroup[6].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+			return cards, remainCards
+		}
+	}
+	cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[6].cardValue))
+	return cards, remainCards
+}
+
+func groupLen7Has10(hands []*Card, g group) ([]*ReCard, []*Card) {
+	/* // 这种情况可以组成两个顺子
+	{1, 1},				{1, 1},
+	{2, 1},				{2, 1},
+	{3, 1}, {3, 2}		{3, 1},
+	{4, 1}, {4, 2},		{4, 1}, {4, 2},
+	{5, 1}, {5, 2},		{5, 1},
+	{6, 1},				{6, 1},
+	{7, 1},				{7, 1},{7, 2},{7, 2},
+	*/
+
+	// 1.还是判断是否有三张在两边
+	seqNum, _, num := howManyCardByX(g, 3) // 有则num必定为1
+	if num == 1 { // 如果有三张的情况 要判断是否在两边 是则移除
+		if seqNum[0] == int(g.cardGroup[0].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[6].cardValue))
+			return append([]*ReCard{}, cards), remainCards
+		} else if seqNum[0] == int(g.cardGroup[6].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+			return append([]*ReCard{}, cards), remainCards
+		}
+	}
+
+	// 然后在找出所有顺子
+	// 2. 是否能找出两个顺子
+	cards, remainCards := unlimitedJunko(hands)
+	reCards, remainCards := mergeJunkoWithSingle(cards, remainCards)
+	return reCards, remainCards
+}
+
+// finish
+func groupLen7Has11(hands []*Card, g group) ([]*ReCard, []*Card) {
+	// 1.还是判断是否有三张在两边
+	seqNum, isContinuously, num := howManyCardByX(g, 3) // 有则num必定为1
+	if num == 1 { // 如果有三张的情况 要判断是否在两边 是则移除
+		if seqNum[0] == int(g.cardGroup[0].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[6].cardValue))
+			return append([]*ReCard{}, cards), remainCards
+		} else if seqNum[0] == int(g.cardGroup[6].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+			return append([]*ReCard{}, cards), remainCards
+		}
+		//cards, remainCards := groupJunko(hands, seqNum[0], seqNum[len(seqNum)])
+		//return append([]*ReCard{}, cards), remainCards
+	} else if num == 2 {
+		if isContinuously {
+			triple, remainCards := groupJunkoTriple(hands, seqNum[0], seqNum[len(seqNum)-1])
+			junko, remainCards := unlimitedJunko(remainCards)
+			return append(junko, triple), remainCards
+		}
+
+		if seqNum[0] == int(g.cardGroup[0].cardValue) {
+			if seqNum[0] == int(g.cardGroup[0].cardValue) {
+				cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[6].cardValue))
+				return append([]*ReCard{}, cards), remainCards
+			} else if seqNum[0] == int(g.cardGroup[6].cardValue) {
+				cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+				return append([]*ReCard{}, cards), remainCards
+			}
+
+			if seqNum[1] == int(g.cardGroup[0].cardValue) {
+				cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[6].cardValue))
+				return append([]*ReCard{}, cards), remainCards
+			} else if seqNum[1] == int(g.cardGroup[6].cardValue) {
+				cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+				return append([]*ReCard{}, cards), remainCards
+			}
+			cards, remainCards := groupJunko(hands, seqNum[0], seqNum[len(seqNum)])
+			return append([]*ReCard{}, cards), remainCards
+		}
+
+	}
+
+	// 然后在找出所有顺子
+	// 2. 是否能找出两个顺子
+	cards, remainCards := unlimitedJunko(hands)
+	if len(cards) == 2 {
+		reCards, remainCards := mergeJunkoWithSingle(cards, remainCards)
+		return reCards, remainCards
+	} else {
+		cards, remainCards := FindPossibleLongSingleJunko(hands)
+		return append([]*ReCard{}, cards), remainCards
+	}
+}
+
+
+// finish
+func groupLen7Has12(hands []*Card, g group) ([]*ReCard, []*Card) {
+	// 1.还是判断是否有三张在两边
+	seqNum, isContinuously, num := howManyCardByX(g, 3) // 有则num必定为1
+	if num == 1 { // 如果有三张的情况 要判断是否在两边 是则移除
+		if seqNum[0] == int(g.cardGroup[0].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[6].cardValue))
+			return append([]*ReCard{}, cards), remainCards
+		} else if seqNum[0] == int(g.cardGroup[6].cardValue) {
+			cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+			return append([]*ReCard{}, cards), remainCards
+		}
+		//cards, remainCards := groupJunko(hands, seqNum[0], seqNum[len(seqNum)])
+		//return append([]*ReCard{}, cards), remainCards
+	} else if num == 2 {
+		if isContinuously {
+			triple, remainCards := groupJunkoTriple(hands, seqNum[0], seqNum[len(seqNum)-1])
+			junko, remainCards := unlimitedJunko(remainCards)
+			return append(junko, triple), remainCards
+		}
+
+		if seqNum[0] == int(g.cardGroup[0].cardValue) {
+			if seqNum[0] == int(g.cardGroup[0].cardValue) {
+				cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[6].cardValue))
+				return append([]*ReCard{}, cards), remainCards
+			} else if seqNum[0] == int(g.cardGroup[6].cardValue) {
+				cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+				return append([]*ReCard{}, cards), remainCards
+			}
+
+			if seqNum[1] == int(g.cardGroup[0].cardValue) {
+				cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[6].cardValue))
+				return append([]*ReCard{}, cards), remainCards
+			} else if seqNum[1] == int(g.cardGroup[6].cardValue) {
+				cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
+				return append([]*ReCard{}, cards), remainCards
+			}
+			cards, remainCards := groupJunko(hands, seqNum[0], seqNum[len(seqNum)])
+			return append([]*ReCard{}, cards), remainCards
+		}
+
+	}
+
+	// 然后在找出所有顺子
+	// 2. 是否能找出两个顺子
+	cards, remainCards := unlimitedJunko(hands)
+	if len(cards) == 2 {
+		reCards, remainCards := mergeJunkoWithSingle(cards, remainCards)
+		return reCards, remainCards
+	} else {
+		cards, remainCards := FindPossibleLongSingleJunko(hands)
+		return append([]*ReCard{}, cards), remainCards
+	}
+}

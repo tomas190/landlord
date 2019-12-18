@@ -45,8 +45,56 @@ func countCardGroupValue(groupCard GroupCard) float64 {
 
 }
 
+// 计算牌组价值是否叫分和抢地主
+/*
+	2 		1.75
+	小王 	2.5
+	大王 	3
+
+	炸弹 	5+base*0.1
+	王炸    8
+*/
+func CountCardValue(cards []*Card) float32 {
+	var value float32
+
+	for i := 0; i < len(cards); i++ {
+		if cards[i].Value == cardConst.CARD_RANK_TWO {
+			value += 1.75
+		} else if cards[i].Value == cardConst.CARD_RANK_BLACK_JOKER {
+			value += 2.5
+		} else if cards[i].Value == cardConst.CARD_RANK_RED_JOKER {
+			value += 3
+		}
+	}
+
+	reCards, _ := FindAllBomb(cards)
+	for i := 0; i < len(reCards); i++ {
+		if reCards[i].Wight == cardConst.CARD_RANK_TWO {
+			value += 7
+			value = value - 1.75*4
+		} else {
+			value += 4 + float32(reCards[i].Wight)*0.1
+		}
+	}
+
+	_, b, _ := hasRacket(cards)
+	if b {
+		value += 8
+		value = value - 5.5
+	}
+	return value
+}
+
 // 根据组牌牌型计算分值 todo 很大的优化空间
 func countCardTypeValue(card *ReCard, cardType int) float64 {
+
+	/*
+			这里暂时根据  2 大小王 炸弹的数量对手牌进行评分
+
+		    后续跟拍原则 根据出牌后是否 能减少首数
+
+	*/
+
 	var value float64
 	baseValue := float64(card.Wight - 10)
 	switch cardType {
@@ -84,6 +132,8 @@ func absSelf(num int32) int32 {
 /*=====================================================================================*/
 
 /*
+以下是不合理的拆法仅做参考
+
 拆牌
 
 如果有炸弹，找出来（炸弹不拆）；
@@ -104,14 +154,6 @@ func absSelf(num int32) int32 {
 剩余的牌里面找出所有对子和单张。
 
 */
-
-func combinationCard(hands []*Card) GroupCard {
-	remainCards := hands
-	// 寻找所有单顺
-	//junkos, remainCards := FindAllJunkos(remainCards)
-
-	return CreateGroupCard(remainCards)
-}
 
 // 相同权值和长度的顺子合并成连对
 /*
@@ -191,33 +233,3 @@ func FindAllJunko(hands []*Card) ([]*ReCard, []*ReCard, []*Card) {
 	return seqDouble, remainJunkos, remainCards
 
 }
-
-// 处理组好的顺子 和单张 组合成 连对
-/*
-	param
-		junkos []*ReCard : 手牌
- 		singles []*Card  : 手牌剩余的牌
-	return
-		[]*ReCard	:相同顺子组成的连对
-					:顺子
-		[]*Card		:剩余手牌
-*/
-//func mergeJunkoSingleAsJunkoDouble(junkos []*ReCard, singles []*Card) ([]*ReCard, []*ReCard, []*Card) {
-//
-//
-//
-//
-//
-//
-//}
-//
-//
-//func mergeJunkoSingleAsJunkoDoubleHelo(singles []*Card){
-//
-//}
-
-
-
-
-
-

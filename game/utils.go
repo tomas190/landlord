@@ -71,3 +71,61 @@ func changToArrInt32(arr []byte) []int32 {
 	}
 	return result
 }
+
+func printGroup(gc GroupCard)  {
+	logger.Debug("单张")
+	rcs := gc.Single
+	for i := 0; i < len(rcs); i++ {
+		fmt.Print("weight:", rcs[i].Wight, "  ")
+		PrintCard(rcs[i].Card)
+	}
+
+	logger.Debug("对子")
+	rcd := gc.Double
+	for i := 0; i < len(rcd); i++ {
+		fmt.Print("weight:", rcd[i].Wight, "  ")
+		PrintCard(rcd[i].Card)
+	}
+
+	logger.Debug("三张")
+	rct := gc.Triple
+	for i := 0; i < len(rct); i++ {
+		fmt.Print("weight:", rct[i].Wight, "  ")
+		PrintCard(rct[i].Card)
+	}
+
+	logger.Debug("炸弹")
+	rcb := gc.Bomb
+	for i := 0; i < len(rcb); i++ {
+		fmt.Print("weight:", rcb[i].Wight, "  ")
+		PrintCard(rcb[i].Card)
+	}
+
+	logger.Debug("火箭")
+	rcr := gc.Rocket
+	for i := 0; i < len(rcr); i++ {
+		fmt.Print("weight:", rcr[i].Wight, "  ")
+		PrintCard(rcr[i].Card)
+	}
+
+	logger.Debug("顺子")
+	rcj := gc.Junko
+	for i := 0; i < len(rcj); i++ {
+		fmt.Print("weight:", rcj[i].Wight, "  ")
+		PrintCard(rcj[i].Card)
+	}
+
+	logger.Debug("连对")
+	rcjd := gc.JunkoDouble
+	for i := 0; i < len(rcjd); i++ {
+		fmt.Print("weight:", rcjd[i].Wight, "  ")
+		PrintCard(rcjd[i].Card)
+	}
+
+	logger.Debug("飞机")
+	rcjt := gc.junkTriple
+	for i := 0; i < len(rcjt); i++ {
+		fmt.Print("weight:", rcjt[i].Wight, "  ")
+		PrintCard(rcjt[i].Card)
+	}
+}

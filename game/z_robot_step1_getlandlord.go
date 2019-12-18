@@ -13,9 +13,17 @@ func RobotGetLandlordAction(room *Room, robot, nextPlayer, lastPlayer *Player) {
 
 	// todo 机器人 抢地主阶段
 	if step == roomStatus.CallLandlord {
-		NotCallLandlordAction(room, robot, nextPlayer)
+		if robot.HandsValue >= 6 {
+			CallLandlordAction(room, robot, nextPlayer)
+		} else {
+			NotCallLandlordAction(room, robot, nextPlayer)
+		}
 	} else if step == roomStatus.GetLandlord {
-		NotGetLandlordAction(room, robot, nextPlayer, lastPlayer)
+		if robot.HandsValue >= 8 {
+			GetLandlordAction(room, robot, nextPlayer, lastPlayer)
+		} else {
+			NotGetLandlordAction(room, robot, nextPlayer, lastPlayer)
+		}
 	} else {
 		logger.Error("房间状态错误 !!!incredible")
 	}

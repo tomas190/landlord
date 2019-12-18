@@ -205,9 +205,10 @@ message Settlement {
 // 倍数详细信息
 message MultipleInfo {
     // 前端每轮显示 *3 的房间底分倍数
+    string spring = 1; // 春天倍数
     string fightLandlord = 2; // 抢地主倍数
     string boom = 3; // 炸弹倍数
-    string spring = 1; // 春天倍数
+    string rocket = 4 ;// 火箭炸弹倍数
 }
 
 // 恢复的玩家信息

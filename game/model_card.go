@@ -25,19 +25,85 @@ func CreateBrokenCard() []*Card {
 	destiny := RandNum(0, 90)
 	if destiny >= 0 && destiny <= 30 {
 		result = initOriginalCard()
-	//	logger.Debug("initOriginalCard 111111111111")
+		//	logger.Debug("initOriginalCard 111111111111")
 	} else if destiny >= 31 && destiny <= 60 {
 		result = initOriginalCard2()
-	//	logger.Debug("initOriginalCard2 222222222")
+		//	logger.Debug("initOriginalCard2 222222222")
 	} else {
 		result = initOriginalCard3()
 		//logger.Debug("initOriginalCard3 3333333333")
 	}
 
-
 	dSort := RandNum(25, 35)
 	OutOfCardNotDeep(result, dSort)
 	return result
+}
+
+func CreateBroken8910Card() ([]*Card, []*Card) {
+	card3 := initOriginalCard3()
+
+	var card8910 []*Card
+	for j := 6; j <= 8; j++ {
+		for i := 1; i <= 4; i++ {
+			var card Card
+			card.Value = int32(j)
+			card.Suit = int32(i)
+			card8910 = append(card8910, &card)
+		}
+	}
+
+	return removeCards(card3, card8910), card8910
+
+}
+
+/*
+	三个17 张的牌 和底牌
+*/
+
+func stick() ([]*Card, []*Card, []*Card) {
+	var p1, p2, p3 []*Card
+	num := RandNum(1, 9)
+	switch num {
+	case 1:
+		p1 = []*Card{{6, 1}, {6, 2}, {6, 3}, {8, 4},}
+		p2 = []*Card{{7, 1}, {7, 2}, {7, 3}, {6, 4},}
+		p3 = []*Card{{8, 1}, {8, 2}, {8, 3}, {7, 4},}
+	case 2:
+		p1 = []*Card{{6, 1}, {6, 2}, {7, 1}, {7, 2},}
+		p2 = []*Card{{7, 3}, {7, 4}, {8, 3}, {8, 1},}
+		p3 = []*Card{{6, 3}, {6, 4}, {8, 2}, {8, 4},}
+	case 3:
+		p1 = []*Card{{6, 1}, {6, 2}, {6, 3}, {6, 4},}
+		p2 = []*Card{{7, 3}, {7, 4}, {8, 3}, {8, 1},}
+		p3 = []*Card{{8, 2}, {8, 4}, {7, 2}, {7, 1},}
+	case 4:
+		p1 = []*Card{{7, 1}, {7, 2}, {7, 3}, {7, 4},}
+		p2 = []*Card{{8, 3}, {8, 4}, {6, 3}, {6, 1},}
+		p3 = []*Card{{6, 2}, {6, 4}, {8, 2}, {8, 1},}
+	default:
+		p1 = []*Card{{8, 1}, {8, 2}, {7, 1}, {7, 2},}
+		p2 = []*Card{{8, 3}, {8, 4}, {6, 3}, {6, 1},}
+		p3 = []*Card{{6, 2}, {6, 4}, {7, 4}, {7, 3},}
+	}
+	return p1, p2, p3
+}
+
+func CreateCardsNew() ([]*Card, []*Card, []*Card, []*Card) {
+	cards, _ := CreateBroken8910Card()
+	OutOfCardNotDeep42(cards,30)
+	p1card := cards[:13]
+	p2card := cards[13:26]
+	p3card := cards[26:39]
+
+	boCard := cards[39:]
+
+	i, i2, i3 := stick()
+	p1card=append(p1card, i...)
+	p3card=append(p2card, i2...)
+	p2card=append(p3card, i3...)
+
+	return p1card, p2card, p3card, boCard
+
 }
 
 func initOriginalCard() []*Card {
@@ -124,6 +190,14 @@ func OutOfCard(arr []*Card) {
 func OutOfCardNotDeep(arr []*Card, deepLevel int) {
 	for i := len(arr) - 1; i > deepLevel; i-- {
 		num := RandNum(0, 53)
+		arr[i], arr[num] = arr[num], arr[i]
+	}
+}
+
+// 随机乱序
+func OutOfCardNotDeep42(arr []*Card, deepLevel int) {
+	for i := len(arr) - 1; i > deepLevel; i-- {
+		num := RandNum(0, 41)
 		arr[i], arr[num] = arr[num], arr[i]
 	}
 }

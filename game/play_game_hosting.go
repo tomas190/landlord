@@ -758,9 +758,9 @@ func eTripletsHelpRemove(cards []*Card) []int {
 // 飞机 带单
 func HostingBeatTripletsWithSingle(handCards, eCards []*Card) ([]*Card, bool, int32) {
 	cards, hasRacket, rType := hasRacket(handCards)
-	cTripletsLen := len(eCards)
+	//cTripletsLen := len(eCards)
 	cTripletsJunkoLen := len(eCards) / 4
-	if cTripletsLen < 6 || (!hasRacket && len(handCards) < cTripletsLen) {
+	if !hasRacket && len(handCards) < 4 { //
 		logger.Error("牌数量不满足检测条件...")
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}

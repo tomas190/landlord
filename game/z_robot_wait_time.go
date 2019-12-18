@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+/*
+	todo  最好根据上家牌型来思考
+*/
+
 // 为让用户感觉更加真实 增加等带时间计算
 /*
 	60%的机率 让用户在1~5秒之间成功匹配
@@ -111,4 +115,40 @@ func getWaitTimeOutCardSoSlowly() time.Duration {
 // 机器人假装掉线  这个地方一地要配合 不出操作
 func getWaitTimeOutCardFakerToDisconnection() time.Duration {
 	return sysSet.GameDelayTime
+}
+
+
+
+
+
+// 机器人出牌决策等待时间
+func delayDestiny() bool {
+	destiny := RandNum(1, 10000)
+	if destiny <= 7000 {
+		logger.Debug("机器人打牌阶段决策时间:快速 1-2s")
+		DelaySomeTime(getWaitTimeOutCardFast())
+		return false
+	}
+
+	if destiny <= 9500 {
+		logger.Debug("机器人打牌阶段决策时间:中速 3-5s")
+		DelaySomeTime(getWaitTimeOutCardMedium())
+		return false
+	}
+
+	if destiny <= 9800 {
+		logger.Debug("机器人打牌阶段决策时间:慢速 6-15s")
+		DelaySomeTime(getWaitTimeOutCardSlowly())
+		return false
+	}
+
+	if destiny <= 9999 {
+		logger.Debug("机器人打牌阶段决策时间:超慢 15-29s")
+		DelaySomeTime(getWaitTimeOutCardSoSlowly())
+		return false
+	}
+	// todo 建议概率一万分之1
+	logger.Debug("机器人打牌阶段决策时间:假装断线 30s")
+	DelaySomeTime(getWaitTimeOutCardFakerToDisconnection())
+	return true
 }

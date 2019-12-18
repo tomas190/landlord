@@ -20,6 +20,7 @@ type Room struct {
 	MultiGetLandlord int32              // 当局抢地主倍数
 	MultiBoom        int32              // 炸弹倍数
 	MultiSpring      int32              // 是否春天
+	MultiRocket      int32              // 火箭倍数
 	LandlordOutNum   int32              // 地主出了多少首牌 用于计算春天
 	Status           int32              // 房间状态 0 等待中 1叫地主 2.抢地主, 3正在玩
 }

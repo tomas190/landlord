@@ -46,11 +46,10 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	}
 
 	if actionPlayer.IsRobot {
+		actionPlayer.GroupCard = GroupHandsCard(actionPlayer.HandCards)
 		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer)
 		return
 	}
-
-
 
 	select {
 	case action := <-actionPlayer.ActionChan:
@@ -84,15 +83,19 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	}
 
 	// 炸弹计算翻倍
-	if cardsType == cardConst.CARD_PATTERN_BOMB || cardsType == cardConst.CARD_PATTERN_ROCKET {
+	if cardsType == cardConst.CARD_PATTERN_BOMB {
 		room.MultiAll = room.MultiAll * 2
 		if room.MultiBoom == 0 {
 			room.MultiBoom = 2
 		} else {
 			room.MultiBoom = room.MultiBoom * 2
 		}
-
 	}
+	// 火箭倍数
+	if cardsType == cardConst.CARD_PATTERN_ROCKET {
+		room.MultiRocket = 2
+	}
+
 	room.ThrowCards = append(room.ThrowCards, cards...)
 	/*after*/
 	after := actionPlayer.HandCards
@@ -120,7 +123,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		isSpring := CheckSpring(room, actionPlayer)
 		pushLastOutCard(room, actionPlayer, cards, cardsType)
 		logger.Debug("玩家胜利:", actionPlayer.PlayerInfo.PlayerId)
-
+		pushCardCount(room)
 		if isSpring {
 			DelaySomeTime(1)
 			pushSpring(room)
@@ -134,6 +137,9 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		clearRoomAndPlayer(room)
 		runtime.Goexit()
 		return
+	}
+	if actionPlayer.IsRobot { // 重新组排
+		actionPlayer.GroupCard = GroupHandsCard(actionPlayer.HandCards)
 	}
 	setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
 	pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType)

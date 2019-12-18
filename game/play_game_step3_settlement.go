@@ -148,6 +148,7 @@ func Settlement(room *Room, winPlayer *Player) {
 	multiInfo.FightLandlord = fmt.Sprintf("×%d", room.MultiGetLandlord)
 	multiInfo.Boom = fmt.Sprintf("×%d", room.MultiBoom)
 	multiInfo.Spring = fmt.Sprintf("×%d", room.MultiSpring)
+	multiInfo.Rocket = fmt.Sprintf("×%d", room.MultiRocket)
 	sPush.MultipleInfo = &multiInfo
 	sPush.WaitTime = sysSet.GameDelayReadyTimeInt
 
