@@ -17,11 +17,13 @@ func robotOutCard(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Pla
 		}
 	} else {
 		// todo
-		// 农民玩家一号跟牌
+
 		if robot.IsMustDo {
-			landlordRobotOutCardMustDo(room, robot, nextPlayer, lastPlayer)
 			// 农民首出
+			landlordRobotOutCardMustDo(room, robot, nextPlayer, lastPlayer)
+
 		} else {
+			// 农民玩家一号跟牌
 			farmerRobotFallowCard(room, robot, nextPlayer, lastPlayer)
 		}
 
@@ -182,12 +184,12 @@ func farmerRobotFallowCardF1(room *Room, robot *Player, nextPlayer *Player, last
 	// checkLandlordHasLast()
 
 	// 采用最小跟牌
-	cards, b := minFollowCard(robot, efficCard, efficType)
+	cards, b ,cardType:= minFollowCard(robot, efficCard, efficType)
 	if !b { // todo  这里要多做判断
 		NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
 	}
 	// 待修复
-	OutCardsAction(room, robot, nextPlayer, cards, efficType)
+	OutCardsAction(room, robot, nextPlayer, cards, cardType)
 }
 
 /*e  农民出牌策略 还有很大的优化空间*/

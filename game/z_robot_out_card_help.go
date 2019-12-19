@@ -319,15 +319,17 @@ func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, 
 		return nil, false
 
 	case cardConst.CARD_PATTERN_TRIPLET:
-		g := group.Triple
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight {
-					return g[i].Card, true
-				}
-			}
-		}
-		return nil, false
+		//g := group.Triple
+		//if g != nil {
+		//	for i := 0; i < len(g); i++ {
+		//		if g[i].Wight > eWight {
+		//			return g[i].Card, true
+		//		}
+		//	}
+		//}
+		cards, b, _ := HostingBeatTriple(actionPlayer.HandCards, eCards)
+
+		return cards, b
 
 	case cardConst.CARD_PATTERN_TRIPLET_WITH_SINGLE:
 		g := group.Triple
@@ -407,7 +409,7 @@ func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, 
 		g := group.Triple
 		if g != nil {
 			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight {
+				if g[i].Wight > eWight&& len(g[i].Card) == len(eCards) {
 					singles := group.Single
 					if len(singles) < len(eCards)/4 { //||len { //
 						return nil, false
@@ -427,7 +429,7 @@ func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, 
 		g := group.Triple
 		if g != nil {
 			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight {
+				if g[i].Wight > eWight && len(g[i].Card) == len(eCards){
 					Double := group.Double
 					if len(Double) < len(eCards)/4 { //||len { //
 						return nil, false
