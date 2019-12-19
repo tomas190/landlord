@@ -319,17 +319,17 @@ func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, 
 		return nil, false
 
 	case cardConst.CARD_PATTERN_TRIPLET:
-		//g := group.Triple
-		//if g != nil {
-		//	for i := 0; i < len(g); i++ {
-		//		if g[i].Wight > eWight {
-		//			return g[i].Card, true
-		//		}
-		//	}
-		//}
-		cards, b, _ := HostingBeatTriple(actionPlayer.HandCards, eCards)
+		g := group.Triple
+		if g != nil {
+			for i := 0; i < len(g); i++ {
+				if g[i].Wight > eWight {
+					return g[i].Card, true
+				}
+			}
+		}
+		//cards, b, _ := HostingBeatTriple(actionPlayer.HandCards, eCards)
 
-		return cards, b
+		return nil, false
 
 	case cardConst.CARD_PATTERN_TRIPLET_WITH_SINGLE:
 		g := group.Triple

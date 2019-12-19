@@ -184,12 +184,12 @@ func farmerRobotFallowCardF1(room *Room, robot *Player, nextPlayer *Player, last
 	// checkLandlordHasLast()
 
 	// 采用最小跟牌
-	cards, b ,cardType:= minFollowCard(robot, efficCard, efficType)
+	cards, b := minFollowCard(robot, efficCard, efficType)
 	if !b { // todo  这里要多做判断
 		NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
 	}
 	// 待修复
-	OutCardsAction(room, robot, nextPlayer, cards, cardType)
+	OutCardsAction(room, robot, nextPlayer, cards, efficType)
 }
 
 /*e  农民出牌策略 还有很大的优化空间*/
