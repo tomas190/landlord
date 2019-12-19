@@ -27,13 +27,17 @@ func GroupHandsCard(hands []*Card) GroupCard {
 		reCards, remainCards = groupGroup(remainCards, countGroup[i])
 		if len(reCards) > 0 {
 			for j := 0; j < len(reCards); j++ {
+				if reCards[j] == nil {
+					continue
+				}
+
 				switch reCards[j].CardType {
 				case cardConst.CARD_PATTERN_SEQUENCE:
 					tmpGroup.Junko = append(tmpGroup.Junko, reCards[j])
 				case cardConst.CARD_PATTERN_SEQUENCE_OF_PAIRS:
 					tmpGroup.JunkoDouble = append(tmpGroup.Junko, reCards[j])
 				case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS:
-					tmpGroup.junkTriple = append(tmpGroup.Junko, reCards[j])
+					tmpGroup.JunkTriple = append(tmpGroup.Junko, reCards[j])
 				default:
 					logger.Debug(reCards[j].CardType)
 					PrintCard(reCards[j].Card)
@@ -47,7 +51,7 @@ func GroupHandsCard(hands []*Card) GroupCard {
 	groupCards := CreateGroupCard(remainCards)
 	groupCards.JunkoDouble = tmpGroup.JunkoDouble
 	groupCards.Junko = tmpGroup.Junko
-	groupCards.junkTriple = tmpGroup.junkTriple
+	groupCards.JunkTriple = tmpGroup.JunkTriple
 	return groupCards
 
 }

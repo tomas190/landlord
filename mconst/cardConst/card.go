@@ -53,6 +53,7 @@ const (
 	_CARD_PATTERN                                           = iota
 	CARD_PATTERN_TODO                                        // 1待判定类型
 	CARD_PATTERN_ERROR                                       // 2非法类型
+
 	CARD_PATTERN_SINGLE                                      // 3单张               from 3 (low) up to red joker (high)
 	CARD_PATTERN_PAIR                                        // 4对子               3-3, A-A
 	CARD_PATTERN_TRIPLET                                     // 5三不带             9-9-9.

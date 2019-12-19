@@ -27,7 +27,8 @@ func CreateBrokenCard() []*Card {
 		result = initOriginalCard()
 		//	logger.Debug("initOriginalCard 111111111111")
 	} else if destiny >= 31 && destiny <= 60 {
-		result = initOriginalCard2()
+		result = initOriginalCard3()
+		//result = initOriginalCard2()
 		//	logger.Debug("initOriginalCard2 222222222")
 	} else {
 		result = initOriginalCard3()

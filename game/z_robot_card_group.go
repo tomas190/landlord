@@ -20,7 +20,7 @@ type GroupCard struct {
 
 	Junko       []*ReCard // 顺子
 	JunkoDouble []*ReCard // 连对
-	junkTriple  []*ReCard // 飞机
+	JunkTriple  []*ReCard // 飞机
 	Rocket      []*ReCard // 火箭
 }
 

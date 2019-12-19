@@ -123,7 +123,7 @@ func printGroup(gc GroupCard)  {
 	}
 
 	logger.Debug("飞机")
-	rcjt := gc.junkTriple
+	rcjt := gc.JunkTriple
 	for i := 0; i < len(rcjt); i++ {
 		fmt.Print("weight:", rcjt[i].Wight, "  ")
 		PrintCard(rcjt[i].Card)

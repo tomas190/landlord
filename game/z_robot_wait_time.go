@@ -77,7 +77,7 @@ func getWaitTimeCallLandlord() time.Duration {
 // 玩家一般玩牌 在正常情况会 在1到2秒 做出选择
 // 机器人正常出牌速度
 func getWaitTimeOutCardFast() time.Duration {
-	delayTime := RandNum(1, 2)
+	delayTime := RandNum(2, 3)
 	return time.Duration(delayTime)
 }
 
@@ -125,7 +125,7 @@ func getWaitTimeOutCardFakerToDisconnection() time.Duration {
 func delayDestiny() bool {
 	destiny := RandNum(1, 10000)
 	if destiny <= 7000 {
-		logger.Debug("机器人打牌阶段决策时间:快速 1-2s")
+		logger.Debug("机器人打牌阶段决策时间:快速 2-3s")
 		DelaySomeTime(getWaitTimeOutCardFast())
 		return false
 	}
@@ -144,11 +144,13 @@ func delayDestiny() bool {
 
 	if destiny <= 9999 {
 		logger.Debug("机器人打牌阶段决策时间:超慢 15-29s")
-		DelaySomeTime(getWaitTimeOutCardSoSlowly())
+		DelaySomeTime(getWaitTimeOutCardMedium())
+		//DelaySomeTime(getWaitTimeOutCardSoSlowly())
 		return false
 	}
 	// todo 建议概率一万分之1
 	logger.Debug("机器人打牌阶段决策时间:假装断线 30s")
-	DelaySomeTime(getWaitTimeOutCardFakerToDisconnection())
+	DelaySomeTime(getWaitTimeOutCardMedium())
+	//DelaySomeTime(getWaitTimeOutCardFakerToDisconnection())
 	return true
 }

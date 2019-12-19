@@ -7,22 +7,23 @@ import (
 )
 
 type Room struct {
-	RoomClass        *RoomClassify      // 房间分类
-	RoomId           string             // 房间ID
-	Players          map[string]*Player // 当前玩家
-	LandlordPlayerId string             // 地主玩家Id
-	ThrowCards       []*Card            // 弃牌堆
-	BottomCards      []*Card            // 地主牌(及最后三张牌)
-	reStartNum       int32              // 都不叫重发次数
-	EffectiveCard    []*Card            // 有效牌
-	EffectiveType    int32              // 有效牌牌型
-	MultiAll         int32              // 当局游戏总倍数
-	MultiGetLandlord int32              // 当局抢地主倍数
-	MultiBoom        int32              // 炸弹倍数
-	MultiSpring      int32              // 是否春天
-	MultiRocket      int32              // 火箭倍数
-	LandlordOutNum   int32              // 地主出了多少首牌 用于计算春天
-	Status           int32              // 房间状态 0 等待中 1叫地主 2.抢地主, 3正在玩
+	RoomClass         *RoomClassify      // 房间分类
+	RoomId            string             // 房间ID
+	Players           map[string]*Player // 当前玩家
+	LandlordPlayerId  string             // 地主玩家Id
+	ThrowCards        []*Card            // 弃牌堆
+	BottomCards       []*Card            // 地主牌(及最后三张牌)
+	reStartNum        int32              // 都不叫重发次数
+	EffectiveCard     []*Card            // 有效牌
+	EffectiveType     int32              // 有效牌牌型
+	EffectivePlayerId string             // 有效的玩家Id
+	MultiAll          int32              // 当局游戏总倍数
+	MultiGetLandlord  int32              // 当局抢地主倍数
+	MultiBoom         int32              // 炸弹倍数
+	MultiSpring       int32              // 是否春天
+	MultiRocket       int32              // 火箭倍数
+	LandlordOutNum    int32              // 地主出了多少首牌 用于计算春天
+	Status            int32              // 房间状态 0 等待中 1叫地主 2.抢地主, 3正在玩
 }
 
 type RoomClassify struct {

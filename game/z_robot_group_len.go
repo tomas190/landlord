@@ -495,6 +495,7 @@ func groupLen6Has10(hands []*Card, g group) (*ReCard, []*Card) {
 	//如能组成连对则组成 反之不拆 todo 其实拆也可以 单少住不拆
 	seqArr, isContinuously, num = howManyCardByX(g, 2)
 	if num >= 3 {
+		// todo num == 4  先判断双顺
 		if isContinuously {
 			return groupJunkoDouble(hands, seqArr[0], seqArr[len(seqArr)-1])
 		}

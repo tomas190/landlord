@@ -96,7 +96,7 @@ func TestG(t *testing.T) {
 	}
 
 	logger.Debug("飞机")
-	rcjt := gc.junkTriple
+	rcjt := gc.JunkTriple
 	for i := 0; i < len(rcjt); i++ {
 		fmt.Print("weight:", rcjt[i].Wight, "  ")
 		PrintCard(rcjt[i].Card)
@@ -110,14 +110,14 @@ func TestG(t *testing.T) {
 func TestAd(t *testing.T) {
 
 	hands := []*Card{
-		{5,2},{5,2},{5,2},
-		{6,2},{6,2},{6,2},
-		{7,2},{7,2},{7,2},
-		{8,2},{8,2},{8,2},{8,2},
-		{10,2},
-		{12,2},{12,2},{12,2},
-		{13,2},
-		{14,2},
+		//{5,2},//{5,2},{5,2},
+		{6,2},//{6,2},{6,2},
+		{7,2},{7,2},//{7,2},
+		{8,2},{8,2},//8,2},{8,2},
+		{9,2},{9,2},
+		{10,2},{10,2},
+		{11,2},
+		//{12,2},
 	}
 
 	gc := GroupHandsCard(hands)
@@ -171,7 +171,7 @@ func TestAd(t *testing.T) {
 	}
 
 	logger.Debug("飞机")
-	rcjt := gc.junkTriple
+	rcjt := gc.JunkTriple
 	for i := 0; i < len(rcjt); i++ {
 		fmt.Print("weight:", rcjt[i].Wight, "  ")
 		PrintCard(rcjt[i].Card)

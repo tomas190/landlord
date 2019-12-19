@@ -106,6 +106,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	actionPlayer.ThrowCards = append(actionPlayer.ThrowCards, cards[:]...)
 	room.EffectiveCard = cards
 	room.EffectiveType = cardsType
+	room.EffectivePlayerId = actionPlayer.PlayerInfo.PlayerId
 
 	// 出牌日志
 	logger.Debug("出的牌:")
