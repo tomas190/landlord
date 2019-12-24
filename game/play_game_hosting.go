@@ -152,6 +152,30 @@ func getHasNumsCard(handCards []*Card, nums int) []int {
 	return counts
 }
 
+
+// 统计[]*card中 相同nums数量的牌有哪些
+/*
+	eg [{3},{3},{2},{2},{6}]
+	nums 2  返回  [3,2]  ,3和2 都有两张
+  , nums 1  返回  [6]
+*/
+func getHasMoreNumsCard(handCards []*Card, nums int) []int {
+	// 先统计牌的张输
+	var counts []int
+	cardCount := make(map[int32]int, len(handCards))
+	for i := 0; i < len(handCards); i++ {
+		cardCount[handCards[i].Value] = cardCount[handCards[i].Value] + 1
+	}
+
+	for k, v := range cardCount {
+		if v >= nums {
+			counts = append(counts, int(k))
+		}
+	}
+	sort.Ints(counts)
+	return counts
+}
+
 /* ================================= 托管必出牌抽取 ============================*/
 
 // 判断是否有王炸 有王炸

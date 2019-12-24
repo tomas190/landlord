@@ -66,7 +66,10 @@ return
 // 根据group进行拆分牌
 func groupGroup(hands []*Card, g group) ([]*ReCard, []*Card) {
 	groupLen := len(g.cardGroup) // 牌的去重张数
-	if groupLen == 2 {
+
+	if groupLen < 2 {
+		return nil, hands
+	} else if groupLen == 2 {
 		return groupLen2(hands, g)
 	} else if groupLen == 3 {
 		return groupLen3(hands, g)
@@ -81,6 +84,7 @@ func groupGroup(hands []*Card, g group) ([]*ReCard, []*Card) {
 	}
 
 	logger.Debug("==============  超出预测范围 =============")
+	logger.Debug("group:", g)
 	return nil, hands
 }
 

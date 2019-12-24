@@ -2,6 +2,7 @@ package game
 
 import (
 	"landlord/mconst/cardConst"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -25,10 +26,50 @@ type GroupCard struct {
 }
 
 //
+type UpReCard struct {
+	IsGodCard bool // 是否天派
+	RC        *ReCard
+}
+
 type ReCard struct {
 	Wight    int32   // 该牌组权重
 	CardType int32   // 该牌类型
 	Card     []*Card // 卡牌组
+}
+
+func SortReCardByWightSL(reCards []*ReCard) {
+	sortByWight := func(p1, p2 *ReCard) bool { return p1.Wight < p2.Wight }
+	By(sortByWight).Sort(reCards)
+}
+
+//By是定义其Planet参数顺序的“less”函数的类型。
+type By func(p1, p2 *ReCard) bool
+
+func (by By) Sort(reCards []*ReCard) {
+	ps := &reCardSorter{
+		reCards: reCards,
+		by:      by,
+	}
+	sort.Sort(ps)
+}
+
+type reCardSorter struct {
+	reCards []*ReCard
+	by      func(p1, p2 *ReCard) bool
+}
+
+func (s *reCardSorter) Len() int {
+	return len(s.reCards)
+}
+
+// Swap is part of sort.Interface.
+func (s *reCardSorter) Swap(i, j int) {
+	s.reCards[i], s.reCards[j] = s.reCards[j], s.reCards[i]
+}
+
+// Less is part of sort.Interface. It is implemented by calling the "by" closure in the sorter.
+func (s *reCardSorter) Less(i, j int) bool {
+	return s.by(s.reCards[i], s.reCards[j])
 }
 
 /*
@@ -114,6 +155,7 @@ func possiblyLessSingle(handCards []*Card) GroupCard {
 // 根据手牌分析
 // 将手牌分成 单张 对子 三张(不带任何) 炸弹 火箭
 // 这个方法不组成顺子 连对 飞机等牌型
+// todo 注意炸弹的权重在原有基础上+20
 func CreateGroupCard(handCards []*Card) GroupCard {
 	var gc GroupCard
 	gc.CurrentHandCards = handCards
@@ -153,7 +195,8 @@ func FindRocket(handCards []*Card) ([]*ReCard, []*Card) {
 		remainCards := removeCards(handCards, rocket)
 
 		var reCard ReCard
-		reCard.Wight = cardConst.CARD_RANK_RED_JOKER
+		reCard.CardType = cardConst.CARD_PATTERN_ROCKET
+		reCard.Wight = cardConst.CARD_RANK_RED_JOKER + 20
 		reCard.Card = rocket
 		reCards = append(reCards, &reCard)
 		return reCards, remainCards
@@ -162,10 +205,10 @@ func FindRocket(handCards []*Card) ([]*ReCard, []*Card) {
 }
 
 // 找到所有炸弹
-/*
-	return
-		[]*ReCard 需要找的牌
-		[]*Card   剩余手牌
+/*  // 炸弹的权重
+return
+	[]*ReCard 需要找的牌
+	[]*Card   剩余手牌
 */
 func FindAllBomb(handCards []*Card) ([]*ReCard, []*Card) {
 	bomb := getHasNumsCard(handCards, 4)
@@ -175,7 +218,8 @@ func FindAllBomb(handCards []*Card) ([]*ReCard, []*Card) {
 		for i := 0; i < len(bomb); i++ {
 			card := findThisValueCard(bomb[i], handCards, 4)
 			var re ReCard
-			re.Wight = card[0].Value
+			re.Wight = card[0].Value+ 20
+			re.CardType = cardConst.CARD_PATTERN_BOMB
 			re.Card = card
 			reCards = append(reCards, &re)
 
@@ -204,6 +248,7 @@ func FindAllTriplet(handCards []*Card) ([]*ReCard, []*Card) {
 			var re ReCard
 			re.Wight = card[0].Value
 			re.Card = card
+			re.CardType = cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS
 			reCards = append(reCards, &re)
 
 			// 移除牌
@@ -231,6 +276,7 @@ func FindAllDouble(handCards []*Card) ([]*ReCard, []*Card) {
 			var re ReCard
 			re.Wight = card[0].Value
 			re.Card = card
+			re.CardType = cardConst.CARD_PATTERN_PAIR
 			reCards = append(reCards, &re)
 
 			// 移除牌
@@ -274,6 +320,7 @@ func FindAllSingle(handCards []*Card) ([]*ReCard, []*Card) {
 			var re ReCard
 			re.Wight = card[0].Value
 			re.Card = card
+			re.CardType = cardConst.CARD_PATTERN_SINGLE
 			reCards = append(reCards, &re)
 
 			// 移除牌
@@ -350,7 +397,7 @@ dre:
 
 	var rc ReCard
 	rc.Card = junko
-	rc.CardType =cardConst.CARD_PATTERN_SEQUENCE
+	rc.CardType = cardConst.CARD_PATTERN_SEQUENCE
 	rc.Wight = junko[len(junko)-1].Value
 
 	result := removeCards(handCards, junko)

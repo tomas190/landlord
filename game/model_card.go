@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"github.com/wonderivan/logger"
 	"landlord/mconst/cardConst"
 	"sort"
 )
@@ -27,8 +28,8 @@ func CreateBrokenCard() []*Card {
 		result = initOriginalCard()
 		//	logger.Debug("initOriginalCard 111111111111")
 	} else if destiny >= 31 && destiny <= 60 {
-		result = initOriginalCard3()
-		//result = initOriginalCard2()
+		//result = initOriginalCard3()
+		result = initOriginalCard2()
 		//	logger.Debug("initOriginalCard2 222222222")
 	} else {
 		result = initOriginalCard3()
@@ -91,17 +92,21 @@ func stick() ([]*Card, []*Card, []*Card) {
 
 func CreateCardsNew() ([]*Card, []*Card, []*Card, []*Card) {
 	cards, _ := CreateBroken8910Card()
-	OutOfCardNotDeep42(cards,30)
-	p1card := cards[:13]
-	p2card := cards[13:26]
-	p3card := cards[26:39]
+	logger.Debug("len:",len(cards))
 
+	OutOfCardNotDeep42(cards,1)
+	p1card :=append([]*Card{}, cards[:13]...)
+	p2card := append([]*Card{}, cards[13:26]...)
+	p3card := append([]*Card{}, cards[26:39]...)
 	boCard := cards[39:]
 
 	i, i2, i3 := stick()
+
+
 	p1card=append(p1card, i...)
-	p3card=append(p2card, i2...)
-	p2card=append(p3card, i3...)
+	p2card=append(p2card, i2...)
+	p3card=append(p3card, i3...)
+
 
 	return p1card, p2card, p3card, boCard
 
@@ -197,7 +202,7 @@ func OutOfCardNotDeep(arr []*Card, deepLevel int) {
 
 // 随机乱序
 func OutOfCardNotDeep42(arr []*Card, deepLevel int) {
-	for i := len(arr) - 1; i > deepLevel; i-- {
+	for i := len(arr) - 1; i >deepLevel ; i-- {
 		num := RandNum(0, 41)
 		arr[i], arr[num] = arr[num], arr[i]
 	}

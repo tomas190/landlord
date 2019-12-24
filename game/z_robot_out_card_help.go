@@ -70,96 +70,6 @@ func findTripleWithCards(singles, double, junkoDouble []*ReCard, length int) []*
 }
 
 /*
-	从组牌中寻找权重最小的组牌
-	// 注意顺子连对飞机 则权重要减去本身长度
-*/
-func findMinWeightCards(group GroupCard) *ReCard {
-	var min ReCard
-	min.Wight = 1000 // 初始值
-	var all []*ReCard
-
-	// 目前权重一样 根据以下顺序优先出
-	all = append(all, group.Rocket...)
-	all = append(all, group.Single...)
-	all = append(all, group.Double...)
-	all = append(all, group.Triple...)
-	all = append(all, group.Junko...)
-	all = append(all, group.JunkoDouble...)
-	all = append(all, group.JunkTriple...)
-	// all=append(all, group.Bomb...) 炸弹和火箭不考虑
-
-	for i := 0; i < len(all); i++ {
-		tmp := all[i]
-		if tmp == nil {
-			continue
-		}
-		tmpWight := tmp.CardType
-		if tmp.CardType == cardConst.CARD_PATTERN_SEQUENCE ||
-			tmp.CardType == cardConst.CARD_PATTERN_SEQUENCE_OF_PAIRS ||
-			tmp.CardType == cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS {
-			tmpWight = tmpWight - int32(len(tmp.Card))
-		}
-
-		if min.Wight < tmpWight {
-			min = * tmp
-		}
-	}
-
-	if min.Wight == 1000 {
-		return nil
-	}
-
-	if min.CardType == cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS {
-		findTripleWithCards(group.Single, group.Double, group.JunkoDouble, len(min.Card)/3)
-	} else if min.CardType == cardConst.CARD_PATTERN_TRIPLET {
-		findTripleWithCards(group.Single, group.Double, group.JunkoDouble, 1)
-	}
-	return &min
-
-}
-
-/*
-	判断农民是否报单或者报双
-	场上有单 就返报单类型
-	双单  单
-	一单一双 单
-	双对  双
-
-*/
-func checkNotLandlordHasLast(farmer1, farmer2 *Player) ([]*Card, int32) {
-
-	var result int32
-	var resultCard []*Card
-	//var resultHands []*Card
-	cardsType1 := GetCardsType(farmer1.HandCards)
-	if cardsType1 == cardConst.CARD_PATTERN_PAIR || cardsType1 == cardConst.CARD_PATTERN_SINGLE {
-		result += result
-		resultCard = farmer1.HandCards
-	}
-
-	cardsType2 := GetCardsType(farmer2.HandCards)
-	if cardsType2 == cardConst.CARD_PATTERN_PAIR || cardsType2 == cardConst.CARD_PATTERN_SINGLE {
-		result += result
-		if cardsType1 == cardsType2 {
-			if farmer2.HandCards[0].Value >= farmer1.HandCards[0].Value {
-				resultCard = farmer2.HandCards
-			}
-		} else if cardsType1 == cardConst.CARD_PATTERN_PAIR && cardsType2 == cardConst.CARD_PATTERN_SINGLE {
-			resultCard = farmer2.HandCards
-		}
-	}
-
-	if result == 7 || result == 3 || result == 6 {
-		result = cardConst.CARD_PATTERN_SINGLE
-
-	} else if result == 8 || result == 4 {
-		result = cardConst.CARD_PATTERN_PAIR
-	}
-
-	return resultCard, result
-}
-
-/*
 	todo 待优化
 	判断农民是否报单或者报双
 	场上有单 就返报单类型
@@ -176,78 +86,6 @@ func checkLandlordHasLast(landlord *Player) ([]*Card, int32, bool) {
 	}
 
 	return nil, 0, false
-}
-
-/*
-	有人报单找牌
-*/
-func findMinWeightCardsExpectSome(group GroupCard, expSingle, expDouble bool) *ReCard {
-	var min ReCard
-	min.Wight = 1000 // 初始值
-	var all []*ReCard
-
-	// 目前权重一样 根据以下顺序优先出
-	//all = append(all, group.Rocket...)
-
-	if !expSingle {
-		all = append(all, group.Single...)
-	}
-	if !expDouble {
-		all = append(all, group.Double...)
-	}
-	all = append(all, group.Triple...)
-	all = append(all, group.Junko...)
-	all = append(all, group.JunkoDouble...)
-	all = append(all, group.JunkTriple...)
-	// all=append(all, group.Bomb...) 炸弹和火箭不考虑
-
-	for i := 0; i < len(all); i++ {
-		tmp := all[i]
-		if tmp == nil {
-			continue
-		}
-		tmpWight := tmp.CardType
-		if tmp.CardType == cardConst.CARD_PATTERN_SEQUENCE ||
-			tmp.CardType == cardConst.CARD_PATTERN_SEQUENCE_OF_PAIRS ||
-			tmp.CardType == cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS {
-			tmpWight = tmpWight - int32(len(tmp.Card))
-		}
-
-		if min.Wight < tmpWight {
-			min = * tmp
-		}
-	}
-
-	if min.Wight == 1000 {
-		return nil
-	}
-	return &min
-}
-
-/*
-	当有人报单的时候的单牌出牌
-*/
-
-func findBestSingleCard(re []*ReCard) *ReCard {
-	// 根据长度取中间的单张
-	sLen := len(re)
-	if sLen == 0 {
-		return nil
-	}
-
-	var index int
-
-	if sLen%2 == 0 {
-		index = (sLen - 1) / 2
-	} else {
-		index = sLen/2 - 1
-	}
-
-	var result ReCard
-	result.CardType = cardConst.CARD_PATTERN_SINGLE
-	result.Wight = re[index].Card[0].Value
-	result.Card = append(result.Card, re[index].Card...)
-	return &result
 }
 
 // 计算牌型权重
@@ -291,6 +129,10 @@ func countCardWight(cards []*Card, cType int32) int32 {
 }
 
 // 最小跟牌
+/*
+	最小跟牌 及判断 自己是否有能打过上家与之匹配的牌型 不出炸弹
+
+*/
 func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, bool) {
 
 	eWight := countCardWight(eCards, eType)
@@ -354,7 +196,14 @@ func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, 
 		if g != nil {
 			for i := 0; i < len(g); i++ {
 				if g[i].Wight > eWight {
-					return g[i].Card, true
+					Double := group.Double
+					if len(Double) <= 0 { //||len { //
+						return nil, false
+					}
+					var r []*Card
+					r = append(r, Double[0].Card...)
+					r = append(r, g[i].Card...)
+					return r, true
 				}
 			}
 		}
@@ -409,7 +258,7 @@ func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, 
 		g := group.Triple
 		if g != nil {
 			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight&& len(g[i].Card) == len(eCards) {
+				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
 					singles := group.Single
 					if len(singles) < len(eCards)/4 { //||len { //
 						return nil, false
@@ -429,7 +278,7 @@ func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, 
 		g := group.Triple
 		if g != nil {
 			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight && len(g[i].Card) == len(eCards){
+				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
 					Double := group.Double
 					if len(Double) < len(eCards)/4 { //||len { //
 						return nil, false
@@ -459,5 +308,156 @@ func getTripletWeight(cards []*Card) int32 {
 		//	return 13
 	}
 	return group.Triple[0].Wight
+}
 
+/*
+	将玩家的组牌加上带牌重新组牌
+*/
+func completeGroupCard(g GroupCard) GroupCard {
+	singles := g.Single
+	doubles := g.Double
+
+	var sAndDCards []*Card
+	for i := 0; i < len(singles); i++ {
+		sAndDCards = append(sAndDCards, singles[i].Card...)
+	}
+
+	for i := 0; i < len(doubles); i++ {
+		sAndDCards = append(sAndDCards, doubles[i].Card...)
+	}
+
+	SortCardSL(sAndDCards)
+
+	// 飞机
+	triples := g.JunkTriple
+	for i := 0; i < len(triples); i++ {
+		tLen := len(triples[i].Card) / 3
+		if len(singles) >= tLen {
+			var withCards []*Card
+			for j := 0; j < tLen; j++ {
+				withCards = append(withCards, singles[j].Card...)
+			}
+			triples[i].Card = append(triples[i].Card, withCards...)
+			triples[i].CardType = cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_SINGLES
+			sAndDCards = removeCards(sAndDCards, withCards)
+			singles = singles[tLen:]
+			continue
+		}
+		if len(doubles) >= tLen {
+			var withCards []*Card
+			for j := 0; j < tLen; j++ {
+				withCards = append(withCards, doubles[j].Card...)
+			}
+			triples[i].Card = append(triples[i].Card, withCards...)
+			triples[i].CardType = cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS
+			sAndDCards = removeCards(sAndDCards, withCards)
+			doubles = doubles[tLen:]
+			continue
+		}
+
+		// 不够组合 取最小
+		if len(sAndDCards) >= tLen {
+			logger.Debug("合并去min")
+			triples[i].Card = append(triples[i].Card, sAndDCards[:tLen]...)
+			triples[i].CardType = cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_SINGLES
+			sAndDCards = sAndDCards[tLen:]
+
+			tmpS, _ := FindAllSingle(sAndDCards)
+			singles = tmpS
+
+			tmpD, _ := FindAllDouble(sAndDCards)
+			doubles = tmpD
+			//
+			//for i := 0; i < len(doubles); i++ {
+			//	PrintCard(doubles[i].Card)
+			//}
+		}
+
+	}
+
+	triple := g.Triple
+	sAndDReCards := append(singles, doubles...)
+	SortReCardByWightSL(sAndDReCards)
+	for i := 0; i < len(triple); i++ {
+		// 取单张和对子的最小权重
+		if len(sAndDReCards) >= 1 {
+			withCards := sAndDReCards[0].Card
+			triple[i].CardType = sAndDReCards[0].CardType
+			triple[i].Card = append(triple[i].Card, withCards...)
+			//logger.Debug("此处type:", sAndDReCards[0].CardType)
+			//logger.Debug("此处type:", triple[i].CardType)
+
+			sAndDCards = removeCards(sAndDCards, withCards)
+			sAndDReCards = sAndDReCards[1:]
+			tmpS, _ := FindAllSingle(sAndDCards)
+			singles = tmpS
+			tmpD, _ := FindAllDouble(sAndDCards)
+			doubles = tmpD
+		}
+	}
+
+	g.Single = singles
+	g.Double = doubles
+	return g
+}
+
+/*
+	将group 装换成 []*Recard
+*/
+
+func changeGroupToReCard(g GroupCard) []*ReCard {
+	var result []*ReCard
+	result = append(result, g.Single...)
+	result = append(result, g.Double...)
+	result = append(result, g.Triple...)
+	result = append(result, g.Bomb...)
+	result = append(result, g.Junko...)
+	result = append(result, g.JunkoDouble...)
+	result = append(result, g.JunkTriple...)
+	result = append(result, g.Rocket...)
+
+	return result
+}
+
+// 判断玩家是否保单或者报双
+
+/*
+	判断农民是否报单或者报双
+	场上有单 就返报单类型
+	双单  单
+	一单一双 单
+	双对  双
+
+*/
+func checkPlayerHasLast(player *Player) (int32, bool) {
+
+	cardsType1 := GetCardsType(player.HandCards)
+	if cardsType1 == cardConst.CARD_PATTERN_PAIR || cardsType1 == cardConst.CARD_PATTERN_SINGLE {
+		return cardsType1, true
+	}
+	return 0, false
+}
+
+// 寻找牌中最小的一张牌
+func findMinCard(hands []*Card) []*Card {
+	if len(hands) <= 0 {
+		return nil
+	}
+	SortCardSL(hands)
+	return append([]*Card{}, hands[0])
+}
+
+// 寻找牌中最小的一对牌 包括拆三带
+// 这个方法和 findMinDouble() 不一样
+func findMinDoubleCard(hands []*Card) []*Card {
+	if len(hands) <= 0 {
+		return nil
+	}
+
+	numsCard := getHasMoreNumsCard(hands, 2)
+	if len(numsCard) >= 0 {
+		card := findThisValueCard(numsCard[0], hands, 2)
+		return card
+	}
+	return nil
 }

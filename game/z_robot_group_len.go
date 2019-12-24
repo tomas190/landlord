@@ -621,7 +621,8 @@ func groupLen6Has12(hands []*Card, g group) (*ReCard, []*Card) {
 
 		seqNum, has := hasContinuouslyLonger(seqArr, 3)
 		if has { // 三连对
-			return groupJunkoTriple(hands, seqNum[0], seqNum[len(seqNum)-1])
+
+			return groupJunkoDouble(hands, seqNum[0], seqNum[len(seqNum)-1])
 		}
 	} else { // 这里不用说  必定5连对
 		return groupJunkoDouble(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[5].cardValue))
