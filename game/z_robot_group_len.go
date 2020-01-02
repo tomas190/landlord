@@ -13,7 +13,9 @@ func groupLen2(hands []*Card, g group) ([]*ReCard, []*Card) {
 	seqArr, isContinuously, _ := howManyCardByX(g, 3)
 	if isContinuously {
 		re, remainCards := groupJunkoTriple(hands, seqArr[0], seqArr[len(seqArr)-1])
-		r = append(r, re)
+		if re!=nil {
+			r = append(r, re)
+		}
 		return r, remainCards
 	}
 	return nil, hands
@@ -31,14 +33,18 @@ func groupLen3(hands []*Card, g group) ([]*ReCard, []*Card) {
 	seqArr, isContinuously, num := howManyCardByX(g, 3)
 	if isContinuously && num >= 2 {
 		re, remainCards := groupJunkoTriple(hands, seqArr[0], seqArr[len(seqArr)-1])
-		r = append(r, re)
+		if re!=nil {
+			r = append(r, re)
+		}
 		return r, remainCards
 	}
 
 	seqArr, isContinuously, num = howManyCardByX(g, 2)
 	if isContinuously && num >= 3 {
 		re, remainCards := groupJunkoDouble(hands, seqArr[0], seqArr[len(seqArr)-1])
-		r = append(r, re)
+		if re!=nil {
+			r = append(r, re)
+		}
 		return r, remainCards
 	}
 	return nil, hands
@@ -60,7 +66,9 @@ func groupLen4(hands []*Card, g group) ([]*ReCard, []*Card) {
 	seqArr, isContinuously, num := howManyCardByX(g, 3)
 	if isContinuously && num >= 2 {
 		re, remainCards := groupJunkoTriple(hands, seqArr[0], seqArr[len(seqArr)-1])
-		r = append(r, re)
+		if re!=nil {
+			r = append(r, re)
+		}
 		return r, remainCards
 	}
 
@@ -68,7 +76,9 @@ func groupLen4(hands []*Card, g group) ([]*ReCard, []*Card) {
 	seqNum, has := hasContinuouslyLonger(seqArr, 3)
 	if has {
 		re, remainCards := groupJunkoTriple(hands, seqNum[0], seqNum[len(seqNum)-1])
-		r = append(r, re)
+		if re!=nil {
+			r = append(r, re)
+		}
 		return r, remainCards
 	}
 
@@ -76,14 +86,18 @@ func groupLen4(hands []*Card, g group) ([]*ReCard, []*Card) {
 	seqNum, has = hasContinuouslyLonger(seqArr, 2)
 	if has {
 		re, remainCards := groupJunkoTriple(hands, seqNum[0], seqNum[len(seqNum)-1])
-		r = append(r, re)
+		if re!=nil {
+			r = append(r, re)
+		}
 		return r, remainCards
 	}
 
 	seqArr, isContinuously, num = howManyCardByX(g, 2)
 	if isContinuously && num >= 3 {
 		re, remainCards := groupJunkoDouble(hands, seqArr[0], seqArr[len(seqArr)-1])
-		r = append(r, re)
+		if re!=nil {
+			r = append(r, re)
+		}
 		return r, remainCards
 	}
 	return nil, hands
@@ -411,14 +425,14 @@ func groupLen6(hands []*Card, g group) ([]*ReCard, []*Card) {
 		if cards!=nil {
 			r = append(r, cards)
 		}
-		r = append(r, cards)
+		//r = append(r, cards)
 		return r, remainCards
 	} else if cardLen == 10 { // 如果总长度等于10
 		cards, remainCards := groupLen6Has10(hands, g)
 		if cards!=nil {
 			r = append(r, cards)
 		}
-		r = append(r, cards)
+		//r = append(r, cards)
 		return r, remainCards
 	} else if cardLen == 11 { // 如果总长度等于10
 		cards, remainCards := groupLen6Has11(hands, g)
@@ -431,7 +445,7 @@ func groupLen6(hands []*Card, g group) ([]*ReCard, []*Card) {
 		if cards!=nil {
 			r = append(r, cards)
 		}
-		r = append(r, cards)
+		//r = append(r, cards)
 		return r, remainCards
 	} else if cardLen == 13 {
 		return groupLen6Has13(hands, g)
@@ -456,7 +470,6 @@ func groupLen6less9(hands []*Card, g group) (*ReCard, []*Card) {
 	if num == 1 { // 如果有三张的情况 要判断是否在两边 是则移除
 		if seqNum[0] == int(g.cardGroup[0].cardValue) {
 			cards, remainCards := groupJunko(hands, int(g.cardGroup[1].cardValue), int(g.cardGroup[5].cardValue))
-
 			return cards, remainCards
 		} else if seqNum[0] == int(g.cardGroup[5].cardValue) {
 			cards, remainCards := groupJunko(hands, int(g.cardGroup[0].cardValue), int(g.cardGroup[4].cardValue))

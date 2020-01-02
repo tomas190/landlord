@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"github.com/wonderivan/logger"
+	"landlord/mconst/cardConst"
 	"testing"
 )
 
@@ -121,12 +122,12 @@ func TestAd(t *testing.T) {
 	//}
 
 	hands := []*Card{
-		{1,1},{1,2},
-		{2,1},{2,3},{2,4},
-		{3,1},{3,4},
-		{4,2},
-		{5,1},{5,3},
-		{6,1},{6,3},
+		{1, 1}, {1, 2},
+		{2, 1}, {2, 3}, {2, 4},
+		{3, 1}, {3, 4},
+		{4, 2},
+		{5, 1}, {5, 3},
+		{6, 1}, {6, 3},
 	}
 
 	gc := GroupHandsCard(hands)
@@ -211,17 +212,29 @@ func TestCreateCardsNew(t *testing.T) {
 
 func TestComplete(t *testing.T) {
 
+	//hands := []*Card{
+	//
+	//	{4, 2}, {4, 2}, //{5,2},
+	//	{5, 2}, {5, 2}, //{5,2},
+	//	{6, 2}, {6, 2}, {6, 2},
+	//	{7, 2}, {7, 2}, {7, 2},
+	//	//{8, 2},// {8, 2}, {8, 2}, {8, 2},
+	//	{9, 2}, {9, 2}, {9, 2},
+	//	{10, 2}, {10, 2},
+	//	{11, 2},
+	//	{12, 2},
+	//}
+	//
 	hands := []*Card{
 
-		{4, 2}, {4, 2}, //{5,2},
-		{5, 2}, {5, 2}, //{5,2},
-		{6, 2}, {6, 2}, {6, 2},
-		{7, 2}, {7, 2}, {7, 2},
-		//{8, 2},// {8, 2}, {8, 2}, {8, 2},
-		{9, 2}, {9, 2}, {9, 2},
-		{10, 2}, {10, 2},
-		{11, 2},
-		{12, 2},
+		{1, 2}, {1, 2}, //{5,2},
+		{2, 2},
+		{3, 2},
+		{4, 2},
+		{5, 2},
+		{6, 2},{6, 1},
+		//{8, 2},{8, 1},
+
 	}
 
 	gc := GroupHandsCard(hands)
@@ -292,15 +305,14 @@ func TestAddExpFieldWaitUser(t *testing.T) {
 		//{5, 2}, {5, 2}, //{5,2},
 		{6, 2}, {6, 2}, //{6, 2},
 		//{7, 2}, {7, 2}, {7, 2},
-		{8, 2},// {8, 2}, {8, 2}, {8, 2},
+		{8, 2}, // {8, 2}, {8, 2}, {8, 2},
 		//{9, 2}, {9, 2}, {9, 2},
 		//{10,2},{10,2},
 		//{11, 2},
-		{12,2},
+		{12, 2},
 	}
 
 	f1 := []*Card{
-
 		//{4, 2}, {4, 2}, //{5,2},
 		{5, 2}, {5, 2}, //{5,2},
 		//{6, 2}, {6, 2}, //{6, 2},
@@ -313,11 +325,10 @@ func TestAddExpFieldWaitUser(t *testing.T) {
 	}
 
 	f2 := []*Card{
-
 		//{4, 2}, {4, 2}, //{5,2},
 		{5, 2}, {5, 2}, //{5,2},
 		{6, 2}, {6, 2}, //{6, 2},
-		{7, 2}, {7, 2},// {7, 2},
+		{7, 2}, {7, 2}, // {7, 2},
 		////{8, 2},// {8, 2}, {8, 2}, {8, 2},
 		//{9, 2}, {9, 2}, {9, 2},
 		//{10,2},{10,2},
@@ -332,14 +343,39 @@ func TestAddExpFieldWaitUser(t *testing.T) {
 	groupCard := completeGroupCard(handsCard)
 	cr := changeGroupToReCard(groupCard)
 
-
 	cards, i := CheckGodCard(cr, f1, f2)
-	logger.Debug("天牌num:",i)
+	logger.Debug("天牌num:", i)
 
-	for i:=0;i<len(cards) ;i++  {
-		logger.Debug("是否天牌:",cards[i].IsGodCard)
+	for i := 0; i < len(cards); i++ {
+		logger.Debug("是否天牌:", cards[i].IsGodCard)
 		PrintCard(cards[i].RC.Card)
 
 	}
 
+}
+
+func TestAAA(t *testing.T) {
+	hands := []*Card{
+		{4, 2}, {4, 2}, {5, 2},
+		{5, 2}, {5, 2}, {5, 2},
+		{6, 2}, {6, 2}, //{6, 2},
+		{7, 2}, {7, 2}, // {7, 2},
+		{8, 2},         // {8, 2}, {8, 2}, {8, 2},
+		{9, 2}, {9, 2}, {9, 2},
+		{10, 2}, {10, 2},
+		{11, 2},
+		{12, 2},
+		{14, 2},
+		{15, 2},
+	}
+
+	g := CreateGroupCard(hands)
+	comG := completeGroupCard(g)
+
+	eCard := []*Card{{10, 1}, {10, 2}}
+
+	cards, b, _ := FindMinFollowCards(hands, comG, eCard, cardConst.CARD_PATTERN_PAIR)
+	if b {
+		PrintCard(cards)
+	}
 }

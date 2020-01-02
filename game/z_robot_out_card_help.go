@@ -128,177 +128,178 @@ func countCardWight(cards []*Card, cType int32) int32 {
 
 }
 
-// 最小跟牌
-/*
-	最小跟牌 及判断 自己是否有能打过上家与之匹配的牌型 不出炸弹
-
-*/
-func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, bool) {
-
-	eWight := countCardWight(eCards, eType)
-	group := actionPlayer.GroupCard
-
-	switch eType {
-	case cardConst.CARD_PATTERN_SINGLE:
-		g := group.Single
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight {
-					return g[i].Card, true
-				}
-			}
-		}
-		return nil, false
-	case cardConst.CARD_PATTERN_PAIR:
-		g := group.Double
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight {
-					return g[i].Card, true
-				}
-			}
-		}
-		return nil, false
-
-	case cardConst.CARD_PATTERN_TRIPLET:
-		g := group.Triple
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight {
-					return g[i].Card, true
-				}
-			}
-		}
-		//cards, b, _ := HostingBeatTriple(actionPlayer.HandCards, eCards)
-
-		return nil, false
-
-	case cardConst.CARD_PATTERN_TRIPLET_WITH_SINGLE:
-		g := group.Triple
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight {
-					singles := group.Single
-					if len(singles) <= 0 { //||len { //
-						return nil, false
-					}
-					var r []*Card
-					r = append(r, singles[0].Card...)
-					r = append(r, g[i].Card...)
-					return r, true
-				}
-			}
-		}
-		return nil, false
-
-	case cardConst.CARD_PATTERN_TRIPLET_WITH_PAIR:
-		g := group.Triple
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight {
-					Double := group.Double
-					if len(Double) <= 0 { //||len { //
-						return nil, false
-					}
-					var r []*Card
-					r = append(r, Double[0].Card...)
-					r = append(r, g[i].Card...)
-					return r, true
-				}
-			}
-		}
-		return nil, false
-
-	case cardConst.CARD_PATTERN_BOMB:
-		// todo 这里先返回nil
-		return nil, false
-
-	case cardConst.CARD_PATTERN_QUADPLEX_WITH_SINGLES: // 四代二单
-		// todo 这里先返回nil
-		return nil, false
-
-	case cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS: // 四代二对
-		// todo 这里先返回nil
-		return nil, false
-
-	case cardConst.CARD_PATTERN_SEQUENCE:
-		g := group.Junko
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
-					return g[i].Card, true
-				}
-			}
-		}
-		return nil, false
-
-	case cardConst.CARD_PATTERN_SEQUENCE_OF_PAIRS: // 连对
-		g := group.JunkoDouble
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
-					return g[i].Card, true
-				}
-			}
-		}
-		return nil, false
-
-	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS: // 飞机不带
-		g := group.JunkTriple
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
-					return g[i].Card, true
-				}
-			}
-		}
-		return nil, false
-
-	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_SINGLES: // 飞机带单
-		g := group.Triple
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
-					singles := group.Single
-					if len(singles) < len(eCards)/4 { //||len { //
-						return nil, false
-					}
-					var r []*Card
-					for j := 0; j < len(eCards)/4; j++ {
-						r = append(r, singles[i].Card...)
-					}
-					r = append(r, g[i].Card...)
-					return r, true
-				}
-			}
-		}
-		return nil, false
-
-	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS: // 飞机带对
-		g := group.Triple
-		if g != nil {
-			for i := 0; i < len(g); i++ {
-				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
-					Double := group.Double
-					if len(Double) < len(eCards)/4 { //||len { //
-						return nil, false
-					}
-					var r []*Card
-					for j := 0; j < len(eCards)/4; j++ {
-						r = append(r, Double[i].Card...)
-					}
-					r = append(r, g[i].Card...)
-					return r, true
-				}
-			}
-		}
-		return nil, false
-
-	case cardConst.CARD_PATTERN_ROCKET: // 火箭
-		return nil, false
-	}
-	return nil, false
-}
+//
+//// 最小跟牌
+///*
+//	最小跟牌 及判断 自己是否有能打过上家与之匹配的牌型 不出炸弹
+//
+//*/
+//func minFollowCard(actionPlayer *Player, eCards []*Card, eType int32) ([]*Card, bool) {
+//
+//	eWight := countCardWight(eCards, eType)
+//	group := actionPlayer.GroupCard
+//
+//	switch eType {
+//	case cardConst.CARD_PATTERN_SINGLE:
+//		g := group.Single
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight {
+//					return g[i].Card, true
+//				}
+//			}
+//		}
+//		return nil, false
+//	case cardConst.CARD_PATTERN_PAIR:
+//		g := group.Double
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight {
+//					return g[i].Card, true
+//				}
+//			}
+//		}
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_TRIPLET:
+//		g := group.Triple
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight {
+//					return g[i].Card, true
+//				}
+//			}
+//		}
+//		//cards, b, _ := HostingBeatTriple(actionPlayer.HandCards, eCards)
+//
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_TRIPLET_WITH_SINGLE:
+//		g := group.Triple
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight {
+//					singles := group.Single
+//					if len(singles) <= 0 { //||len { //
+//						return nil, false
+//					}
+//					var r []*Card
+//					r = append(r, singles[0].Card...)
+//					r = append(r, g[i].Card...)
+//					return r, true
+//				}
+//			}
+//		}
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_TRIPLET_WITH_PAIR:
+//		g := group.Triple
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight {
+//					Double := group.Double
+//					if len(Double) <= 0 { //||len { //
+//						return nil, false
+//					}
+//					var r []*Card
+//					r = append(r, Double[0].Card...)
+//					r = append(r, g[i].Card...)
+//					return r, true
+//				}
+//			}
+//		}
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_BOMB:
+//		// todo 这里先返回nil
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_QUADPLEX_WITH_SINGLES: // 四代二单
+//		// todo 这里先返回nil
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS: // 四代二对
+//		// todo 这里先返回nil
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_SEQUENCE:
+//		g := group.Junko
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
+//					return g[i].Card, true
+//				}
+//			}
+//		}
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_SEQUENCE_OF_PAIRS: // 连对
+//		g := group.JunkoDouble
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
+//					return g[i].Card, true
+//				}
+//			}
+//		}
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS: // 飞机不带
+//		g := group.JunkTriple
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
+//					return g[i].Card, true
+//				}
+//			}
+//		}
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_SINGLES: // 飞机带单
+//		g := group.Triple
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
+//					singles := group.Single
+//					if len(singles) < len(eCards)/4 { //||len { //
+//						return nil, false
+//					}
+//					var r []*Card
+//					for j := 0; j < len(eCards)/4; j++ {
+//						r = append(r, singles[i].Card...)
+//					}
+//					r = append(r, g[i].Card...)
+//					return r, true
+//				}
+//			}
+//		}
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS: // 飞机带对
+//		g := group.Triple
+//		if g != nil {
+//			for i := 0; i < len(g); i++ {
+//				if g[i].Wight > eWight && len(g[i].Card) == len(eCards) {
+//					Double := group.Double
+//					if len(Double) < len(eCards)/4 { //||len { //
+//						return nil, false
+//					}
+//					var r []*Card
+//					for j := 0; j < len(eCards)/4; j++ {
+//						r = append(r, Double[i].Card...)
+//					}
+//					r = append(r, g[i].Card...)
+//					return r, true
+//				}
+//			}
+//		}
+//		return nil, false
+//
+//	case cardConst.CARD_PATTERN_ROCKET: // 火箭
+//		return nil, false
+//	}
+//	return nil, false
+//}
 
 // 获取飞机的权值
 func getTripletWeight(cards []*Card) int32 {
@@ -447,6 +448,40 @@ func findMinCard(hands []*Card) []*Card {
 	return append([]*Card{}, hands[0])
 }
 
+// 寻找牌中最大的一张牌
+func findMaxCard(hands []*Card) []*Card {
+	if len(hands) <= 0 {
+		return nil
+	}
+	SortCardSL(hands)
+	return append([]*Card{}, hands[len(hands)-1])
+}
+
+// 寻找牌中最大的一张单牌
+func findMaxSingle(hands []*Card) []*Card {
+	if len(hands) <= 0 {
+		return nil
+	}
+	SortCardSL(hands)
+	return append([]*Card{}, hands[len(hands)-1])
+}
+
+
+// 寻找牌中最大的对子
+// 有可能为空
+func findMaxDouble(hands []*Card) []*Card {
+	if len(hands) <= 0 {
+		return nil
+	}
+
+	numsCard := getHasMoreNumsCard(hands, 2)
+	if len(numsCard) > 0 {
+		card := findThisValueCard(numsCard[len(numsCard)-1], hands, 2)
+		return card
+	}
+	return nil
+}
+
 // 寻找牌中最小的一对牌 包括拆三带
 // 这个方法和 findMinDouble() 不一样
 func findMinDoubleCard(hands []*Card) []*Card {
@@ -455,9 +490,272 @@ func findMinDoubleCard(hands []*Card) []*Card {
 	}
 
 	numsCard := getHasMoreNumsCard(hands, 2)
-	if len(numsCard) >= 0 {
+	if len(numsCard) > 0 {
 		card := findThisValueCard(numsCard[0], hands, 2)
 		return card
 	}
 	return nil
 }
+
+// 判断玩家天牌数
+/*
+	天牌: 指该手牌 不能被其他玩家(非炸弹)压的牌
+
+	return
+		[]*ReCard  : 标记是否天牌的lg
+		int: 天牌数量
+*/
+func CheckGodCard(lg []*ReCard, p1Hands, p2Hands []*Card) ([]UpReCard, int) {
+	var urs []UpReCard
+	var godNums int
+	for i := 0; i < len(lg); i++ {
+		cardsType := GetCardsType(lg[i].Card)
+		lg[i].CardType = cardsType
+
+		if cardsType < cardConst.CARD_PATTERN_SINGLE || cardsType > cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
+			logger.Debug("!!! impossible....", )
+			PrintCard(lg[i].Card)
+		}
+		var f int
+		var ur UpReCard
+		ur.RC = lg[i]
+		_, b, bt := FindCanBeatCards(p1Hands, lg[i].Card, cardsType)
+		if !b && bt != cardConst.CARD_PATTERN_BOMB && bt != cardConst.CARD_PATTERN_ROCKET {
+			f++
+		}
+		_, b1, bt2 := FindCanBeatCards(p2Hands, lg[i].Card, cardsType)
+		if !b1 && bt2 != cardConst.CARD_PATTERN_BOMB && bt2 != cardConst.CARD_PATTERN_ROCKET {
+			f++
+
+		}
+		if f == 2 {
+			ur.IsGodCard = true
+			godNums++
+		}
+
+		urs = append(urs, ur)
+	}
+
+	return urs, godNums
+}
+
+// 判断玩家天牌数
+/*
+	天牌: 指该手牌 不能被其他玩家(包括炸弹)压的牌
+
+	return
+		[]*ReCard  : 标记是否天牌的lg
+		int: 天牌数量
+*/
+func CheckRealGodCard(lg []*ReCard, p1Hands, p2Hands []*Card) ([]UpReCard, int) {
+	var urs []UpReCard
+	var godNums int
+	for i := 0; i < len(lg); i++ {
+		cardsType := GetCardsType(lg[i].Card)
+		lg[i].CardType = cardsType
+
+		if cardsType < cardConst.CARD_PATTERN_SINGLE || cardsType > cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
+			logger.Debug("!!! impossible....", cardsType)
+			PrintCard(lg[i].Card)
+		}
+		var f int
+		var ur UpReCard
+		ur.RC = lg[i]
+		_, b, _ := FindCanBeatCards(p1Hands, lg[i].Card, cardsType)
+		if !b /*&& bt != cardConst.CARD_PATTERN_BOMB && bt != cardConst.CARD_PATTERN_ROCKET */ {
+			f++
+		}
+		_, b1, _ := FindCanBeatCards(p2Hands, lg[i].Card, cardsType)
+		if !b1 /*&& bt2 != cardConst.CARD_PATTERN_BOMB && bt2 != cardConst.CARD_PATTERN_ROCKET*/ {
+			f++
+
+		}
+		if f == 2 {
+			ur.IsGodCard = true
+			godNums++
+		}
+
+		urs = append(urs, ur)
+	}
+
+	return urs, godNums
+}
+
+/*
+
+
+
+ */
+func checkHowManyBeatSingle(singles []*ReCard, single []*Card) int {
+	var result int
+	for i := 0; i < len(singles); i++ {
+		if singles[i].Card[0].Value < single[0].Value {
+			result++
+		}
+
+	}
+	return result
+}
+
+/*
+	寻找最小跟牌策略
+	先从最有组合里面找
+*/
+func FindMinFollowCards(hands []*Card, completeG GroupCard, eCard []*Card, eType int32) ([]*Card, bool, int32) {
+	var res []*Card
+	switch eType {
+	case cardConst.CARD_PATTERN_SINGLE: // 3
+		SortReCardByWightSL(completeG.Single)
+		for i := 0; i < len(completeG.Single); i++ {
+			tmp := completeG.Single[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+	case cardConst.CARD_PATTERN_PAIR: // 4
+		SortReCardByWightSL(completeG.Double)
+		for i := 0; i < len(completeG.Double); i++ {
+			tmp := completeG.Double[i]
+
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+	case cardConst.CARD_PATTERN_TRIPLET: // 5
+		SortReCardByWightSL(completeG.Triple)
+		for i := 0; i < len(completeG.Triple); i++ {
+			tmp := completeG.Triple[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+	case cardConst.CARD_PATTERN_TRIPLET_WITH_SINGLE: // 6
+		SortReCardByWightSL(completeG.Triple)
+		for i := 0; i < len(completeG.Triple); i++ {
+			tmp := completeG.Triple[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+	case cardConst.CARD_PATTERN_TRIPLET_WITH_PAIR: // 7
+		SortReCardByWightSL(completeG.Triple)
+		for i := 0; i < len(completeG.Triple); i++ {
+			tmp := completeG.Triple[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+	case cardConst.CARD_PATTERN_SEQUENCE: // 8
+		SortReCardByWightSL(completeG.Junko)
+		for i := 0; i < len(completeG.Junko); i++ {
+			tmp := completeG.Junko[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+	case cardConst.CARD_PATTERN_SEQUENCE_OF_PAIRS: // 9
+		SortReCardByWightSL(completeG.JunkoDouble)
+		for i := 0; i < len(completeG.JunkoDouble); i++ {
+			tmp := completeG.JunkoDouble[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+
+	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS: // 10
+		SortReCardByWightSL(completeG.Triple)
+		for i := 0; i < len(completeG.Triple); i++ {
+			tmp := completeG.Triple[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+
+	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_SINGLES: // 11
+		SortReCardByWightSL(completeG.Triple)
+		for i := 0; i < len(completeG.Triple); i++ {
+			tmp := completeG.Triple[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+
+	case cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS: // 12
+		SortReCardByWightSL(completeG.Triple)
+		for i := 0; i < len(completeG.Triple); i++ {
+			tmp := completeG.Triple[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+	case cardConst.CARD_PATTERN_BOMB: // 13
+		SortReCardByWightSL(completeG.Bomb)
+		for i := 0; i < len(completeG.Bomb); i++ {
+			tmp := completeG.Bomb[i]
+			if tmp != nil {
+				if CanBeat(eCard, tmp.Card, ) {
+					res = tmp.Card
+					break
+				}
+			}
+		}
+	case cardConst.CARD_PATTERN_ROCKET: // 14
+		return nil, false, -1
+
+	case cardConst.CARD_PATTERN_QUADPLEX_WITH_SINGLES: // 15
+		// todo 先不处理
+
+	case cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS: // 16
+		// todo 先不处理
+	}
+
+	if len(res) >= 0 && res != nil {
+		return res, true, eType
+	} else {
+		return FindCanBeatCards(hands, eCard, eType)
+	}
+
+}
+
+// 寻找天炸
+func findGodBomb(upComRe []UpReCard) ([]*Card, bool, int32) {
+
+	for i := 0; i < len(upComRe); i++ {
+		if (upComRe[i].RC.CardType == cardConst.CARD_PATTERN_BOMB || upComRe[i].RC.CardType == cardConst.CARD_PATTERN_ROCKET) &&
+			upComRe[i].IsGodCard {
+			return upComRe[i].RC.Card, true, upComRe[i].RC.CardType
+		}
+	}
+	return nil, false, 0
+}
+

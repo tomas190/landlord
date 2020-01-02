@@ -11,10 +11,13 @@ func robotOutCard(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Pla
 	if robot.IsLandlord {
 		if robot.IsMustDo {
 			// todo 地主机器人首出  注意炸弹顺序
-			landlordRobotOutCardMustDo(room, robot, nextPlayer, lastPlayer)
+			//landlordRobotOutCardMustDo(room, robot, nextPlayer, lastPlayer)
+			NewLandlordRobotOutCardMustDo(room, robot, nextPlayer, lastPlayer)
+
 		} else {
 			// todo // 地主机器人跟牌 注意农民保单的时候 要顶牌
-			landlordRobotFallowCard(room, robot, nextPlayer, lastPlayer)
+			//landlordRobotFallowCard(room, robot, nextPlayer, lastPlayer)
+			NewLandlordRobotFallowCard(room, robot, nextPlayer, lastPlayer)
 		}
 	} else {
 		// todo
@@ -29,6 +32,26 @@ func robotOutCard(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Pla
 	}
 
 }
+
+/*
+	农民玩家首出
+   F1 ->F2 ->landlord
+   ALL
+*/
+func farmerRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
+	efficId := room.EffectivePlayerId
+	efficP := room.Players[efficId]
+	if efficP.IsLandlord && !nextPlayer.IsLandlord {
+		// 农民下家是农民出首牌策略
+		//farmerRobotOutCardMustDoF1(room, robot, nextPlayer, lastPlayer)
+		NewRobotFarmerMustDoF1(room, robot, nextPlayer, lastPlayer)
+	} else {
+		// 农民下家是地主出首牌策略
+		//farmerRobotOutCardMustDoF2(room, robot, nextPlayer, lastPlayer)
+		NewRobotFarmerMustDoF2(room, robot, nextPlayer, lastPlayer)
+	}
+}
+
 
 /*s 地主出牌策略 还有很大的优化空间*/
 // 一 地主机器人首出牌策虐
@@ -55,7 +78,7 @@ func landlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player, l
 	if outNums == 2 {
 		if !b1 && !b2 {
 			if completeReCards[0].CardType == cardConst.CARD_PATTERN_BOMB ||
-				completeReCards[1].CardType == cardConst.CARD_PATTERN_BOMB {
+				completeReCards[1].CardType == cardConst.CARD_PATTERN_ROCKET {
 				for i := 0; i < len(godCard); i++ {
 					if completeReCards[i].CardType != cardConst.CARD_PATTERN_BOMB {
 						logger.Debug("地主首出 最后一首是炸弹+其他 并无人报牌 显出其他")
@@ -158,7 +181,8 @@ func landlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, last
 
 	// 最有组牌能否打过
 	// canBeat := CanBeat(eCards, comGroup[i].Card)
-	beatCards, canBeat, beatType := FindCanBeatCards(robot.HandCards, eCards, eType)
+	//beatCards, canBeat, beatType := FindCanBeatCards(robot.HandCards, eCards, eType)
+	beatCards, canBeat, beatType := FindMinFollowCards(robot.HandCards, completeGroupCard(robot.GroupCard), eCards, eType)
 	if canBeat { // 如果能打过
 		//logger.Debug("fallow 11111111111111111111111")
 		// 判断是否炸弹打过  如果是炸弹打过
@@ -230,22 +254,7 @@ func landlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, last
 
 }
 
-/*
-	农民玩家首出
-   F1 ->F2 ->landlord
-   ALL
-*/
-func farmerRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
-	efficId := room.EffectivePlayerId
-	efficP := room.Players[efficId]
-	if efficP.IsLandlord && !nextPlayer.IsLandlord {
-		// 农民下家是农民出首牌策略
-		farmerRobotOutCardMustDoF1(room, robot, nextPlayer, lastPlayer)
-	} else {
-		// 农民下家是地主出首牌策略
-		farmerRobotOutCardMustDoF2(room, robot, nextPlayer, lastPlayer)
-	}
-}
+
 
 // 农民下家是农名出手牌策略
 /*
@@ -478,11 +487,13 @@ func farmerRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, lastPl
 	efficP := room.Players[efficId]
 	if efficP.IsLandlord && !nextPlayer.IsLandlord {
 		// 农民下家是农民跟牌策略
-		farmerRobotFallowCardF1(room, robot, nextPlayer, lastPlayer, !efficP.IsLandlord)
+		//farmerRobotFallowCardF1(room, robot, nextPlayer, lastPlayer, !efficP.IsLandlord)
+		farmerFallowF1(room, robot, nextPlayer, lastPlayer)
 	} else {
 		// 农民下家是地主跟牌策略
 		//farmerRobotFallowCardF1(room, robot, nextPlayer, lastPlayer)
-		farmerRobotFallowCardF2(room, robot, nextPlayer, lastPlayer, !efficP.IsLandlord)
+		//farmerRobotFallowCardF2(room, robot, nextPlayer, lastPlayer, !efficP.IsLandlord)
+		farmerFallowF2(room, robot, nextPlayer, lastPlayer)
 	}
 }
 
@@ -499,7 +510,8 @@ func farmerRobotFallowCardF1(room *Room, robot *Player, nextPlayer *Player, last
 
 	// 最有组牌能否打过
 	// canBeat := CanBeat(eCards, comGroup[i].Card)
-	beatCards, canBeat, beatType := FindCanBeatCards(robot.HandCards, eCards, eType)
+	//beatCards, canBeat, beatType := FindCanBeatCards(robot.HandCards, eCards, eType)
+	beatCards, canBeat, beatType := FindMinFollowCards(robot.HandCards, completeGroupCard(robot.GroupCard), eCards, eType)
 	if canBeat { // 如果能打过
 		if ePlayer.IsLandlord { // 如果上首牌是地主出的
 			// 判断是否炸弹打过  如果是炸弹打过
@@ -621,10 +633,10 @@ func farmerRobotFallowCardF2(room *Room, robot *Player, nextPlayer *Player, last
 	eCards := room.EffectiveCard
 	ePlayer := room.Players[room.EffectivePlayerId]
 
-
 	// 最有组牌能否打过
 	// canBeat := CanBeat(eCards, comGroup[i].Card)
-	beatCards, canBeat, beatType := FindCanBeatCards(robot.HandCards, eCards, eType)
+	//beatCards, canBeat, beatType := FindCanBeatCards(robot.HandCards, eCards, eType)
+	beatCards, canBeat, beatType := FindMinFollowCards(robot.HandCards, completeGroupCard(robot.GroupCard), eCards, eType)
 	if canBeat { // 如果能打过
 		if ePlayer.IsLandlord { // 如果上首牌是地主出的
 			//logger.Debug("fallow 11111111111111111111111")
@@ -736,102 +748,3 @@ func farmerRobotFallowCardF2(room *Room, robot *Player, nextPlayer *Player, last
 
 }
 
-// 判断玩家天牌数
-/*
-	天牌: 指该手牌 不能被其他玩家(非炸弹)压的牌
-
-	return
-		[]*ReCard  : 标记是否天牌的lg
-		int: 天牌数量
-*/
-func CheckGodCard(lg []*ReCard, p1Hands, p2Hands []*Card) ([]UpReCard, int) {
-	var urs []UpReCard
-	var godNums int
-	for i := 0; i < len(lg); i++ {
-		cardsType := GetCardsType(lg[i].Card)
-		lg[i].CardType = cardsType
-
-		if cardsType < cardConst.CARD_PATTERN_SINGLE || cardsType > cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
-			logger.Debug("!!! impossible....", )
-			PrintCard(lg[i].Card)
-		}
-		var f int
-		var ur UpReCard
-		ur.RC = lg[i]
-		_, b, bt := FindCanBeatCards(p1Hands, lg[i].Card, cardsType)
-		if !b && bt != cardConst.CARD_PATTERN_BOMB && bt != cardConst.CARD_PATTERN_ROCKET {
-			f++
-		}
-		_, b1, bt2 := FindCanBeatCards(p2Hands, lg[i].Card, cardsType)
-		if !b1 && bt2 != cardConst.CARD_PATTERN_BOMB && bt2 != cardConst.CARD_PATTERN_ROCKET {
-			f++
-
-		}
-		if f == 2 {
-			ur.IsGodCard = true
-			godNums++
-		}
-
-		urs = append(urs, ur)
-	}
-
-	return urs, godNums
-}
-
-// 判断玩家天牌数
-/*
-	天牌: 指该手牌 不能被其他玩家(包括炸弹)压的牌
-
-	return
-		[]*ReCard  : 标记是否天牌的lg
-		int: 天牌数量
-*/
-func CheckRealGodCard(lg []*ReCard, p1Hands, p2Hands []*Card) ([]UpReCard, int) {
-	var urs []UpReCard
-	var godNums int
-	for i := 0; i < len(lg); i++ {
-		cardsType := GetCardsType(lg[i].Card)
-		lg[i].CardType = cardsType
-
-		if cardsType < cardConst.CARD_PATTERN_SINGLE || cardsType > cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
-			logger.Debug("!!! impossible....", )
-			PrintCard(lg[i].Card)
-		}
-		var f int
-		var ur UpReCard
-		ur.RC = lg[i]
-		_, b, _ := FindCanBeatCards(p1Hands, lg[i].Card, cardsType)
-		if !b /*&& bt != cardConst.CARD_PATTERN_BOMB && bt != cardConst.CARD_PATTERN_ROCKET */ {
-			f++
-		}
-		_, b1, _ := FindCanBeatCards(p2Hands, lg[i].Card, cardsType)
-		if !b1 /*&& bt2 != cardConst.CARD_PATTERN_BOMB && bt2 != cardConst.CARD_PATTERN_ROCKET*/ {
-			f++
-
-		}
-		if f == 2 {
-			ur.IsGodCard = true
-			godNums++
-		}
-
-		urs = append(urs, ur)
-	}
-
-	return urs, godNums
-}
-
-/*
-
-
-
- */
-func checkHowManyBeatSingle(singles []*ReCard, single []*Card) int {
-	var result int
-	for i := 0; i < len(singles); i++ {
-		if singles[i].Card[0].Value < single[0].Value {
-			result++
-		}
-
-	}
-	return result
-}

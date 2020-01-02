@@ -93,6 +93,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	}
 	// 火箭倍数
 	if cardsType == cardConst.CARD_PATTERN_ROCKET {
+		room.MultiAll = room.MultiAll * 2
 		room.MultiRocket = 2
 	}
 
@@ -126,11 +127,11 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		logger.Debug("玩家胜利:", actionPlayer.PlayerInfo.PlayerId)
 		pushCardCount(room)
 		if isSpring {
-			DelaySomeTime(1)
+			//DelaySomeTime(1)
 			pushSpring(room)
 			//DelaySomeTime(1)
 		}
-		DelaySomeTime(2)
+		//DelaySomeTime(2)
 		// 结算
 		Settlement(room, actionPlayer)
 

@@ -615,7 +615,7 @@ func HostingBeatContinuouslyDouble(handCards, eCards []*Card) ([]*Card, bool, in
 
 	// 1.先去掉手牌中的重复值 要去掉 2 以上大的牌 (2 以上大的牌不能组成 连队)
 	canDoubleCards := continuouslyDoubleHelpRemove(handCards)
-	logger.Debug(canDoubleCards)
+//	logger.Debug(canDoubleCards)
 
 	// 有机会组成大过的 连队
 	if len(canDoubleCards) >= cDoubleJunkoLen {
