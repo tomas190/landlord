@@ -655,9 +655,23 @@ func farmerFallowF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 			nextComRe := changeGroupToReCard(nextCompG)
 			if !(countCardWight(followCards, oType) >= 12 ||
 				len(nextComRe)+1 >= allLen) {
-				// 最小跟拍
-				logger.Debug("F2跟牌  有能大过的跟牌  上家是出牌是农民 普通跟拍 =====")
-				OutCardsAction(room, robot, nextPlayer, followCards, oType)
+				tmpG := CreateGroupCard(removeCards(robot.HandCards, followCards))
+				tmpComG := completeGroupCard(tmpG)
+				tmpComRe := changeGroupToReCard(tmpComG)
+				tmpAllLen := len(tmpComRe)
+				_, godNum := CheckRealGodCard(tmpComRe, nextPlayer.HandCards, lastPlayer.HandCards)
+				// 如果返回了一个炸弹出牌
+				if oType == cardConst.CARD_PATTERN_BOMB || oType == cardConst.CARD_PATTERN_ROCKET {
+					if tmpAllLen-godNum <= 1 {
+						OutCardsAction(room, robot, nextPlayer, followCards, oType)
+						return
+					}
+				} else { // 如果返回的不是炸弹 拆牌之后 手术牌值多一首 可以出
+					if allLen > tmpAllLen {
+						OutCardsAction(room, robot, nextPlayer, followCards, oType)
+						return
+					}
+				}
 				return
 			}
 
@@ -757,14 +771,29 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 			}
 
 			logger.Debug("F2跟牌  有能大过的跟牌  上家是出牌是农民====================")
-			//nextCompG := completeGroupCard(lastPlayer.GroupCard)
-			//nextComRe := changeGroupToReCard(nextCompG)
-			if countCardWight(followCards, oType) <= 11 { //||
-				//len(nextComRe)+1 >= allLen) {
+			lastCompG := completeGroupCard(lastPlayer.GroupCard)
+			nextComRe := changeGroupToReCard(lastCompG)
+			if !(countCardWight(followCards, oType) >= 12 ||
+				len(nextComRe)+1 >= allLen) {
 				// 最小跟拍
-				logger.Debug("F2跟牌  有能大过的跟牌  上家是出牌是农民 普通跟拍 =====")
-				OutCardsAction(room, robot, nextPlayer, followCards, oType)
-				return
+
+				tmpG := CreateGroupCard(removeCards(robot.HandCards, followCards))
+				tmpComG := completeGroupCard(tmpG)
+				tmpComRe := changeGroupToReCard(tmpComG)
+				tmpAllLen := len(tmpComRe)
+				_, godNum := CheckRealGodCard(tmpComRe, nextPlayer.HandCards, lastPlayer.HandCards)
+				// 如果返回了一个炸弹出牌
+				if oType == cardConst.CARD_PATTERN_BOMB || oType == cardConst.CARD_PATTERN_ROCKET {
+					if tmpAllLen-godNum <= 1 {
+						OutCardsAction(room, robot, nextPlayer, followCards, oType)
+						return
+					}
+				} else { // 如果返回的不是炸弹 拆牌之后 手术牌值多一首 可以出
+					if allLen > tmpAllLen {
+						OutCardsAction(room, robot, nextPlayer, followCards, oType)
+						return
+					}
+				}
 			}
 
 		}

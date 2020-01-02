@@ -17,14 +17,28 @@ func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo
 
 	go func() { // 假操作房间进入
 		num := RandNum(0, 90)
-		if num<=90 {
-			DelaySomeTime(destiny/3)
+		if num <= 40 {
+			DelaySomeTime(destiny / 3)
 			var p Player
 			p.PlayerInfo = &playerInfo
 			p.Session = session
 			p.PlayerPosition = 1
 			PushFakerPlayerEnterRoom(&p)
-			DelaySomeTime(destiny/2)
+			DelaySomeTime(destiny / 2)
+			PushFakerPlayerQuitRoom(&p)
+		} else if num <= 90 {
+			var p Player
+			p.PlayerInfo = &playerInfo
+			p.Session = session
+			p.PlayerPosition = 1
+
+			DelaySomeTime(destiny / 5)
+			PushFakerPlayerEnterRoom(&p)
+			DelaySomeTime(destiny / 4)
+			PushFakerPlayerQuitRoom(&p)
+			DelaySomeTime(destiny / 6)
+			PushFakerPlayerEnterRoom(&p)
+			DelaySomeTime(destiny / 4)
 			PushFakerPlayerQuitRoom(&p)
 		}
 	}()
