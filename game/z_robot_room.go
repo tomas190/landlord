@@ -13,12 +13,28 @@ type WaitRoomChan struct {
 
 // 处理玩家进入房间 和机器人玩
 func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32, waitRoom *WaitRoomChan) {
+	destiny := getWaitTimePlayerEnterRoom()
+
+	go func() { // 假操作房间进入
+		num := RandNum(0, 90)
+		if num<=90 {
+			DelaySomeTime(destiny/3)
+			var p Player
+			p.PlayerInfo = &playerInfo
+			p.Session = session
+			p.PlayerPosition = 1
+			PushFakerPlayerEnterRoom(&p)
+			DelaySomeTime(destiny/2)
+			PushFakerPlayerQuitRoom(&p)
+		}
+	}()
+
 	select {
 	case <-waitRoom.WaitChan:
 		logger.Debug("============= 玩家在等待过程中退出了房间 =============")
 		waitRoom.IsClose = true
 		close(waitRoom.WaitChan)
-	case <-time.After(time.Second * getWaitTimePlayerEnterRoom()):
+	case <-time.After(time.Second * destiny):
 		waitRoom.IsClose = true
 		close(waitRoom.WaitChan)
 		PlayWithRobot(session, playerInfo, roomType)

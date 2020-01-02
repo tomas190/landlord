@@ -41,6 +41,37 @@ func PushPlayerEnterRoom(room *Room) {
 	MapPlayersSendMsg(players, PkgMsg(msgIdConst.PushRoomPlayer, bytes))
 }
 
+func PushFakerPlayerEnterRoom(player *Player) {
+
+	robot := CreateRobot()
+	robot.PlayerPosition =int32( RandNum(2,3))
+
+	rRobot := ChangePlayerToRoomPlayerProto(robot)
+	rPlayer := ChangePlayerToRoomPlayerProto(player)
+
+	var resp mproto.PushRoomPlayer
+	var rPs []*mproto.RoomPlayer
+
+	rPs = append(rPs, rRobot, rPlayer)
+	resp.Players = rPs
+
+	bytes, _ := proto.Marshal(&resp)
+
+	_ = player.Session.WriteBinary(PkgMsg(msgIdConst.PushRoomPlayer, bytes))
+
+}
+
+func PushFakerPlayerQuitRoom(player *Player) {
+
+	rPlayer := ChangePlayerToRoomPlayerProto(player)
+	var resp mproto.PushRoomPlayer
+	var rPs []*mproto.RoomPlayer
+	rPs = append(rPs, rPlayer)
+	resp.Players = rPs
+	bytes, _ := proto.Marshal(&resp)
+	_ = player.Session.WriteBinary(PkgMsg(msgIdConst.PushRoomPlayer, bytes))
+}
+
 // 2.给玩家发牌
 func PushPlayerStartGame(room *Room) {
 	cards := CreateBrokenCard()
