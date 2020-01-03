@@ -39,9 +39,8 @@ func robotOutCard(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Pla
    ALL
 */
 func farmerRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
-	efficId := room.EffectivePlayerId
-	efficP := room.Players[efficId]
-	if efficP.IsLandlord && !nextPlayer.IsLandlord {
+
+	if !nextPlayer.IsLandlord {
 		// 农民下家是农民出首牌策略
 		//farmerRobotOutCardMustDoF1(room, robot, nextPlayer, lastPlayer)
 		NewRobotFarmerMustDoF1(room, robot, nextPlayer, lastPlayer)
@@ -483,16 +482,13 @@ func farmerRobotOutCardMustDoF2(room *Room, robot *Player, nextPlayer *Player, l
 	F1 F2 LANDLORD
 */
 func farmerRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
-	efficId := room.EffectivePlayerId
-	efficP := room.Players[efficId]
-	if efficP.IsLandlord && !nextPlayer.IsLandlord {
+	//efficId := room.EffectivePlayerId
+	//efficP := room.Players[efficId]
+	if !nextPlayer.IsLandlord {
 		// 农民下家是农民跟牌策略
-		//farmerRobotFallowCardF1(room, robot, nextPlayer, lastPlayer, !efficP.IsLandlord)
 		farmerFallowF1(room, robot, nextPlayer, lastPlayer)
 	} else {
 		// 农民下家是地主跟牌策略
-		//farmerRobotFallowCardF1(room, robot, nextPlayer, lastPlayer)
-		//farmerRobotFallowCardF2(room, robot, nextPlayer, lastPlayer, !efficP.IsLandlord)
 		farmerFallowF2(room, robot, nextPlayer, lastPlayer)
 	}
 }

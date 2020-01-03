@@ -650,11 +650,11 @@ func farmerFallowF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 
 		// 2.出牌者是农民
 		if !ePlayer.IsLandlord == true { // 如果是下家农民出的
-			logger.Debug("F2跟牌  有能大过的跟牌  上家是出牌是农民====================")
-			nextCompG := completeGroupCard(lastPlayer.GroupCard)
-			nextComRe := changeGroupToReCard(nextCompG)
-			if !(countCardWight(followCards, oType) >= 12 ||
-				len(nextComRe)+1 >= allLen) {
+			logger.Debug("F1跟牌  有能大过的跟牌  上家是出牌是农民====================")
+			//nextCompG := completeGroupCard(lastPlayer.GroupCard)
+			//nextComRe := changeGroupToReCard(nextCompG)
+			if !(countCardWight(followCards, oType) >= cardConst.CARD_RANK_ACE){//||
+				//len(nextComRe)+1 >= allLen) {
 				tmpG := CreateGroupCard(removeCards(robot.HandCards, followCards))
 				tmpComG := completeGroupCard(tmpG)
 				tmpComRe := changeGroupToReCard(tmpComG)
@@ -672,7 +672,6 @@ func farmerFallowF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 						return
 					}
 				}
-				return
 			}
 
 		} else { // 上首牌是地主出的
@@ -771,10 +770,10 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 			}
 
 			logger.Debug("F2跟牌  有能大过的跟牌  上家是出牌是农民====================")
-			lastCompG := completeGroupCard(lastPlayer.GroupCard)
-			nextComRe := changeGroupToReCard(lastCompG)
-			if !(countCardWight(followCards, oType) >= 12 ||
-				len(nextComRe)+1 >= allLen) {
+			//lastCompG := completeGroupCard(lastPlayer.GroupCard)
+			//nextComRe := changeGroupToReCard(lastCompG)
+			if !(countCardWight(followCards, oType) >= cardConst.CARD_RANK_ACE ){
+				//len(nextComRe)+1 >= allLen) || nextPlayer.LastAction == playerAction.OutCardAction {
 				// 最小跟拍
 
 				tmpG := CreateGroupCard(removeCards(robot.HandCards, followCards))
