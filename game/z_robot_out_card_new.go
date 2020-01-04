@@ -788,17 +788,13 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 						return
 					}
 				} else { // 如果返回的不是炸弹 拆牌之后 手术牌值多一首 可以出
-					if allLen > tmpAllLen {
+
 						OutCardsAction(room, robot, nextPlayer, followCards, oType)
 						return
-					}
 				}
 			}
-
 		}
-
 	}
-
 	logger.Debug("F2 跟牌 不出")
 	NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
 	return
