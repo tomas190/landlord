@@ -297,7 +297,7 @@ func NewLandlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, l
 				return
 			}
 		} else { // 如果返回的不是炸弹 拆牌之后 手术牌值多一首 可以出
-			if allLen+1 >= tmpAllLen {
+			if allLen+2 >= tmpAllLen {
 				OutCardsAction(room, robot, nextPlayer, beatCards, bType)
 				return
 			}
