@@ -41,23 +41,17 @@ func PushPlayerEnterRoom(room *Room) {
 	MapPlayersSendMsg(players, PkgMsg(msgIdConst.PushRoomPlayer, bytes))
 }
 
-func PushFakerPlayerEnterRoom(player *Player) {
+func PushFakerPlayerEnterRoom(players map[string]*Player, realPlayer *Player) {
 
-	robot := CreateRobot()
-	robot.PlayerPosition =int32( RandNum(2,3))
-
-	rRobot := ChangePlayerToRoomPlayerProto(robot)
-	rPlayer := ChangePlayerToRoomPlayerProto(player)
+	playerProto := ChangeArrPlayerToRoomPlayerProto(players)
 
 	var resp mproto.PushRoomPlayer
-	var rPs []*mproto.RoomPlayer
 
-	rPs = append(rPs, rRobot, rPlayer)
-	resp.Players = rPs
+	resp.Players = playerProto
 
 	bytes, _ := proto.Marshal(&resp)
 
-	_ = player.Session.WriteBinary(PkgMsg(msgIdConst.PushRoomPlayer, bytes))
+	_ = realPlayer.Session.WriteBinary(PkgMsg(msgIdConst.PushRoomPlayer, bytes))
 
 }
 

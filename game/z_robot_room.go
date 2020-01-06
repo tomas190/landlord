@@ -15,33 +15,10 @@ type WaitRoomChan struct {
 func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32, waitRoom *WaitRoomChan) {
 	destiny := getWaitTimePlayerEnterRoom()
 
-	go func() { // 假操作房间进入
-		num := RandNum(0, 90)
-		if num <= 40 {
-			DelaySomeTime(destiny / 3)
-			var p Player
-			p.PlayerInfo = &playerInfo
-			p.Session = session
-			p.PlayerPosition = 1
-			PushFakerPlayerEnterRoom(&p)
-			DelaySomeTime(destiny / 2)
-			PushFakerPlayerQuitRoom(&p)
-		} else if num <= 90 {
-			var p Player
-			p.PlayerInfo = &playerInfo
-			p.Session = session
-			p.PlayerPosition = 1
+	mp := make(map[string]*Player, 3)
+	room := NewRoom(roomType, mp)
 
-			DelaySomeTime(destiny / 5)
-			PushFakerPlayerEnterRoom(&p)
-			DelaySomeTime(destiny / 4)
-			PushFakerPlayerQuitRoom(&p)
-			DelaySomeTime(destiny / 6)
-			PushFakerPlayerEnterRoom(&p)
-			DelaySomeTime(destiny / 4)
-			PushFakerPlayerQuitRoom(&p)
-		}
-	}()
+	fakerIntoRoom(room, playerInfo, session, destiny)
 
 	select {
 	case <-waitRoom.WaitChan:
@@ -51,35 +28,35 @@ func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo
 	case <-time.After(time.Second * destiny):
 		waitRoom.IsClose = true
 		close(waitRoom.WaitChan)
-		PlayWithRobot(session, playerInfo, roomType)
+		PlayWithRobot(session, playerInfo, room)
 	}
 
 }
 
 // 匹配机器人并创建房间
-func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32) {
+func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, room *Room) {
 	/*
 		todo 是否宰羊模式
 	*/
 
-	var p Player
-	p.PlayerInfo = &playerInfo
-	p.Session = session
-	p.PlayerPosition = 1
-	p.ActionChan = make(chan PlayerActionChan)
-
-	robot2 := CreateRobot()
-	robot2.PlayerPosition = 2
-
-	robot3 := CreateRobot()
-	robot3.PlayerPosition = 3
-
-	mp := make(map[string]*Player, 3)
-	mp[playerInfo.PlayerId] = &p
-	mp[robot2.PlayerInfo.PlayerId] = robot2
-	mp[robot3.PlayerInfo.PlayerId] = robot3
-
-	room := NewRoom(roomType, mp)
+	//var p Player
+	//p.PlayerInfo = &playerInfo
+	//p.Session = session
+	//p.PlayerPosition = 1
+	//p.ActionChan = make(chan PlayerActionChan)
+	//
+	//robot2 := CreateRobot()
+	//robot2.PlayerPosition = 2
+	//
+	//robot3 := CreateRobot()
+	//robot3.PlayerPosition = 3
+	//
+	//mp := make(map[string]*Player, 3)
+	//mp[playerInfo.PlayerId] = &p
+	//mp[robot2.PlayerInfo.PlayerId] = robot2
+	//mp[robot3.PlayerInfo.PlayerId] = robot3
+	//
+	//room := NewRoom(roomType, mp)
 
 	// 设置用户全局房间Id
 	SetSessionRoomId(session, room.RoomId)
@@ -102,4 +79,74 @@ func PlayGameWithRobot(room *Room) {
 	PushPlayerStartGameWithRobot2(room)
 	// ..．流程控制到这里结束　发牌  抢地主  玩牌 直接由 PushPlayerStartGame 开始 且循环
 
+}
+
+func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, destiny time.Duration) {
+	go func() { // 假操作房间进入
+
+		d := RandNum(0, 10)
+		if d <= 7 {
+			var p Player
+			p.PlayerInfo = &playerInfo
+			p.Session = session
+			p.PlayerPosition = 1
+			p.ActionChan = make(chan PlayerActionChan)
+			room.Players[p.PlayerInfo.PlayerId] = &p
+
+			// 第一个进入的机器人
+			robot2 := CreateRobot()
+			robot2.PlayerPosition = 2
+			room.Players[robot2.PlayerInfo.PlayerId] = robot2
+
+			DelaySomeTime(destiny / 3)
+			logger.Debug("===================推送第一个机器人")
+			PushFakerPlayerEnterRoom(room.Players, &p)
+
+			// 第一个进入的机器人
+			robot3 := CreateRobot()
+			robot3.PlayerPosition = 3
+			room.Players[robot3.PlayerInfo.PlayerId] = robot3
+
+			DelaySomeTime(destiny / 2)
+			logger.Debug("===================推送第二个机器人")
+			PushFakerPlayerEnterRoom(room.Players, &p)
+		} else {
+			logger.Debug("ssssssssssssssssss")
+			var p Player
+			p.PlayerInfo = &playerInfo
+			p.Session = session
+			p.PlayerPosition = 1
+			p.ActionChan = make(chan PlayerActionChan)
+			room.Players[p.PlayerInfo.PlayerId] = &p
+
+			// 第一个进入的机器人
+			robot2 := CreateRobot()
+			robot2.PlayerPosition = 2
+			room.Players[robot2.PlayerInfo.PlayerId] = robot2
+
+			DelaySomeTime(destiny / 4)
+			logger.Debug("===================推送第一个机器人")
+			PushFakerPlayerEnterRoom(room.Players, &p)
+			delete(room.Players, robot2.PlayerInfo.PlayerId)
+
+			DelaySomeTime(destiny / 5)
+			PushFakerPlayerQuitRoom(&p)
+
+			robotN2 := CreateRobot()
+			robotN2.PlayerPosition = 2
+			room.Players[robotN2.PlayerInfo.PlayerId] = robotN2
+
+			DelaySomeTime(destiny / 5)
+			PushFakerPlayerEnterRoom(room.Players, &p)
+
+			// 第一个进入的机器人
+			robot3 := CreateRobot()
+			robot3.PlayerPosition = 3
+			room.Players[robot3.PlayerInfo.PlayerId] = robot3
+
+			DelaySomeTime(destiny / 2)
+			logger.Debug("===================推送第二个机器人")
+			PushFakerPlayerEnterRoom(room.Players, &p)
+		}
+	}()
 }
