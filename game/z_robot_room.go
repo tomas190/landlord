@@ -83,7 +83,6 @@ func PlayGameWithRobot(room *Room) {
 
 func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, destiny time.Duration) {
 	go func() { // 假操作房间进入
-
 		d := RandNum(0, 10)
 		if d <= 7 {
 			var p Player
@@ -144,7 +143,7 @@ func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, d
 			robot3.PlayerPosition = 3
 			room.Players[robot3.PlayerInfo.PlayerId] = robot3
 
-			DelaySomeTime(destiny / 2)
+			DelaySomeTime(destiny / 4)
 			logger.Debug("===================推送第二个机器人")
 			PushFakerPlayerEnterRoom(room.Players, &p)
 		}
