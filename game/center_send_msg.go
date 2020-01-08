@@ -136,8 +136,8 @@ func NoticeWinMoreThan(playerId, playerName string, winGold float64) {
 
 	//style := `<size=20><color=YELLOW>恭喜!</color><color=orange>888888888</color><color=YELLOW>在</color></><color=WHITE><b><size=25>龙虎斗</color></b></><color=YELLOW><size=20>中一把赢了</color></><color=YELLOW><b><size=35>8888.88</color></b></><color=YELLOW><size=20>金币！</color></>`
 
-	msg := fmt.Sprintf("<size=20><color=YELLOW>恭喜!</color><color=orange>%s</color><color=YELLOW>在</color></><color=WHITE><b><size=25>斗地主</color></b></><color=YELLOW><size=20>中一把赢了</color></><color=YELLOW><b><size=35>%.2f</color></b></><color=YELLOW><size=20>金币！</color></>", playerName, winGold)
-
+	//msg := fmt.Sprintf("<size=20><color=YELLOW>恭喜!</color><color=orange>%s</color><color=YELLOW>在</color></><color=WHITE><b><size=25>斗地主</color></b></><color=YELLOW><size=20>中一把赢了</color></><color=YELLOW><b><size=35>%.2f</color></b></><color=YELLOW><size=20>金币！</color></>", playerName, winGold)
+	msg := fmt.Sprintf("<size=20><color=yellow>恭喜!</color><color=orange>%s</color><color=yellow>在</color></><color=orange><size=25>斗地主</color></><color=yellow><size=20>中一把赢了</color></><color=yellow><size=30>%2.f</color></><color=yellow><size=25>金币！</color></>", playerName, winGold)
 	base := &ToCenterMessage{}
 	base.Event = msgWinMoreThanNotice
 	base.Data = &Notice{

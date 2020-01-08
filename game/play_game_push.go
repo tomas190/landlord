@@ -47,6 +47,8 @@ func PushRecoverRoom(session *melody.Session, room *Room, playerId string) {
 		landPlayer := room.Players[room.LandlordPlayerId]
 		if landPlayer != nil {
 			resp.LandlordPosition = landPlayer.PlayerPosition
+			resp.BottomCard = ChangeCardToProto(room.BottomCards)
+
 		} else {
 			logger.Error("该房间无玩家信息 !!!incredible")
 		}

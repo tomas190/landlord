@@ -84,3 +84,11 @@ func TestOne(t *testing.T) {
 	PrintCard(hands)
 
 }
+
+
+
+func TestCanBeat(t *testing.T) {
+	eCards:=[]*Card{{3,cardConst.CARD_SUIT_SPADE},{3,cardConst.CARD_SUIT_CLUB}}
+	cards:=[]*Card{{7,2},{7,1}}
+	logger.Debug(CanBeat(eCards,cards))
+}

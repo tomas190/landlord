@@ -127,6 +127,7 @@ message PushRoomRecover {
     int32 multi = 7; // 倍数 当前倍数房间倍数
     double bottomPoint = 8; // 底分
     int32 roomStatus = 9; // 房间当前状态   1 叫地主  2抢地主  3 出牌
+    repeated Card bottomCard = 10; // 底牌 // 地主产生之后才有
 
 }
 
