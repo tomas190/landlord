@@ -42,7 +42,7 @@ var roomClassify *mproto.PushRoomClassify
 func InitConfig() {
 	initLogger()
 	initServerConf()
-	//initMongoDb()
+	initMongoDb()
 	initRoomClassify()
 }
 
@@ -123,7 +123,7 @@ func initMongoDb() {
 	}
 	globalSession.SetMode(mgo.Monotonic, true)
 	logger.Info("连接mongo数据库成功 address:", Server.MongoDBAddr)
-
+	InitSurplusPool()
 }
 
 // 初始化房间分类信息

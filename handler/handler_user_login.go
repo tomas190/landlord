@@ -54,6 +54,16 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	game.SetSessionIsLogin(session)
 	game.SetSessionPassword(session, req.UserPassword)
 	game.SaveAgent(playerInfo.PlayerId, session)
+
+
+	// 记录用户登录
+	var playerRecode game.PlayerRecode
+	playerRecode.PlayerId = req.UserId
+	err = playerRecode.AddPlayerIfNotExist()
+	if err != nil {
+		logger.Error("记录玩家登录失败:",err.Error())
+	}
+
 	logger.Info("当前连接数:", m.Len())
 
 }

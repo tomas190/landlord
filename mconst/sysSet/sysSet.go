@@ -7,7 +7,9 @@ package sysSet
 import "time"
 
 const (
-	GameDelayTime    time.Duration = 30  // 玩牌等待时间
+	GameName = "landlord"
+
+	GameDelayTime    time.Duration = 30 // 玩牌等待时间
 	GameDelayTimeInt int32         = 30
 
 	GameDelayGetLandlordTime    time.Duration = 20 // 叫地主等待时间
