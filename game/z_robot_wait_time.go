@@ -20,17 +20,17 @@ import (
 func getWaitTimePlayerEnterRoom() time.Duration {
 	destiny := RandNum(1, 100)
 	if destiny <= 60 {
-		delayTime := RandNum(3, 5)
+		delayTime := RandNum(2, 4)
 		logger.Debug("============ 正常机率 ============ ", delayTime)
 		return time.Duration(delayTime)
 	}
 
 	if destiny <= 95 {
-		delayTime := RandNum(5, 10)
+		delayTime := RandNum(3, 5)
 		logger.Debug("============  35机率 ============ ", delayTime)
 		return  time.Duration(delayTime)
 	}
-	delayTime := RandNum(10, 15)
+	delayTime := RandNum(5, 10)
 	logger.Debug("============  5机率  ============ ", delayTime)
 	return  time.Duration(delayTime)
 }

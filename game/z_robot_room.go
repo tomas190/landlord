@@ -14,12 +14,9 @@ type WaitRoomChan struct {
 // 处理玩家进入房间 和机器人玩
 func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32, waitRoom *WaitRoomChan) {
 	destiny := getWaitTimePlayerEnterRoom()
-
-	mp := make(map[string]*Player, 3)
-	room := NewRoom(roomType, mp)
-
-	fakerIntoRoom(room, playerInfo, session, destiny)
-
+	//mp := make(map[string]*Player, 3)
+	//room := NewRoom(roomType, mp)
+	// fakerIntoRoom(room, playerInfo, session, destiny)
 	select {
 	case <-waitRoom.WaitChan:
 		logger.Debug("============= 玩家在等待过程中退出了房间 =============")
@@ -28,35 +25,36 @@ func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo
 	case <-time.After(time.Second * destiny):
 		waitRoom.IsClose = true
 		close(waitRoom.WaitChan)
-		PlayWithRobot(session, playerInfo, room)
+		PlayWithRobot(session, playerInfo, roomType)
 	}
 
 }
 
 // 匹配机器人并创建房间
-func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, room *Room) {
+//func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, room *Room) {
+func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32) {
 	/*
 		todo 是否宰羊模式
 	*/
 
-	//var p Player
-	//p.PlayerInfo = &playerInfo
-	//p.Session = session
-	//p.PlayerPosition = 1
-	//p.ActionChan = make(chan PlayerActionChan)
-	//
-	//robot2 := CreateRobot()
-	//robot2.PlayerPosition = 2
-	//
-	//robot3 := CreateRobot()
-	//robot3.PlayerPosition = 3
-	//
-	//mp := make(map[string]*Player, 3)
-	//mp[playerInfo.PlayerId] = &p
-	//mp[robot2.PlayerInfo.PlayerId] = robot2
-	//mp[robot3.PlayerInfo.PlayerId] = robot3
-	//
-	//room := NewRoom(roomType, mp)
+	var p Player
+	p.PlayerInfo = &playerInfo
+	p.Session = session
+	p.PlayerPosition = 1
+	p.ActionChan = make(chan PlayerActionChan)
+
+	robot2 := CreateRobot()
+	robot2.PlayerPosition = 2
+
+	robot3 := CreateRobot()
+	robot3.PlayerPosition = 3
+
+	mp := make(map[string]*Player, 3)
+	mp[playerInfo.PlayerId] = &p
+	mp[robot2.PlayerInfo.PlayerId] = robot2
+	mp[robot3.PlayerInfo.PlayerId] = robot3
+
+	room := NewRoom(roomType, mp)
 
 	// 设置用户全局房间Id
 	SetSessionRoomId(session, room.RoomId)
@@ -81,6 +79,9 @@ func PlayGameWithRobot(room *Room) {
 
 }
 
+
+
+// 用这种多线程会有很多问题
 func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, destiny time.Duration) {
 	go func() { // 假操作房间进入
 		d := RandNum(0, 10)

@@ -113,6 +113,7 @@ func PushPlayerStartGameWithRobot2(room *Room) {
 	r1.HandCards = append([]*Card{}, p2...)
 	r2.HandCards = append([]*Card{}, p3...)
 	room.BottomCards = bottomCard
+
 	logger.Debug("底牌:")
 	PrintCard(room.BottomCards)
 
