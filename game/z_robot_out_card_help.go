@@ -577,7 +577,6 @@ func CheckRealGodCard(lg []*ReCard, p1Hands, p2Hands []*Card) ([]UpReCard, int) 
 
 		urs = append(urs, ur)
 	}
-
 	return urs, godNums
 }
 

@@ -269,7 +269,6 @@ func TestCr(t *testing.T) {
 		PrintCard(rcs[i].Card)
 	}
 
-
 	logger.Debug("对子")
 	rcd := gc.Double
 	for i := 0; i < len(rcd); i++ {
@@ -283,7 +282,6 @@ func TestCr(t *testing.T) {
 		fmt.Print("weight:", rct[i].Wight, "  ")
 		PrintCard(rct[i].Card)
 	}
-
 
 	logger.Debug("炸弹")
 	rcb, _ := FindAllBomb(hands)
@@ -299,7 +297,6 @@ func TestCr(t *testing.T) {
 		PrintCard(rcr[i].Card)
 	}
 
-
 	logger.Debug("顺子")
 	rcj := gc.Junko
 	for i := 0; i < len(rcj); i++ {
@@ -313,4 +310,38 @@ func TestCr(t *testing.T) {
 		fmt.Print("weight:", rcjd[i].Wight, "  ")
 		PrintCard(rcjd[i].Card)
 	}
+}
+
+func TestCreateRobot(t *testing.T) {
+	cards, i, i2, i3 := CreateGodCards()
+
+	SortCard(cards)
+	SortCard(i)
+	SortCard(i2)
+	SortCard(i3)
+
+	fmt.Println("天牌")
+	PrintCard(cards)
+	fmt.Println("爛牌1")
+	PrintCard(i)
+	fmt.Println("爛牌2")
+	PrintCard(i2)
+	fmt.Println("底牌")
+	PrintCard(i3)
+
+	a := append([]*Card{}, cards...)
+	a = append(a, i...)
+	a = append(a, i2...)
+	a = append(a, i3...)
+
+	fmt.Println("縂:", len(a))
+	SortCardSL(a)
+
+	for i := 0; i < len(a); i++ {
+		if i%4 == 0 {
+			fmt.Println()
+		}
+		PrintCard(append([]*Card{},a[i]))
+	}
+
 }

@@ -100,7 +100,21 @@ func PushPlayerStartGameWithRobot2(room *Room) {
 	//	{12, 2}, {11, 2}, {8, 2},
 	//}
 
-	p1, p2, p3, bottomCard := CreateCardsNew()
+	var p1, p2, p3, bottomCard []*Card
+	var s SurplusPool
+	surplus := s.GetLastSurplus()
+	logger.Debug("当前盈余池:", surplus.CurrentSurplus)
+	if surplus.CurrentSurplus <= 0 {
+		logger.Debug("盈余池小于0 发好牌")
+		num := RandNum(0, 10)
+		if num >= 5 {
+			p3, p2, p1, bottomCard = CreateGodCards()
+		} else {
+			p2, p1, p3, bottomCard = CreateGodCards()
+		}
+	} else {
+		p1, p2, p3, bottomCard = CreateCardsNew()
+	}
 
 	player, r1, r2 := getPlayersWithRobot(room)
 	// todo 玩家发牌策略
@@ -145,4 +159,54 @@ func CountRobotCardValue(r1, r2 *Player) {
 
 	r1.GroupCard = groupCard1
 	r2.GroupCard = groupCard2
+}
+
+// 第一首是天牌牌
+func CreateGodCards() ([]*Card, []*Card, []*Card, []*Card) {
+
+	godCard, rCards := getGodCard()
+	logger.Debug("===========:", len(rCards))
+
+	p1card := godCard
+	p2card := append([]*Card{}, rCards[:13]...)
+	p3card := append([]*Card{}, rCards[13:26]...)
+	boCard := append([]*Card{}, rCards[26:]...)
+
+	i, i2, i3 := stick()
+
+	p1card = append(p1card, i...)
+	p2card = append(p2card, i2...)
+	p3card = append(p3card, i3...)
+
+	return p1card, p2card, p3card, boCard
+
+}
+
+// 获取13张好牌
+func getGodCard() ([]*Card, []*Card) {
+	cards, _ := CreateBroken8910Card()
+	OutOfCardNotDeep42(cards, 5)
+	ci := getGodCardIndex()
+
+	tmp := append([]*Card{}, cards...)
+
+	var godCard []*Card
+	for i := 0; i < len(ci); i++ {
+		c := findThisValueCard(ci[i], tmp, 1)
+		godCard = append(godCard, c...)
+		tmp = removeCards(tmp, c)
+	}
+
+	return godCard, tmp
+}
+
+// 获取好牌的value
+func getGodCardIndex() []int {
+	arr := []int{15, 14, 13, 13, 13, 13, 12, 12, 12, 12, 11, 11, 11, 11, 10, 10, 10, 10, 9, 9, 5, 5}
+	for i := len(arr) - 1; i > 0; i-- {
+		num := RandNum(0, len(arr)-1)
+		arr[i], arr[num] = arr[num], arr[i]
+	}
+
+	return arr[:13]
 }
