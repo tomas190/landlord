@@ -75,11 +75,11 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 	// 如果有农民报单
 	if (b1 && cType1 == cardConst.CARD_PATTERN_SINGLE) || (b2 && cType2 == cardConst.CARD_PATTERN_SINGLE) {
 		// 有农民保单
-		for i := 0; i < len(godCard); i++ {
-			if godCard[i].RC.CardType != cardConst.CARD_PATTERN_SINGLE {
+		for i := 0; i < len(comRe); i++ {
+			if comRe[i].CardType != cardConst.CARD_PATTERN_SINGLE {
 				logger.Debug("地主首出 农民保单 非类型最小权重")
-				outCard := godCard[i].RC.Card
-				cardType := godCard[i].RC.CardType
+				outCard := comRe[i].Card
+				cardType := comRe[i].CardType
 				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
 				return
 			}
@@ -95,11 +95,11 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 	// 如果有农民报双
 	if (b1 && cType1 == cardConst.CARD_PATTERN_PAIR) || (b2 && cType2 == cardConst.CARD_PATTERN_PAIR) {
 		// 有农民保单
-		for i := 0; i < len(godCard); i++ {
-			if godCard[i].RC.CardType != cardConst.CARD_PATTERN_PAIR {
+		for i := 0; i < len(comRe); i++ {
+			if comRe[i].CardType != cardConst.CARD_PATTERN_PAIR {
 				logger.Debug("地主首出 农民保双 非类型最小权重")
-				outCard := godCard[i].RC.Card
-				cardType := godCard[i].RC.CardType
+				outCard := comRe[i].Card
+				cardType := comRe[i].CardType
 				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
 				return
 			}
@@ -429,11 +429,11 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 	// 如果地主保单
 	if isLandlordLastOne && landType == cardConst.CARD_PATTERN_SINGLE {
 		// 如果地主报单
-		for i := 0; i < len(upReCards); i++ {
-			if upReCards[i].RC.CardType != landType {
+		for i := 0; i < len(comRe); i++ {
+			if comRe[i].CardType != landType {
 				logger.Debug("F1首出 地主保单 非类型最小权重")
-				outCard := upReCards[i].RC.Card
-				cardType := upReCards[i].RC.CardType
+				outCard := comRe[i].Card
+				cardType := comRe[i].CardType
 				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
 				return
 			}
@@ -447,11 +447,11 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 	// 如果地主报双
 	if isLandlordLastOne && landType == cardConst.CARD_PATTERN_PAIR {
 		// 如果地主报双
-		for i := 0; i < len(upReCards); i++ {
-			if upReCards[i].RC.CardType != landType {
+		for i := 0; i < len(comRe); i++ {
+			if comRe[i].CardType != landType {
 				logger.Debug("F1首出 地主保双 非类型最小权重")
-				outCard := upReCards[i].RC.Card
-				cardType := upReCards[i].RC.CardType
+				outCard := comRe[i].Card
+				cardType := comRe[i].CardType
 				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
 				return
 			}
@@ -547,11 +547,11 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 	// 如果地主保单
 	if isLandlordLastOne && landType == cardConst.CARD_PATTERN_SINGLE {
 		// 如果地主报单
-		for i := 0; i < len(upReCards); i++ {
-			if upReCards[i].RC.CardType != landType {
+		for i := 0; i < len(comRe); i++ {
+			if comRe[i].CardType != landType {
 				logger.Debug("F1首出 地主保单 非类型最小权重")
-				outCard := upReCards[i].RC.Card
-				cardType := upReCards[i].RC.CardType
+				outCard := comRe[i].Card
+				cardType := comRe[i].CardType
 				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
 				return
 			}
@@ -565,11 +565,11 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 	// 如果地主报双
 	if isLandlordLastOne && landType == cardConst.CARD_PATTERN_PAIR {
 		// 如果地主报双
-		for i := 0; i < len(upReCards); i++ {
-			if upReCards[i].RC.CardType != landType {
+		for i := 0; i < len(comRe); i++ {
+			if comRe[i].CardType != landType {
 				logger.Debug("F1首出 地主保双 非类型最小权重")
-				outCard := upReCards[i].RC.Card
-				cardType := upReCards[i].RC.CardType
+				outCard := comRe[i].Card
+				cardType := comRe[i].CardType
 				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
 				return
 			}
