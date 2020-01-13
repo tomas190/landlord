@@ -46,14 +46,14 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		return
 	}
 
-	if Server.UseRobot { // 如果是开启机器人模式
-		wc := make(chan struct{})
-		var wr WaitRoomChan
-		wr.WaitChan = wc
-		session.Set("WaitChan", &wr)
-		go DealPlayerEnterRoomWithRobot(session, *playerInfo, req.RoomType, &wr)
-		return
-	}
+	//if Server.UseRobot { // 如果是开启机器人模式
+	//	wc := make(chan struct{})
+	//	var wr WaitRoomChan
+	//	wr.WaitChan = wc
+	//	session.Set("WaitChan", &wr)
+	//	go DealPlayerEnterRoomWithRobot(session, *playerInfo, req.RoomType, &wr)
+	//	return
+	//}
 
 	switch req.RoomType {
 	case roomType.ExperienceField: // 如果是体验场
@@ -236,6 +236,9 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 	roomId := GetSessionRoomId(session)
 	// 1. 如果roomId为空代表玩家是在等待队列 则移除等待队列
 	if roomId == "" {
+		logger.Debug(info.PlayerId, "当前在等待队列中..")
+		RemoveWaitUser(info.PlayerId)
+
 		logger.Debug("退出房间.....")
 		if Server.UseRobot {
 			logger.Debug("退出房间.....1")

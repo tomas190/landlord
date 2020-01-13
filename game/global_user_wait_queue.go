@@ -70,7 +70,7 @@ func AddExpFieldWaitUser(session *melody.Session, player PlayerInfo) {
 	ExpFieldWaitUser.WaitUsers[player.PlayerId] = &wu
 
 	// todo  需要3到5秒后如果没有玩家与之进行匹配 则分配一个机器人
-
+	go matchExpField()
 	logger.Debug("玩家 ", player.PlayerId, " 进入体验场等待队列")
 }
 
@@ -173,7 +173,7 @@ func AddLowFieldWaitUser(session *melody.Session, player PlayerInfo) {
 	LowFieldWaitUser.WaitUsers[player.PlayerId] = &wu
 
 	// todo  需要3到5秒后如果没有玩家与之进行匹配 则分配一个机器人
-
+	go matchLowField()
 	logger.Debug("玩家 ", player.PlayerId, " 进入低级场等待队列")
 }
 
@@ -276,7 +276,7 @@ func AddMidFieldWaitUser(session *melody.Session, player PlayerInfo) {
 	MidFieldWaitUser.WaitUsers[player.PlayerId] = &wu
 
 	// todo  需要3到5秒后如果没有玩家与之进行匹配 则分配一个机器人
-
+	go matchMidField()
 	logger.Debug("玩家 ", player.PlayerId, " 进入中级场等待队列")
 }
 
@@ -379,7 +379,7 @@ func AddHighFieldWaitUser(session *melody.Session, player PlayerInfo) {
 	HighFieldWaitUser.WaitUsers[player.PlayerId] = &wu
 
 	// todo  需要3到5秒后如果没有玩家与之进行匹配 则分配一个机器人
-
+	go matchHighField()
 	logger.Debug("玩家 ", player.PlayerId, " 进入高级场等待队列")
 }
 
@@ -416,7 +416,6 @@ func DealPlayerEnterHighField(session *melody.Session, playerInfo PlayerInfo) {
 		AddHighFieldWaitUser(session, playerInfo)
 		return
 	}
-
 
 	if len(HighFieldWaitUser.WaitUsers) < 2 { // 斗地主需要三个人才能玩
 		AddHighFieldWaitUser(session, playerInfo)
@@ -470,15 +469,6 @@ func DealPlayerEnterHighField(session *melody.Session, playerInfo PlayerInfo) {
 
 /*=================  高级场 ===============*/
 
-
-
-
-
-
-
-
-
-
 // help
 // 用户是否在等待队列
 func IsPlayerInExpField(playerId string) bool {
@@ -524,5 +514,87 @@ func IsPlayerInHighField(playerId string) bool {
 	return false
 }
 
+// 匹配队列
+//func cornMatch() {
+//	var MyCron cron.Cron
+//	ce := "*/5 * * * * ?"
+//	MyCron.AddFunc(ce, matchExpField, "matchExpField")
+//	MyCron.AddFunc(ce, matchLowField, "matchLowField")
+//	MyCron.AddFunc(ce, matchMidField, "matchMidField")
+//	MyCron.AddFunc(ce, matchHighField, "matchHighField")
+//
+//	MyCron.Start()
+//
+//}
 
+func matchExpField() {
+	d:=time.Duration(RandNum(4,8))
+	DelaySomeTime(d)
+	ExpFieldWaitUser.mu.Lock()
+	defer ExpFieldWaitUser.mu.Unlock()
 
+	if len(ExpFieldWaitUser.WaitUsers) > 0 {
+		logger.Debug("当前体验城等待用户人数",len(ExpFieldWaitUser.WaitUsers))
+		for _, p := range ExpFieldWaitUser.WaitUsers {
+			PlayWithRobot(p.Session, *p.Player, roomType.ExperienceField)
+		}
+		logger.Debug("ExpField玩家匹配的机器人")
+	} else {
+		logger.Debug("ExpField玩家匹配的玩家")
+	}
+	ExpFieldWaitUser.WaitUsers = make(map[string]*WaitUser, 3)
+}
+
+// 匹配队列
+func matchLowField() {
+	d:=time.Duration(RandNum(4,8))
+	DelaySomeTime(d)
+	LowFieldWaitUser.mu.Lock()
+	defer LowFieldWaitUser.mu.Unlock()
+
+	if len(LowFieldWaitUser.WaitUsers) > 0 {
+		for _, p := range LowFieldWaitUser.WaitUsers {
+			PlayWithRobot(p.Session, *p.Player, roomType.LowField)
+		}
+		logger.Debug("LowField玩家匹配的机器人")
+	} else {
+		logger.Debug("LowField玩家匹配的玩家")
+	}
+	LowFieldWaitUser.WaitUsers = make(map[string]*WaitUser, 3)
+}
+
+// 匹配队列
+func matchMidField() {
+	d:=time.Duration(RandNum(4,8))
+	DelaySomeTime(d)
+	MidFieldWaitUser.mu.Lock()
+	defer MidFieldWaitUser.mu.Unlock()
+
+	if len(MidFieldWaitUser.WaitUsers) > 0 {
+		for _, p := range MidFieldWaitUser.WaitUsers {
+			PlayWithRobot(p.Session, *p.Player, roomType.MidField)
+		}
+		logger.Debug("MidField玩家匹配的机器人")
+	} else {
+		logger.Debug("MidField玩家匹配的玩家")
+	}
+	MidFieldWaitUser.WaitUsers = make(map[string]*WaitUser, 3)
+}
+
+// 匹配队列
+func matchHighField() {
+	d:=time.Duration(RandNum(4,8))
+	DelaySomeTime(d)
+	HighFieldWaitUser.mu.Lock()
+	defer HighFieldWaitUser.mu.Unlock()
+
+	if len(HighFieldWaitUser.WaitUsers) > 0 {
+		for _, p := range HighFieldWaitUser.WaitUsers {
+			PlayWithRobot(p.Session, *p.Player, roomType.HighField)
+		}
+		logger.Debug("HighField玩家匹配的机器人")
+	} else {
+		logger.Debug("HighField玩家匹配的玩家")
+	}
+	HighFieldWaitUser.WaitUsers = make(map[string]*WaitUser, 3)
+}

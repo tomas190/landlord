@@ -44,6 +44,8 @@ func InitConfig() {
 	initServerConf()
 	initMongoDb()
 	initRoomClassify()
+
+	//cornMatch()
 }
 
 // 加载日志适配器

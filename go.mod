@@ -9,6 +9,7 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/websocket v1.4.1
+	github.com/jakecoffman/cron v0.0.0-20190106200828-7e2009c226a5
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/wonderivan/logger v1.0.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
