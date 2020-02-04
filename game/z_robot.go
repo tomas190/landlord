@@ -31,8 +31,8 @@ func getRobotImg() string {
 	MidField        int32 = 3 // 中级场
 	HighField       int32 = 4 // 高级场
 */
-func getRobotGold(roomType int32)float64{
-	switch roomType {
+func getRobotGold(rt int32)float64{
+	switch rt {
 	case roomType.ExperienceField:
 		return float64(RandNum(6, 30))
 	case roomType.LowField:
