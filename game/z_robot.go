@@ -40,8 +40,8 @@ func getRobotGold(rt int32)float64{
 	case roomType.MidField:
 		return float64(RandNum(30, 300))
 	case roomType.HighField:
-		return float64(RandNum(200, 2000))
+		return float64(RandNum(101, 300))
 	}
-	return float64(RandNum(200, 2000))
+	return float64(RandNum(101, 300))
 }
 
