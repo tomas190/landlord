@@ -2,13 +2,14 @@ package game
 
 import (
 	"strconv"
+	"landlord/mconst/roomType"
 )
 
-func CreateRobot() *Player {
+func CreateRobot(roomType int32) *Player {
 	var player Player
 	var pi PlayerInfo
 	pi.PlayerId = strconv.Itoa(RandNum(12311548, 95685578))
-	pi.Gold = float64(RandNum(300, 1983))
+	pi.Gold = getRobotGold(roomType)
 	pi.Name = pi.PlayerId
 	pi.HeadImg = getRobotImg()
 	player.PlayerInfo = &pi
@@ -24,4 +25,23 @@ func getRobotImg() string {
 }
 
 
+/*
+	ExperienceField int32 = 1 // 体验场
+	LowField        int32 = 2 // 初级场
+	MidField        int32 = 3 // 中级场
+	HighField       int32 = 4 // 高级场
+*/
+func getRobotGold(roomType int32)float64{
+	switch roomType {
+	case roomType.ExperienceField:
+		return float64(RandNum(6, 30))
+	case roomType.LowField:
+		return float64(RandNum(20, 200))
+	case roomType.MidField:
+		return float64(RandNum(30, 300))
+	case roomType.HighField:
+		return float64(RandNum(200, 2000))
+	}
+	return float64(RandNum(200, 2000))
+}
 

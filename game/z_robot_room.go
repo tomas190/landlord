@@ -43,10 +43,10 @@ func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int3
 	p.PlayerPosition = 1
 	p.ActionChan = make(chan PlayerActionChan)
 
-	robot2 := CreateRobot()
+	robot2 := CreateRobot(roomType)
 	robot2.PlayerPosition = 2
 
-	robot3 := CreateRobot()
+	robot3 := CreateRobot(roomType)
 	robot3.PlayerPosition = 3
 
 	mp := make(map[string]*Player, 3)
@@ -94,7 +94,7 @@ func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, d
 			room.Players[p.PlayerInfo.PlayerId] = &p
 
 			// 第一个进入的机器人
-			robot2 := CreateRobot()
+			robot2 := CreateRobot(room.RoomClass.RoomType)
 			robot2.PlayerPosition = 2
 			room.Players[robot2.PlayerInfo.PlayerId] = robot2
 
@@ -103,7 +103,7 @@ func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, d
 			PushFakerPlayerEnterRoom(room.Players, &p)
 
 			// 第一个进入的机器人
-			robot3 := CreateRobot()
+			robot3 := CreateRobot(room.RoomClass.RoomType)
 			robot3.PlayerPosition = 3
 			room.Players[robot3.PlayerInfo.PlayerId] = robot3
 
@@ -120,7 +120,7 @@ func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, d
 			room.Players[p.PlayerInfo.PlayerId] = &p
 
 			// 第一个进入的机器人
-			robot2 := CreateRobot()
+			robot2 := CreateRobot(room.RoomClass.RoomType)
 			robot2.PlayerPosition = 2
 			room.Players[robot2.PlayerInfo.PlayerId] = robot2
 
@@ -132,7 +132,7 @@ func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, d
 			DelaySomeTime(destiny / 5)
 			PushFakerPlayerQuitRoom(&p)
 
-			robotN2 := CreateRobot()
+			robotN2 := CreateRobot(room.RoomClass.RoomType)
 			robotN2.PlayerPosition = 2
 			room.Players[robotN2.PlayerInfo.PlayerId] = robotN2
 
@@ -140,7 +140,7 @@ func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, d
 			PushFakerPlayerEnterRoom(room.Players, &p)
 
 			// 第一个进入的机器人
-			robot3 := CreateRobot()
+			robot3 := CreateRobot(room.RoomClass.RoomType)
 			robot3.PlayerPosition = 3
 			room.Players[robot3.PlayerInfo.PlayerId] = robot3
 
