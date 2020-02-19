@@ -132,6 +132,7 @@ func syncSessionInfo(oldSession, session *melody.Session, info *mproto.PlayerInf
 			player.PlayerInfo.Name = info.PlayerName
 			player.PlayerInfo.HeadImg = info.PlayerImg
 			player.Session = session
+			player.IsCloseSession = false
 		}
 		game.SetSessionRoomId(session, roomId)
 	}
