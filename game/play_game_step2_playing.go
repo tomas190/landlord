@@ -10,7 +10,6 @@ import (
 	"landlord/mconst/playerStatus"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
-	"runtime"
 	"time"
 )
 
@@ -120,6 +119,13 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	// 出牌日志
 
 	if len(actionPlayer.HandCards) == 0 {
+		// 有人打完代表这局结束
+		for _,p:=range room.Players  {
+			if !p.IsRobot {
+				SetSessionRoomId(p.Session, "")
+			}
+		}
+		
 		//pushOutCardHelp(room, nil, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType)
 		// 判断是否春天
 		isSpring := CheckSpring(room, actionPlayer)
@@ -137,7 +143,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 
 		// 移除房间
 		clearRoomAndPlayer(room)
-		runtime.Goexit()
+		//runtime.Goexit()
 		return
 	}
 	if actionPlayer.IsRobot { // 重新组排
@@ -323,10 +329,11 @@ func clearRoomAndPlayer(room *Room) {
 
 		if player.IsCloseSession { // 如果玩家已经断线 登出中心服
 			ClearClosePlayer(player.Session)
-		} else {
-			// 置空玩家的roomId
-			SetSessionRoomId(player.Session, "")
 		}
+		//else {
+		//	// 置空玩家的roomId
+		//	//SetSessionRoomId(player.Session, "")
+		//}
 	}
 	// 移除房间
 	RemoveRoom(room.RoomId)
