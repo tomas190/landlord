@@ -37,14 +37,28 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		return
 	}
 
-	room, b := IsPlayerInRoom(playerInfo.PlayerId)
-	if b {
-		if room.RoomClass.RoomType == req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
-			//room.Players[playerInfo.PlayerId].Session = session
-			PushRecoverRoom(session, room, playerInfo.PlayerId)
+	//room, b := IsPlayerInRoom(playerInfo.PlayerId)
+	//if b {
+	//	if room.RoomClass.RoomType == req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
+	//		//room.Players[playerInfo.PlayerId].Session = session
+	//		PushRecoverRoom(session, room, playerInfo.PlayerId)
+	//	}
+	//	return
+	//}
+
+	// 2020年2月20日19:02:20 todo
+	roomId := GetSessionRoomId(session)
+	if roomId!="" {
+		room := GetRoom(roomId)
+		if room!=nil {
+			if room.RoomClass.RoomType==req.RoomType {
+				PushRecoverRoom(session, room, playerInfo.PlayerId)
+				return
+			}
 		}
-		return
+		logger.Debug("进入房间异常:存在roomId 但无此房间:",roomId)
 	}
+	// 2020年2月20日19:02:20 todo
 
 	//if Server.UseRobot { // 如果是开启机器人模式
 	//	wc := make(chan struct{})

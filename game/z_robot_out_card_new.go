@@ -1,8 +1,10 @@
 package game
 
 import (
+	"fmt"
 	"github.com/wonderivan/logger"
 	"landlord/mconst/cardConst"
+	"strconv"
 )
 
 /*
@@ -87,7 +89,7 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 
 		if len(comRe) >= 2 {
 			logger.Debug("地主首出 只有和这种类型相似的牌  出第二大")
-			OutCardsAction(room, robot, nextPlayer, comRe[1].Card, comRe[1].CardType)
+			OutCardsAction(room, robot, nextPlayer, SpecialHandle(comRe[1].Card), comRe[1].CardType)
 			return
 		}
 	}
@@ -100,7 +102,7 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 				logger.Debug("地主首出 农民保双 非类型最小权重")
 				outCard := comRe[i].Card
 				cardType := comRe[i].CardType
-				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -108,13 +110,16 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 		if len(comRe) >= 2 {
 			logger.Debug("地主首出 如果全是对子 出最小单牌")
 			outCard := findMinCard(robot.HandCards)
-			OutCardsAction(room, robot, nextPlayer, outCard, cardConst.CARD_PATTERN_SINGLE)
+			OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardConst.CARD_PATTERN_SINGLE)
+			//OutCardsAction(room, robot, nextPlayer, outCard, cardConst.CARD_PATTERN_SINGLE)
 			return
 		}
 	}
 
 	logger.Debug("地主首出 无人最后一手牌 取最小权值牌")
-	OutCardsAction(room, robot, nextPlayer, comRe[0].Card, comRe[0].CardType)
+	//checkCard := SpecialHandle(comRe[0].Card)
+	OutCardsAction(room, robot, nextPlayer, SpecialHandle(comRe[0].Card), comRe[0].CardType)
+	//OutCardsAction(room, robot, nextPlayer, comRe[0].Card, comRe[0].CardType)
 }
 
 // 二 地主机器人跟牌策虐 finish
@@ -358,7 +363,7 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 						logger.Debug("F1首出 最后一首是炸弹+其他 并无人报牌 显出其他")
 						outCard := comRe[i].Card
 						cardType := comRe[i].CardType
-						OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+						OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 						return
 					}
 				}
@@ -372,7 +377,7 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 			if upReCards[i].IsGodCard && !(upReCards[i].RC.CardType == cardConst.CARD_PATTERN_BOMB || upReCards[i].RC.CardType == cardConst.CARD_PATTERN_ROCKET) {
 				outCard := upReCards[i].RC.Card
 				cardType := upReCards[i].RC.CardType
-				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -382,7 +387,7 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 			if upReCards[i].IsGodCard {
 				outCard := upReCards[i].RC.Card
 				cardType := upReCards[i].RC.CardType
-				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -434,7 +439,7 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 				logger.Debug("F1首出 地主保单 非类型最小权重")
 				outCard := comRe[i].Card
 				cardType := comRe[i].CardType
-				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -452,7 +457,7 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 				logger.Debug("F1首出 地主保双 非类型最小权重")
 				outCard := comRe[i].Card
 				cardType := comRe[i].CardType
-				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -464,7 +469,7 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 	}
 
 	logger.Debug("F1首出 无人最后一手牌 取最小权值牌")
-	OutCardsAction(room, robot, nextPlayer, comRe[0].Card, comRe[0].CardType)
+	OutCardsAction(room, robot, nextPlayer, SpecialHandle(comRe[0].Card), comRe[0].CardType)
 }
 
 /*
@@ -514,7 +519,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 						logger.Debug("F2首出 最后一首是炸弹+其他 并无人报牌 显出其他")
 						outCard := comRe[i].Card
 						cardType := comRe[i].CardType
-						OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+						OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 						return
 					}
 				}
@@ -528,7 +533,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 			if upReCards[i].IsGodCard && !(upReCards[i].RC.CardType == cardConst.CARD_PATTERN_BOMB || upReCards[i].RC.CardType == cardConst.CARD_PATTERN_ROCKET) {
 				outCard := upReCards[i].RC.Card
 				cardType := upReCards[i].RC.CardType
-				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -538,7 +543,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 			if upReCards[i].IsGodCard {
 				outCard := upReCards[i].RC.Card
 				cardType := upReCards[i].RC.CardType
-				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+				OutCardsAction(room, robot, nextPlayer,  SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -552,7 +557,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 				logger.Debug("F1首出 地主保单 非类型最小权重")
 				outCard := comRe[i].Card
 				cardType := comRe[i].CardType
-				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+				OutCardsAction(room, robot, nextPlayer,  SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -570,7 +575,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 				logger.Debug("F1首出 地主保双 非类型最小权重")
 				outCard := comRe[i].Card
 				cardType := comRe[i].CardType
-				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
+				OutCardsAction(room, robot, nextPlayer,  SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -582,7 +587,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 	}
 
 	logger.Debug("F1首出 无人最后一手牌 取最小权值牌")
-	OutCardsAction(room, robot, nextPlayer, comRe[0].Card, comRe[0].CardType)
+	OutCardsAction(room, robot, nextPlayer,  SpecialHandle(comRe[0].Card), comRe[0].CardType)
 }
 
 /*
@@ -799,4 +804,34 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 	NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
 	return
 
+}
+
+
+
+// bug特殊处理
+/*
+	3456788大鬼能出牌 123456615
+	3456788大鬼出牌 123456614
+*/
+func SpecialHandle(outCard []*Card)[]*Card  {
+	if len(outCard)!=8 {
+		fmt.Println("aaa")
+		return outCard
+	}
+	var exp string
+	SortCardSL(outCard)
+	for i:=0; i<len(outCard);i++  {
+		exp+=strconv.Itoa(int(outCard[i].Value))
+	}
+
+	var res []*Card
+	if "123456615" == exp ||"123456614"==exp{
+		for i:=1;i<=6 ;  i++{
+			card:=findThisValueCard(i,outCard,1)
+			res = append(res, card...)
+		}
+		return res
+	}else {
+		return outCard
+	}
 }

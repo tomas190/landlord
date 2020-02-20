@@ -323,18 +323,16 @@ func CheckSpring(room *Room, player *Player) bool {
 func clearRoomAndPlayer(room *Room) {
 	players := room.Players
 	for _, player := range players {
-		if player.IsRobot {
-			continue
-		}
-
-		if player.IsCloseSession { // 如果玩家已经断线 登出中心服
-			ClearClosePlayer(player.Session)
-		}
-		//else {
+		if !player.IsRobot {
+			if player.IsCloseSession { // 如果玩家已经断线 登出中心服
+				ClearClosePlayer(player.Session)
+			}
+			//else {
 			// 置空玩家的roomId
 			//SetSessionRoomId(player.Session, "")
-		//}
-		SetSessionRoomId(player.Session, "")
+			//}
+			SetSessionRoomId(player.Session, "")
+		}
 	}
 	// 移除房间
 	RemoveRoom(room.RoomId)
