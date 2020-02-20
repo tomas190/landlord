@@ -121,9 +121,6 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 
 	if len(actionPlayer.HandCards) == 0 {
 		// 有人打完代表这局结束
-		// 移除房间
-		clearRoomAndPlayer(room)
-
 		//pushOutCardHelp(room, nil, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType)
 		// 判断是否春天
 		isSpring := CheckSpring(room, actionPlayer)
@@ -135,12 +132,17 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 			pushSpring(room)
 			//DelaySomeTime(1)
 		}
-		//DelaySomeTime(2)
+		//
 		// 结算
 		Settlement(room, actionPlayer)
 
+		//
+		if isSpring {
+			DelaySomeTime(1)
+		}
+		DelaySomeTime(2)
 		//// 移除房间
-		//clearRoomAndPlayer(room)
+		clearRoomAndPlayer(room)
 		runtime.Goexit()
 		return
 	}
