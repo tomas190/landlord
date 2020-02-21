@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"github.com/wonderivan/logger"
+	"landlord/mconst/roomType"
 	"testing"
 )
 
@@ -344,4 +345,11 @@ func TestCreateRobot(t *testing.T) {
 		PrintCard(append([]*Card{},a[i]))
 	}
 
+}
+
+func TestAddHighFieldWaitUser(t *testing.T) {
+	fmt.Println(getRobotGold(roomType.ExperienceField))
+	fmt.Println(getRobotGold(roomType.LowField))
+	fmt.Println(getRobotGold(roomType.MidField))
+	fmt.Println(getRobotGold(roomType.HighField))
 }

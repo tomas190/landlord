@@ -1,10 +1,10 @@
 package game
 
 import (
-	"fmt"
 	"github.com/wonderivan/logger"
 	"landlord/mconst/cardConst"
 	"strconv"
+	"strings"
 )
 
 /*
@@ -815,7 +815,6 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 */
 func SpecialHandle(outCard []*Card)[]*Card  {
 	if len(outCard)!=8 {
-		fmt.Println("aaa")
 		return outCard
 	}
 	var exp string
@@ -825,7 +824,7 @@ func SpecialHandle(outCard []*Card)[]*Card  {
 	}
 
 	var res []*Card
-	if "123456615" == exp ||"123456614"==exp{
+	if strings.Contains(exp,"123456")&&GetCardsType(outCard)==cardConst.CARD_PATTERN_ERROR{
 		for i:=1;i<=6 ;  i++{
 			card:=findThisValueCard(i,outCard,1)
 			res = append(res, card...)

@@ -8,7 +8,7 @@ import (
 func CreateRobot(roomType int32) *Player {
 	var player Player
 	var pi PlayerInfo
-	pi.PlayerId = strconv.Itoa(RandNum(12311548, 95685578))
+	pi.PlayerId = strconv.Itoa(RandNum(123115480, 956855780))
 	pi.Gold = getRobotGold(roomType)
 	pi.Name = pi.PlayerId
 	pi.HeadImg = getRobotImg()
@@ -34,14 +34,14 @@ func getRobotImg() string {
 func getRobotGold(rt int32)float64{
 	switch rt {
 	case roomType.ExperienceField:
-		return float64(RandNum(6, 30))
+		return float64(RandNum(6, 30))+float64(RandNum(6, 30))/100
 	case roomType.LowField:
-		return float64(RandNum(20, 200))
+		return float64(RandNum(20, 200))+float64(RandNum(6, 30))/100
 	case roomType.MidField:
-		return float64(RandNum(30, 300))
+		return float64(RandNum(30, 300))+float64(RandNum(6, 30))/100
 	case roomType.HighField:
-		return float64(RandNum(101, 300))
+		return float64(RandNum(101, 300))+float64(RandNum(6, 30))/100
 	}
-	return float64(RandNum(101, 300))
+	return float64(RandNum(101, 300))+float64(RandNum(6, 30))/100
 }
 
