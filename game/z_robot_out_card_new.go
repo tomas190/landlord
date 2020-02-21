@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/wonderivan/logger"
 	"landlord/mconst/cardConst"
+	"landlord/mconst/playerAction"
 	"strconv"
 	"strings"
 )
@@ -21,6 +22,15 @@ import (
 */
 
 func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
+
+	// 2020年2月21日16:41:43 如果能一首出完
+	hc := robot.HandCards
+	cardsType := GetCardsType(hc)
+	if cardsType>=cardConst.CARD_PATTERN_SINGLE&&cardsType<=cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS {
+		OutCardsAction(room, robot, nextPlayer, hc, cardsType)
+		return
+	}
+	// 2020年2月21日16:41:43 如果能一首出完
 
 	comG := completeGroupCard(robot.GroupCard)
 	comRe := changeGroupToReCard(comG)
@@ -310,6 +320,21 @@ func NewLandlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, l
 
 	}
 
+
+	// 2020年2月21日19:31:21 这里对拆对子打单牌进行处理
+	if eType==cardConst.CARD_PATTERN_SINGLE&&robot.LastAction==playerAction.NotOutCardAction{
+		// 如果这首是单牌 并且上把牌地主也没出的情况下 60%的几率拆牌压
+		rand:=RandNum(0,10)
+		if rand>=4 {
+			beatCards, b3, bType := FindCanBeatCards(robot.HandCards, eCards, eType)
+			if  b3{
+				OutCardsAction(room, robot, nextPlayer, beatCards, bType)
+				return
+			}
+		}
+	}
+	// 2020年2月21日19:31:21 这里对拆对子打单牌进行处理
+
 	NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
 	return
 
@@ -346,6 +371,16 @@ func NewLandlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, l
 			否： 【非对子最小权重】
 */
 func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
+
+	// 2020年2月21日16:41:43 如果能一首出完
+	hc := robot.HandCards
+	cardsType := GetCardsType(hc)
+	if cardsType>=cardConst.CARD_PATTERN_SINGLE&&cardsType<=cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS {
+		OutCardsAction(room, robot, nextPlayer, hc, cardsType)
+		return
+	}
+	// 2020年2月21日16:41:43 如果能一首出完
+
 	comG := completeGroupCard(robot.GroupCard)
 	comRe := changeGroupToReCard(comG)
 	SortReCardByWightSL(comRe)
@@ -503,6 +538,16 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 			否： 【非对子最小权重】
 */
 func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
+
+	// 2020年2月21日16:41:43 如果能一首出完
+	hc := robot.HandCards
+	cardsType := GetCardsType(hc)
+	if cardsType>=cardConst.CARD_PATTERN_SINGLE&&cardsType<=cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS {
+		OutCardsAction(room, robot, nextPlayer, hc, cardsType)
+		return
+	}
+	// 2020年2月21日16:41:43 如果能一首出完
+
 	comG := completeGroupCard(robot.GroupCard)
 	comRe := changeGroupToReCard(comG)
 	SortReCardByWightSL(comRe)
