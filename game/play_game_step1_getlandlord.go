@@ -125,12 +125,28 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 			emptyPlayerCardInfo(room) // 清空数据
 
 			DelaySomeTime(1)
-			if Server.UseRobot {
-				// PushPlayerStartGameWithRobot(room)
-				PushPlayerStartGameWithRobot2(room)
-			} else {
-				PushPlayerStartGame(room)
+			// 2020年2月22日16:02:23 bug控制针异常
+			var truePlayerNum int
+			//
+			for _, p := range room.Players {
+				if !p.IsRobot{
+					truePlayerNum++
+				}
 			}
+
+			if truePlayerNum==3 {
+				PushPlayerStartGame(room)
+			}else {
+				PushPlayerStartGameWithRobot2(room)
+			}
+
+			//if Server.UseRobot {
+			//	// PushPlayerStartGameWithRobot(room)
+			//
+			//	PushPlayerStartGameWithRobot2(room)
+			//} else {
+			//	PushPlayerStartGame(room)
+			//}
 		}
 	} else { // 则让下一个玩家叫地主
 		setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)

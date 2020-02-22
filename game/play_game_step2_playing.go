@@ -350,3 +350,30 @@ func ClearClosePlayer(session *melody.Session) {
 	RemoveAgent(playerInfo.PlayerId)
 	RemoveWaitUser(playerInfo.PlayerId)
 }
+
+// 出牌前监测牌型是否正确
+func OutCardCheck(outCard []*Card, cardType int32) ([]*Card, int32) {
+	// 顺子监测补丁
+	if cardType == cardConst.CARD_PATTERN_SEQUENCE {
+		cardsType := GetCardsType(outCard)
+		if cardsType == cardType {
+			return outCard, cardType
+		} else {
+			// 组成最小的顺子
+			gc := GroupHandsCard(outCard)
+			gc = completeGroupCard(gc)
+			if len(gc.Junko) >= 1 {
+				logger.Debug("非法出牌 补丁已经修正 非法牌:" )
+				PrintCard(outCard)
+				logger.Debug("非法出牌 补丁已经修正 修正:" )
+				PrintCard( gc.Junko[0].Card)
+				return gc.Junko[0].Card, cardType
+			}
+			// 如果这里顺子也组不了就返回第一张单张
+			if cardsType == cardConst.CARD_PATTERN_ERROR {
+				return append([]*Card{}, outCard[0]), cardConst.CARD_PATTERN_SINGLE
+			}
+		}
+	}
+	return outCard, cardType
+}
