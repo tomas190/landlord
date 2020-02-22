@@ -92,21 +92,19 @@ func stick() ([]*Card, []*Card, []*Card) {
 
 func CreateCardsNew() ([]*Card, []*Card, []*Card, []*Card) {
 	cards, _ := CreateBroken8910Card()
-	logger.Debug("len:",len(cards))
+	logger.Debug("len:", len(cards))
 
-	OutOfCardNotDeep42(cards,1)
-	p1card :=append([]*Card{}, cards[:13]...)
+	OutOfCardNotDeep42(cards, 1)
+	p1card := append([]*Card{}, cards[:13]...)
 	p2card := append([]*Card{}, cards[13:26]...)
 	p3card := append([]*Card{}, cards[26:39]...)
 	boCard := cards[39:]
 
 	i, i2, i3 := stick()
 
-
-	p1card=append(p1card, i...)
-	p2card=append(p2card, i2...)
-	p3card=append(p3card, i3...)
-
+	p1card = append(p1card, i...)
+	p2card = append(p2card, i2...)
+	p3card = append(p3card, i3...)
 
 	return p1card, p2card, p3card, boCard
 
@@ -202,7 +200,7 @@ func OutOfCardNotDeep(arr []*Card, deepLevel int) {
 
 // 随机乱序
 func OutOfCardNotDeep42(arr []*Card, deepLevel int) {
-	for i := len(arr) - 1; i >deepLevel ; i-- {
+	for i := len(arr) - 1; i > deepLevel; i-- {
 		num := RandNum(0, 41)
 		arr[i], arr[num] = arr[num], arr[i]
 	}
@@ -285,4 +283,84 @@ func (ms *multiSort) Less(i, j int) bool {
 	// All comparisons to here said "equal", so just return whatever
 	// the final comparison reports.
 	return ms.less[k](*p, *q)
+}
+
+/*给三个真实玩家发好牌*/
+func CreateGoodCardAll() []*Card {
+	var base []int
+	for i := 1; i <= 13; i++ {
+		base = append(base, i)
+	}
+	OutOfSort(base, 0)
+
+	var result []*Card
+	for i := 0; i < len(base); i++ {
+		for j := 1; j <= 4; j++ {
+			var card Card
+			card.Value = int32(base[i])
+			card.Suit = int32(j)
+			result = append(result, &card)
+		}
+	}
+
+	var bigCard Card
+	var smlCard Card
+	bigCard.Value = cardConst.CARD_RANK_RED_JOKER
+	bigCard.Suit = cardConst.CARD_SUIT_JOKER
+	smlCard.Value = cardConst.CARD_RANK_BLACK_JOKER
+	smlCard.Suit = cardConst.CARD_SUIT_JOKER
+
+	result = append(result, &bigCard, &smlCard)
+	fmt.Println("==========", len(result))
+	PrintCard(result)
+	dSort := RandNum(45, 50)
+	OutOfCardNotDeep(result, dSort)
+
+	return result
+}
+
+/*给三个真实玩家发好牌*/
+func CreateGoodCard() ([]*Card, []*Card, []*Card, []*Card, ) {
+	var base []int
+	for i := 1; i <= 13; i++ {
+		base = append(base, i)
+	}
+	OutOfSort(base, 0)
+
+	var result []*Card
+	for i := 0; i < len(base); i++ {
+		for j := 1; j <= 4; j++ {
+			var card Card
+			card.Value = int32(base[i])
+			card.Suit = int32(j)
+			result = append(result, &card)
+		}
+	}
+
+	var bigCard Card
+	var smlCard Card
+	bigCard.Value = cardConst.CARD_RANK_RED_JOKER
+	bigCard.Suit = cardConst.CARD_SUIT_JOKER
+	smlCard.Value = cardConst.CARD_RANK_BLACK_JOKER
+	smlCard.Suit = cardConst.CARD_SUIT_JOKER
+
+	result = append(result, &bigCard, &smlCard)
+	fmt.Println("==========", len(result))
+	PrintCard(result)
+	dSort := RandNum(45, 50)
+	OutOfCardNotDeep(result, dSort)
+
+	a1 := append([]*Card{}, result[:17]...)
+	a2 := append([]*Card{}, result[17:34]...)
+	a3 := append([]*Card{}, result[34:51]...)
+	a4 := append([]*Card{}, result[51:]...)
+	return a1, a2, a3, a4
+}
+
+// 随机乱序
+func OutOfSort(arr []int, deepLevel int) {
+	for i := len(arr) - 1; i > deepLevel; i-- {
+		num := RandNum(0, len(arr)-1)
+		arr[i], arr[num] = arr[num], arr[i]
+	}
 }

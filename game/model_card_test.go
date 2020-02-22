@@ -32,3 +32,28 @@ func TestReqEnterRoom(t *testing.T) {
 	PrintCard(result)
 
 }
+
+func TestCreateGoodCard(t *testing.T)  {
+
+	var base []int
+	for i:=1;i<=13 ;i++  {
+		base=append(base, i)
+	}
+
+	OutOfSort(base,0)
+
+
+	a1, a2, a3, bo := CreateGoodCard()
+
+	SortCardSL(a1)
+	SortCardSL(a2)
+	SortCardSL(a3)
+	SortCardSL(bo)
+
+	fmt.Println("===========")
+	PrintCard(a1)
+	PrintCard(a2)
+	PrintCard(a3)
+	PrintCard(bo)
+
+}

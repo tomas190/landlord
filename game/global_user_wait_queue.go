@@ -528,7 +528,7 @@ func IsPlayerInHighField(playerId string) bool {
 //}
 
 func matchExpField() {
-	d:=time.Duration(RandNum(4,8))
+	d:=time.Duration(RandNum(2,6))
 	DelaySomeTime(d)
 	ExpFieldWaitUser.mu.Lock()
 	defer ExpFieldWaitUser.mu.Unlock()
