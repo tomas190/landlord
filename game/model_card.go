@@ -350,7 +350,7 @@ func CreateGoodCard() ([]*Card, []*Card, []*Card, []*Card, ) {
 	result = append(result, &bigCard, &smlCard)
 	fmt.Println("==========", len(result))
 	PrintCard(result)
-	dSort := RandNum(45, 50)
+	dSort := RandNum(35, 48)
 	OutOfCardNotDeep(result, dSort)
 
 	a1 := append([]*Card{}, result[:17]...)

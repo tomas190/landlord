@@ -116,6 +116,7 @@ func PushPlayerStartGameWithRobot2(room *Room) {
 	} else {
 		// 2020年2月24日15:39:27 如果是体验场 玩家都会有好牌
 		if room.EffectiveType==roomType.ExperienceField {
+			logger.Debug("体验场都发好牌...")
 			p1, p2, p3, bottomCard = CreateGoodCard()
 		}else{ // 反之则正常发牌
 			p1, p2, p3, bottomCard = CreateCardsNew()
