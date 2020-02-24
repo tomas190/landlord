@@ -5,6 +5,7 @@ import (
 	"github.com/wonderivan/logger"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/roomStatus"
+	"landlord/mconst/roomType"
 	"landlord/msg/mproto"
 )
 
@@ -113,7 +114,12 @@ func PushPlayerStartGameWithRobot2(room *Room) {
 			p2, p1, p3, bottomCard = CreateGodCards()
 		}
 	} else {
-		p1, p2, p3, bottomCard = CreateCardsNew()
+		// 2020年2月24日15:39:27 如果是体验场 玩家都会有好牌
+		if room.EffectiveType==roomType.ExperienceField {
+			p1, p2, p3, bottomCard = CreateGoodCard()
+		}else{ // 反之则正常发牌
+			p1, p2, p3, bottomCard = CreateCardsNew()
+		}
 	}
 
 	player, r1, r2 := getPlayersWithRobot(room)

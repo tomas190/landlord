@@ -106,7 +106,10 @@ func CreateCardsNew() ([]*Card, []*Card, []*Card, []*Card) {
 	p2card = append(p2card, i2...)
 	p3card = append(p3card, i3...)
 
-	return p1card, p2card, p3card, boCard
+	return append([]*Card{}, p1card...),
+		append([]*Card{}, p2card...),
+		append([]*Card{}, p3card...),
+		append([]*Card{}, boCard...)
 
 }
 
@@ -313,7 +316,7 @@ func CreateGoodCardAll() []*Card {
 	result = append(result, &bigCard, &smlCard)
 	fmt.Println("==========", len(result))
 	PrintCard(result)
-	dSort := RandNum(45, 50)
+	dSort := RandNum(35, 48)
 	OutOfCardNotDeep(result, dSort)
 
 	return result

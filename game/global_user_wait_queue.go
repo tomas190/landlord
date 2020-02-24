@@ -547,7 +547,7 @@ func matchExpField() {
 
 // 匹配队列
 func matchLowField() {
-	d:=time.Duration(RandNum(4,8))
+	d:=time.Duration(RandNum(2,6))
 	DelaySomeTime(d)
 	LowFieldWaitUser.mu.Lock()
 	defer LowFieldWaitUser.mu.Unlock()
@@ -565,7 +565,7 @@ func matchLowField() {
 
 // 匹配队列
 func matchMidField() {
-	d:=time.Duration(RandNum(4,8))
+	d:=time.Duration(RandNum(2,6))
 	DelaySomeTime(d)
 	MidFieldWaitUser.mu.Lock()
 	defer MidFieldWaitUser.mu.Unlock()
@@ -583,7 +583,7 @@ func matchMidField() {
 
 // 匹配队列
 func matchHighField() {
-	d:=time.Duration(RandNum(4,8))
+	d:=time.Duration(RandNum(2,6))
 	DelaySomeTime(d)
 	HighFieldWaitUser.mu.Lock()
 	defer HighFieldWaitUser.mu.Unlock()

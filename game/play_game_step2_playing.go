@@ -77,6 +77,9 @@ func PlayingGame(room *Room, actionPlayerId string) {
 // 出牌逻辑 // 在接受消息前判断牌是否符合规则 和 是否能打过上家 这里不做处理
 // 逻辑能到这一步  是确保能正常操作的
 func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card, cardsType int32) {
+	if actionPlayer.IsMustDo && actionPlayer.IsRobot {
+		cards, cardsType = OutCardCheck(cards, cardsType)
+	}
 
 	if actionPlayer.IsLandlord {
 		room.LandlordOutNum++
@@ -363,10 +366,10 @@ func OutCardCheck(outCard []*Card, cardType int32) ([]*Card, int32) {
 			gc := GroupHandsCard(outCard)
 			gc = completeGroupCard(gc)
 			if len(gc.Junko) >= 1 {
-				logger.Debug("非法出牌 补丁已经修正 非法牌:" )
+				logger.Debug("非法出牌 补丁已经修正 非法牌:")
 				PrintCard(outCard)
-				logger.Debug("非法出牌 补丁已经修正 修正:" )
-				PrintCard( gc.Junko[0].Card)
+				logger.Debug("非法出牌 补丁已经修正 修正:")
+				PrintCard(gc.Junko[0].Card)
 				return gc.Junko[0].Card, cardType
 			}
 			// 如果这里顺子也组不了就返回第一张单张
