@@ -42,8 +42,8 @@ func TestCreateGoodCard(t *testing.T)  {
 
 	OutOfSort(base,0)
 
-
-	a1, a2, a3, bo := CreateGoodCard()
+	dSort := RandNum(35, 48)
+	a1, a2, a3, bo := CreateGoodCard(dSort)
 
 	SortCardSL(a1)
 	SortCardSL(a2)

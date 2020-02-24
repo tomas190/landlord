@@ -289,7 +289,7 @@ func (ms *multiSort) Less(i, j int) bool {
 }
 
 /*给三个真实玩家发好牌*/
-func CreateGoodCardAll() []*Card {
+func CreateGoodCardAll(level int) []*Card {
 	var base []int
 	for i := 1; i <= 13; i++ {
 		base = append(base, i)
@@ -316,14 +316,14 @@ func CreateGoodCardAll() []*Card {
 	result = append(result, &bigCard, &smlCard)
 	fmt.Println("==========", len(result))
 	PrintCard(result)
-	dSort := RandNum(35, 48)
-	OutOfCardNotDeep(result, dSort)
+
+	OutOfCardNotDeep(result, level)
 
 	return result
 }
 
 /*给三个真实玩家发好牌*/
-func CreateGoodCard() ([]*Card, []*Card, []*Card, []*Card, ) {
+func CreateGoodCard(level int) ([]*Card, []*Card, []*Card, []*Card, ) {
 	var base []int
 	for i := 1; i <= 13; i++ {
 		base = append(base, i)
@@ -350,8 +350,8 @@ func CreateGoodCard() ([]*Card, []*Card, []*Card, []*Card, ) {
 	result = append(result, &bigCard, &smlCard)
 	fmt.Println("==========", len(result))
 	PrintCard(result)
-	dSort := RandNum(35, 48)
-	OutOfCardNotDeep(result, dSort)
+
+	OutOfCardNotDeep(result, level)
 
 	a1 := append([]*Card{}, result[:17]...)
 	a2 := append([]*Card{}, result[17:34]...)
