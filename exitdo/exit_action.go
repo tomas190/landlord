@@ -17,7 +17,21 @@ type done struct {
 }
 
 func (s sig) ListenKill() *done {
-	var signalList = []os.Signal{syscall.SIGINT, syscall.SIGTERM,syscall.SIGKILL}
+	var signalList = []os.Signal{
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGQUIT,
+		syscall.SIGILL,
+		syscall.SIGTRAP,
+		syscall.SIGABRT,
+		syscall.SIGBUS,
+		syscall.SIGFPE,
+		syscall.SIGKILL,
+		syscall.SIGSEGV,
+		syscall.SIGPIPE,
+		syscall.SIGALRM,
+		syscall.SIGTERM,
+	}
 	// 创建信号
 	signalChan := make(chan os.Signal, 1)
 	// 通知
