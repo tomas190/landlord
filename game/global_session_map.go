@@ -71,3 +71,11 @@ func GetConnLen() int {
 	i := len(globalLoginAgents.sessionMaps)
 	return i
 }
+
+func BackUserToHall() {
+	globalLoginAgents.rwMutex.Lock()
+	defer globalLoginAgents.rwMutex.Unlock()
+	for playerId, s := range globalLoginAgents.sessionMaps {
+		UserLogoutCenter(playerId,GetSessionPassword(s))
+	}
+}
