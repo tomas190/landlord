@@ -22,7 +22,11 @@ func RobotPlayAction(room *Room, robot, nextPlayer, lastPlayer *Player) {
 	//	return
 	//}
 	//DoGameHosting(room, robot, nextPlayer, lastPlayer)
-	delayDestiny()
+	if robot.WaitingTime >= 3 {
+		// 如果特殊情况机器人的等待时间是3秒 则快速出牌
+		DelaySomeTime(getWaitTimeOutCardFast())
+	} else {
+		delayDestiny()
+	}
 	robotOutCard(room, robot, nextPlayer, lastPlayer)
 }
-

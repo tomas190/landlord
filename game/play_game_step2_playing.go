@@ -85,8 +85,12 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	//case <-time.After(time.Second * sysSet.GameDelayTime): // 自动不出
 	case <-time.After(time.Second * delayTime): // 自动不出
 		// todo 进入托管
-		actionPlayer.IsGameHosting = true
-		RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
+		if delayTime!=3 {
+			// 如果是不能出的就不托管
+			actionPlayer.IsGameHosting = true
+			RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
+		}
+
 		if actionPlayer.IsMustDo {
 			//DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer) // 走托管逻辑
 			cards, cType := FindMustBeOutCards(actionPlayer.HandCards)
