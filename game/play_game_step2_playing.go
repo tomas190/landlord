@@ -15,8 +15,27 @@ import (
 )
 
 /*
-出牌阶段
+出牌阶段 特殊延时时间
 */
+func getPlayingDelayTime(room *Room, actionPlayer *Player) (time.Duration, int32) {
+	t := sysSet.GameDelayTime
+	ti := sysSet.GameDelayTimeInt
+	if actionPlayer.IsMustDo {
+		return t, ti
+	}
+
+	if room.EffectiveType == cardConst.CARD_PATTERN_ROCKET {
+		logger.Debug("满足上手是炸弹 延时3秒...")
+		t = 3
+		ti = 3
+	}
+	if len(room.EffectiveCard) > 1 && len(actionPlayer.HandCards) == 1 {
+		logger.Debug("满足手牌只有一张 但上手是非单张 延时3秒...")
+		t = 3
+		ti = 3
+	}
+	return t, ti
+}
 
 func PlayingGame(room *Room, actionPlayerId string) {
 	actionPlayer := room.Players[actionPlayerId]
@@ -28,7 +47,11 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 	uptWtChin := make(chan struct{})
 
-	go updatePlayerWaitingTime(actionPlayer, uptWtChin, sysSet.GameDelayTimeInt)
+	// 2020年2月25日15:21:31
+	delayTime, delayTimeInt := getPlayingDelayTime(room, actionPlayer)
+	// 2020年2月25日15:21:31
+	//go updatePlayerWaitingTime(actionPlayer, uptWtChin, sysSet.GameDelayTimeInt)
+	go updatePlayerWaitingTime(actionPlayer, uptWtChin, delayTimeInt)
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
@@ -59,7 +82,8 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		case playerAction.NotOutCardAction: // 不出
 			NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 		}
-	case <-time.After(time.Second * sysSet.GameDelayTime): // 自动不出
+	//case <-time.After(time.Second * sysSet.GameDelayTime): // 自动不出
+	case <-time.After(time.Second * delayTime): // 自动不出
 		// todo 进入托管
 		actionPlayer.IsGameHosting = true
 		RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
@@ -153,7 +177,8 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		actionPlayer.GroupCard = GroupHandsCard(actionPlayer.HandCards)
 	}
 	setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
-	pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType)
+	_, delayTimeInt := getPlayingDelayTime(room, nextPlayer)
+	pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType, delayTimeInt)
 	// 推送记牌器
 	pushCardCount(room)
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
@@ -168,7 +193,8 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 		pushMustOutCard(room, nextPlayer.PlayerInfo.PlayerId)
 	} else { // 则由下一个玩家出牌
 		setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
-		pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, nil, -3)
+		_, delayTimeInt := getPlayingDelayTime(room, nextPlayer)
+		pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, nil, -3,delayTimeInt)
 	}
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
@@ -243,13 +269,13 @@ func pushMustOutCard(room *Room, playerId string) string {
 	lastPlayer := getPlayerByPosition(room, getLastPosition(actionPlayer.PlayerPosition))
 
 	//pushOutCardHelp(room, actionPlayer, lastPlayer, playerAction.NoAction, true, nil, 0)
-	pushOutCardHelp(room, actionPlayer, lastPlayer, lastPlayer.LastAction, true, nil, 0)
+	pushOutCardHelp(room, actionPlayer, lastPlayer, lastPlayer.LastAction, true, nil, 0,sysSet.GameDelayTimeInt)
 	return actionPlayer.PlayerInfo.PlayerId
 }
 
 // 推送出牌辅助方法
 func pushOutCardHelp(room *Room, actionPlayer, lastPlayer *Player, lastAction int32,
-	isMustPlay bool, outCard []*Card, cardType int32) {
+	isMustPlay bool, outCard []*Card, cardType, delayTime int32) {
 	var push mproto.PushOutCard
 
 	push.LastPlayerId = lastPlayer.PlayerInfo.PlayerId
@@ -263,7 +289,8 @@ func pushOutCardHelp(room *Room, actionPlayer, lastPlayer *Player, lastAction in
 	if actionPlayer != nil {
 		push.PlayerPosition = actionPlayer.PlayerPosition
 		push.PlayerId = actionPlayer.PlayerInfo.PlayerId
-		push.Countdown = sysSet.GameDelayTimeInt
+		//push.Countdown = sysSet.GameDelayTimeInt
+		push.Countdown = delayTime
 		push.IsMustPlay = isMustPlay
 	}
 	push.Multi = room.MultiAll
@@ -273,7 +300,7 @@ func pushOutCardHelp(room *Room, actionPlayer, lastPlayer *Player, lastAction in
 
 // 推送玩家出的最后一首牌张牌
 func pushLastOutCard(room *Room, actionPlayer *Player, lastCards []*Card, cardType int32) {
-	pushOutCardHelp(room, nil, actionPlayer, actionPlayer.LastAction, false, lastCards, cardType)
+	pushOutCardHelp(room, nil, actionPlayer, actionPlayer.LastAction, false, lastCards, cardType,sysSet.GameDelayTimeInt)
 }
 
 // 将牌送 牌队中移除
