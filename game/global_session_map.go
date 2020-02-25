@@ -76,6 +76,7 @@ func BackUserToHall() {
 	globalLoginAgents.rwMutex.Lock()
 	defer globalLoginAgents.rwMutex.Unlock()
 	for playerId, s := range globalLoginAgents.sessionMaps {
+		logger.Debug("退回玩家资金到大厅:",playerId)
 		UserLogoutCenter(playerId,GetSessionPassword(s))
 	}
 }
