@@ -28,6 +28,7 @@ func RobotGetLandlordAction(room *Room, robot, nextPlayer, lastPlayer *Player) {
 				NotGetLandlordAction(room, robot, nextPlayer, lastPlayer)
 			}
 		}
+		return
 	}
 
 	// todo 机器人 抢地主阶段
