@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/wonderivan/logger"
+	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
-	"time"
 )
 
 func pushSpring(room *Room) {
@@ -27,7 +27,8 @@ func Settlement(room *Room, winPlayer *Player) {
 	origiSettlementGold := settlementGold
 
 	landPlayer, fp1, fp2 := getPlayerClass(room)
-	roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
+	//roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
+	roundId := bson.NewObjectId().String()
 
 	var sPush mproto.PushSettlement
 

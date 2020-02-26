@@ -92,7 +92,7 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId, orderId string
 	//userWin.Info.LockMoney = 0
 	userWin.Info.Money = winMoney
 	userWin.Info.Order = orderId
-	userWin.Info.PayReason = "下注"
+	userWin.Info.PayReason = "对局"
 	//userWin.Info.PreMoney = 0
 	userWin.Info.RoundId = roundId
 	baseData.Data = userWin
@@ -123,7 +123,7 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId, orderId stri
 	//userLose.Info.LockMoney = 0
 	userLose.Info.Money = lossMoney
 	userLose.Info.Order = orderId
-	userLose.Info.PayReason = "下注"
+	userLose.Info.PayReason = "对局"
 	//userLose.Info.PreMoney = 0
 	userLose.Info.RoundId = roundId
 	baseData.Data = userLose
