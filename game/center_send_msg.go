@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"github.com/wonderivan/logger"
+	"gopkg.in/mgo.v2/bson"
 	"time"
 )
 
@@ -75,7 +76,7 @@ LoginOut:
 
 
 //UserSyncWinScore 同步赢分
-func UserSyncWinScore(playerId string, winMoney float64, roundId, orderId string) {
+func UserSyncWinScore(playerId string, winMoney float64, roundId string) {
 	addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	logger.Debug("<-------- 发送赢钱指令 -------->")
 	timeUnix := time.Now().Unix()
@@ -91,7 +92,8 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId, orderId string
 	userWin.Info.ID = playerId
 	//userWin.Info.LockMoney = 0
 	userWin.Info.Money = winMoney
-	userWin.Info.Order = orderId
+	//userWin.Info.Order = orderId
+	userWin.Info.Order = bson.NewObjectId().Hex()
 	userWin.Info.PayReason = "对局"
 	//userWin.Info.PreMoney = 0
 	userWin.Info.RoundId = roundId
@@ -105,7 +107,7 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId, orderId string
 
 
 //UserSyncWinScore 同步输分
-func UserSyncLoseScore(playerId string, lossMoney float64, roundId, orderId string) {
+func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
 	addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	logger.Debug("<-------- GenLoseOrder -------->")
 
@@ -122,7 +124,8 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId, orderId stri
 	userLose.Info.ID = playerId
 	//userLose.Info.LockMoney = 0
 	userLose.Info.Money = lossMoney
-	userLose.Info.Order = orderId
+	//userLose.Info.Order = orderId
+	userLose.Info.Order = bson.NewObjectId().Hex()
 	userLose.Info.PayReason = "对局"
 	//userLose.Info.PreMoney = 0
 	userLose.Info.RoundId = roundId

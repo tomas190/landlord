@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/wonderivan/logger"
-	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
@@ -29,7 +28,7 @@ func Settlement(room *Room, winPlayer *Player) {
 
 	landPlayer, fp1, fp2 := getPlayerClass(room)
 	roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
-	order := bson.NewObjectId().String()
+	//order := bson.NewObjectId().String()
 
 	var sPush mproto.PushSettlement
 
@@ -45,13 +44,13 @@ func Settlement(room *Room, winPlayer *Player) {
 		if fp1.PlayerInfo.Gold < settlementGold { // 如果玩家1 的钱不够开
 			showWinLossGold := fmt.Sprintf("-%.2f", fp1.PlayerInfo.Gold)
 			landRealWinGold += fp1.PlayerInfo.Gold
-			syncLossGold(fp1, fp1.PlayerInfo.Gold, roundId, *room.RoomClass,order) // 同步金币 到中心服务 session
+			syncLossGold(fp1, fp1.PlayerInfo.Gold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 			ss := getSelfSettlement(room, fp1, -1, showWinLossGold, true)
 			sPush.Settlement = append(sPush.Settlement, ss)
 		} else {
 			landRealWinGold += settlementGold
-			syncLossGold(fp1, settlementGold, roundId, *room.RoomClass,order) // 同步金币 到中心服务 session
+			syncLossGold(fp1, settlementGold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 			showWinLossGold := fmt.Sprintf("-%.2f", settlementGold)
 			ss := getSelfSettlement(room, fp1, -1, showWinLossGold, false)
@@ -62,13 +61,13 @@ func Settlement(room *Room, winPlayer *Player) {
 		if fp2.PlayerInfo.Gold < settlementGold { // 如果玩家2 的钱不够开
 			showWinLossGold := fmt.Sprintf("-%.2f", fp2.PlayerInfo.Gold)
 			landRealWinGold += fp2.PlayerInfo.Gold
-			syncLossGold(fp2, fp2.PlayerInfo.Gold, roundId, *room.RoomClass,order) // 同步金币 到中心服务 session
+			syncLossGold(fp2, fp2.PlayerInfo.Gold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 			ss := getSelfSettlement(room, fp2, -1, showWinLossGold, true)
 			sPush.Settlement = append(sPush.Settlement, ss)
 		} else {
 			landRealWinGold += settlementGold
-			syncLossGold(fp2, settlementGold, roundId, *room.RoomClass,order) // 同步金币 到中心服务 session
+			syncLossGold(fp2, settlementGold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 			showWinLossGold := fmt.Sprintf("-%.2f", settlementGold)
 			ss := getSelfSettlement(room, fp2, -1, showWinLossGold, false)
@@ -76,7 +75,7 @@ func Settlement(room *Room, winPlayer *Player) {
 		}
 
 		landRealWinGoldPay := landRealWinGold * (1 - Server.GameTaxRate)                       // 地主实际赢钱 税后
-		syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId, *room.RoomClass,order) // 同步金币 到中心服务 session
+		syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 		showWinLossGold := fmt.Sprintf("%.2f", landRealWinGoldPay)
 		ss := getSelfSettlement(room, landPlayer, 1, showWinLossGold, landRealWinGold < origiSettlementGold*2)
@@ -103,9 +102,9 @@ func Settlement(room *Room, winPlayer *Player) {
 			farmerRealWinGold := landPlayer.PlayerInfo.Gold / 2
 			farmerRealWinGoldPay := farmerRealWinGold * (1 - Server.GameTaxRate)
 
-			syncWinGold(fp1, settlementGold, farmerRealWinGoldPay, roundId, *room.RoomClass,order)
-			syncWinGold(fp2, settlementGold, farmerRealWinGoldPay, roundId, *room.RoomClass,order)
-			syncLossGold(landPlayer, landPlayer.PlayerInfo.Gold, roundId, *room.RoomClass,order)
+			syncWinGold(fp1, settlementGold, farmerRealWinGoldPay, roundId, *room.RoomClass)
+			syncWinGold(fp2, settlementGold, farmerRealWinGoldPay, roundId, *room.RoomClass)
+			syncLossGold(landPlayer, landPlayer.PlayerInfo.Gold, roundId, *room.RoomClass)
 			//
 			logger.Debug("地主玩家输钱不够开", landPlayer.PlayerInfo.Gold)
 			logger.Debug("结算金额基*1", settlementGold)
@@ -124,12 +123,12 @@ func Settlement(room *Room, winPlayer *Player) {
 		} else {
 			// 正常结算
 			fp1WinGoldPay := fp1S * (1 - Server.GameTaxRate)
-			syncWinGold(fp1, fp1S, fp1WinGoldPay, roundId, *room.RoomClass,order)
+			syncWinGold(fp1, fp1S, fp1WinGoldPay, roundId, *room.RoomClass)
 
 			fp2WinGoldPay := fp2S * (1 - Server.GameTaxRate)
-			syncWinGold(fp2, fp2S, fp2WinGoldPay, roundId, *room.RoomClass,order)
+			syncWinGold(fp2, fp2S, fp2WinGoldPay, roundId, *room.RoomClass)
 
-			syncLossGold(landPlayer, fp1S+fp2S, roundId, *room.RoomClass,order)
+			syncLossGold(landPlayer, fp1S+fp2S, roundId, *room.RoomClass)
 
 			fp1ShowWinLossGold := fmt.Sprintf("%.2f", fp1WinGoldPay)
 			fs1 := getSelfSettlement(room, fp1, 1, fp1ShowWinLossGold, fp1S < settlementGold)
@@ -159,7 +158,7 @@ func Settlement(room *Room, winPlayer *Player) {
 
 }
 
-func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType RoomClassify,order string) float64 {
+func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType RoomClassify) float64 {
 	//orderId := fmt.Sprintf("%s-%s-win", roundId, player.PlayerInfo.PlayerId)
 	player.PlayerInfo.Gold = player.PlayerInfo.Gold + goldPay // 同步到房间id
 
@@ -168,7 +167,7 @@ func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType
 		if err != nil {
 			logger.Error("同步进步到session失败: !!!incredible")
 		}
-		UserSyncWinScore(player.PlayerInfo.PlayerId, gold, roundId, order) // 同步到中心服务
+		UserSyncWinScore(player.PlayerInfo.PlayerId, gold, roundId) // 同步到中心服务
 
 		// 赢钱超过设定值发送 跑马灯
 		if !player.IsRobot && goldPay > Server.WinGoldNotice {
@@ -187,7 +186,7 @@ func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType
 	return player.PlayerInfo.Gold
 }
 
-func syncLossGold(player *Player, gold float64, roundId string, roomType RoomClassify,order string) float64 {
+func syncLossGold(player *Player, gold float64, roundId string, roomType RoomClassify) float64 {
 	//orderId := fmt.Sprintf("%s-%s-loss", roundId, player.PlayerInfo.PlayerId)
 	player.PlayerInfo.Gold = player.PlayerInfo.Gold - gold
 	if !player.IsRobot { // 如果不是机器人则同步session信息
@@ -195,7 +194,7 @@ func syncLossGold(player *Player, gold float64, roundId string, roomType RoomCla
 		if err != nil {
 			logger.Error("同步进步到session失败: !!!incredible")
 		}
-		UserSyncLoseScore(player.PlayerInfo.PlayerId, -gold, roundId, order)
+		UserSyncLoseScore(player.PlayerInfo.PlayerId, -gold, roundId)
 	}
 
 	if !player.IsRobot {
