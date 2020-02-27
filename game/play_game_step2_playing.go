@@ -85,7 +85,7 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	//case <-time.After(time.Second * sysSet.GameDelayTime): // 自动不出
 	case <-time.After(time.Second * delayTime): // 自动不出
 		// todo 进入托管
-		if delayTime!=3 {
+		if delayTime != 3 {
 			// 如果是不能出的就不托管
 			actionPlayer.IsGameHosting = true
 			RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
@@ -105,8 +105,38 @@ func PlayingGame(room *Room, actionPlayerId string) {
 // 出牌逻辑 // 在接受消息前判断牌是否符合规则 和 是否能打过上家 这里不做处理
 // 逻辑能到这一步  是确保能正常操作的
 func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card, cardsType int32) {
-	if actionPlayer.IsMustDo && actionPlayer.IsRobot {
-		cards, cardsType = OutCardCheck(cards, cardsType)
+
+	// 机器人出牌补丁
+	if actionPlayer.IsRobot {
+		// 机器人出牌全面检测 是否符合出牌规则
+		if actionPlayer.IsMustDo {
+			logger.Debug("机器人首出牌检测...")
+			cards, cardsType = OutCardCheck(cards, cardsType)
+		} else {
+			// 当前牌是否大过上家 打不过就不出
+			logger.Debug("机器人跟牌检测...")
+			eCard := room.EffectiveCard
+			can := CanBeat(eCard, cards, )
+			if !can {
+				logger.Debug("检测不通过...重新跟牌")
+				logger.Debug("上手牌:", room.EffectiveCard)
+				logger.Debug("非法牌:", cards)
+				logger.Debug("非法牌型:", cardsType)
+				beatCards, b, bcType := FindCanBeatCards(actionPlayer.HandCards, room.EffectiveCard, room.EffectiveType)
+				if !b {
+					// 检测出没有打过的牌 则不出
+					lastPosition := getLastPosition(actionPlayer.PlayerPosition)
+					lastPlayer := getPlayerByPosition(room, lastPosition)
+					NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
+					return
+				}
+				cards = append([]*Card{}, beatCards...)
+				cardsType = bcType
+				logger.Debug("修正牌:", cards)
+				logger.Debug("修正牌牌型:", cardsType)
+			}
+			logger.Debug("检测通过...")
+		}
 	}
 
 	if actionPlayer.IsLandlord {
@@ -198,7 +228,7 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 	} else { // 则由下一个玩家出牌
 		setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
 		_, delayTimeInt := getPlayingDelayTime(room, nextPlayer)
-		pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, nil, -3,delayTimeInt)
+		pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, nil, -3, delayTimeInt)
 	}
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
@@ -273,7 +303,7 @@ func pushMustOutCard(room *Room, playerId string) string {
 	lastPlayer := getPlayerByPosition(room, getLastPosition(actionPlayer.PlayerPosition))
 
 	//pushOutCardHelp(room, actionPlayer, lastPlayer, playerAction.NoAction, true, nil, 0)
-	pushOutCardHelp(room, actionPlayer, lastPlayer, lastPlayer.LastAction, true, nil, 0,sysSet.GameDelayTimeInt)
+	pushOutCardHelp(room, actionPlayer, lastPlayer, lastPlayer.LastAction, true, nil, 0, sysSet.GameDelayTimeInt)
 	return actionPlayer.PlayerInfo.PlayerId
 }
 
@@ -304,7 +334,7 @@ func pushOutCardHelp(room *Room, actionPlayer, lastPlayer *Player, lastAction in
 
 // 推送玩家出的最后一首牌张牌
 func pushLastOutCard(room *Room, actionPlayer *Player, lastCards []*Card, cardType int32) {
-	pushOutCardHelp(room, nil, actionPlayer, actionPlayer.LastAction, false, lastCards, cardType,sysSet.GameDelayTimeInt)
+	pushOutCardHelp(room, nil, actionPlayer, actionPlayer.LastAction, false, lastCards, cardType, sysSet.GameDelayTimeInt)
 }
 
 // 将牌送 牌队中移除
