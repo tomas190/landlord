@@ -63,19 +63,20 @@ func PlayingGame(room *Room, actionPlayerId string) {
 
 	// todo 用户托管动作
 	if actionPlayer.IsGameHosting {
-		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer)
+		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer,uptWtChin)
 		// todo 如果机器人假装断线托管 根据70%的几率恢复
 		return
 	}
 
 	if actionPlayer.IsRobot {
 		actionPlayer.GroupCard = GroupHandsCard(actionPlayer.HandCards)
-		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer)
+		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer,uptWtChin)
 		return
 	}
 
 	select {
 	case action := <-actionPlayer.ActionChan:
+		uptWtChin <- struct{}{}
 		switch action.ActionType {
 		case playerAction.OutCardAction: // 出牌
 			OutCardsAction(room, actionPlayer, nextPlayer, action.ActionCards, action.CardsType)
@@ -84,11 +85,13 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		}
 	//case <-time.After(time.Second * sysSet.GameDelayTime): // 自动不出
 	case <-time.After(time.Second * delayTime): // 自动不出
+		uptWtChin <- struct{}{}
 		// todo 进入托管
 		if delayTime != 3 {
 			// 如果是不能出的就不托管
 			actionPlayer.IsGameHosting = true
 			RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
+			return
 		}
 
 		if actionPlayer.IsMustDo {
@@ -234,8 +237,9 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 }
 
 // 托管操作
-func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
+func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player,uptWtChin chan struct{}) {
 	DelaySomeTime(1)
+	uptWtChin <- struct{}{}
 	if actionPlayer.IsMustDo {
 		// 取牌
 		cards, cType := FindMustBeOutCards(actionPlayer.HandCards)

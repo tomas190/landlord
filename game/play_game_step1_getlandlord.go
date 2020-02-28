@@ -284,10 +284,10 @@ func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTi
 			if actionPlayer.WaitingTime <= 0 {
 				_, isClose := <-tmpChan
 				if !isClose {
-					logger.Debug("更新管道没有关闭")
+					//logger.Debug("更新管道没有关闭")
 					close(tmpChan)
 				}
-				runtime.Goexit()
+				//runtime.Goexit()
 				break
 			}
 			//	logger.Debug("更新一次时间:", actionPlayer.WaitingTime)
