@@ -91,7 +91,6 @@ func PlayingGame(room *Room, actionPlayerId string) {
 			// 如果是不能出的就不托管
 			actionPlayer.IsGameHosting = true
 			RespGameHosting(room, playerStatus.GameHosting, actionPlayer.PlayerPosition, actionPlayer.PlayerInfo.PlayerId)
-			return
 		}
 
 		if actionPlayer.IsMustDo {
