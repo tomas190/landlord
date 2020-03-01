@@ -54,19 +54,23 @@ func OnDisconnect(m *melody.Melody, session *melody.Session) {
 
 // onErr
 func OnErr(session *melody.Session, e error) {
-	go func() {
-		if !session.IsClosed() {
-			// 异常是否在房间游戏
-			info,_:=game.GetSessionPlayerInfo(session)
-			game.RemoveAgent(info.PlayerId)
-			roomId := game.GetSessionRoomId(session)
-			game.RemoveRoom(roomId)
-			err := session.Close()
-			if err != nil {
-				logger.Info("断开session异常 :", err.Error())
-			}
-		}
-	}()
+	//go func() {
+	//	if !session.IsClosed() {
+	//		// 异常是否在房间游戏
+	//		info, err := game.GetSessionPlayerInfo(session)
+	//		if err != nil {
+	//			if info!=nil {
+	//				game.RemoveAgent(info.PlayerId)
+	//				roomId := game.GetSessionRoomId(session)
+	//				game.RemoveRoom(roomId)
+	//				err = session.Close()
+	//				if err != nil {
+	//					logger.Info("断开session异常 :", err.Error())
+	//				}
+	//			}
+	//		}
+	//	}
+	//}()
 	logger.Info("Handler OnErr :", e.Error())
 }
 
