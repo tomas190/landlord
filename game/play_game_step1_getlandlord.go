@@ -8,7 +8,6 @@ import (
 	"landlord/mconst/roomStatus"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
-	"runtime"
 	"time"
 )
 
@@ -278,7 +277,7 @@ func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTi
 			logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
 			actionPlayer.WaitingTime = waitTime
 			close(tmpChan)
-			runtime.Goexit()
+			//runtime.Goexit()
 			break
 		case <-time.After(time.Second):
 			if actionPlayer.WaitingTime <= 0 {
