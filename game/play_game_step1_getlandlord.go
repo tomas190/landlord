@@ -276,7 +276,11 @@ func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTi
 		case <-tmpChan:
 			logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
 			actionPlayer.WaitingTime = waitTime
-			close(tmpChan)
+			_, isClose := <-tmpChan
+			if !isClose {
+				//logger.Debug("更新管道没有关闭")
+				close(tmpChan)
+			}
 			//runtime.Goexit()
 			break
 		case <-time.After(time.Second):
