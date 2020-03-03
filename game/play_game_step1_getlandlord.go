@@ -117,6 +117,9 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 			landPosition := int32(RandNum(1, 3))
 			landPlayer := getPlayerByPosition(room, landPosition)
 			ensureWhoIsLandlord(room, landPlayer, actionPlayer)
+			// 2020年3月3日19:34:36 这里没加return可能会造成玩家卡死
+			return
+			// 2020年3月3日19:34:36 这里没加return可能会造成玩家卡死
 		} else {
 			room.reStartNum = room.reStartNum + 1
 			logger.Debug("三个玩家都不叫 重新发牌")
