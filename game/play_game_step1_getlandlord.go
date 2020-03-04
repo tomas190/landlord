@@ -44,7 +44,9 @@ func CallLandlord(room *Room, playerId string) {
 	// 阻塞等待当前玩家的动作 超过系统设置时间后自动处理
 	select {
 	case action := <-actionPlayer.ActionChan:
-		uptWtChin <- struct{}{}
+		go func() {
+			uptWtChin <- struct{}{}
+		}()
 		switch action.ActionType {
 		case playerAction.CallLandlord: // 叫地主动作
 			CallLandlordAction(room, actionPlayer, nextPlayer)
@@ -56,7 +58,9 @@ func CallLandlord(room *Room, playerId string) {
 			NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
 		}
 	case <-time.After(time.Second * sysSet.GameDelayGetLandlordTime): // 自动进行不叫或者不抢
-		uptWtChin <- struct{}{}
+		go func() {
+			uptWtChin <- struct{}{}
+		}()
 		if room.Status == roomStatus.CallLandlord {
 			NotCallLandlordAction(room, actionPlayer, nextPlayer) // 不叫
 		} else if room.Status == roomStatus.GetLandlord {

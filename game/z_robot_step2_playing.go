@@ -5,7 +5,7 @@ import (
 )
 
 // 机器人打牌阶段操作
-func RobotPlayAction(room *Room, robot, nextPlayer, lastPlayer *Player,uptWtChin chan struct{}) {
+func RobotPlayAction(room *Room, robot, nextPlayer, lastPlayer *Player, uptWtChin chan struct{}) {
 	// 机器人打牌了
 	//isFakerDisconnection := delayDestiny()
 	//delayDestiny()
@@ -22,12 +22,14 @@ func RobotPlayAction(room *Room, robot, nextPlayer, lastPlayer *Player,uptWtChin
 	//	return
 	//}
 	//DoGameHosting(room, robot, nextPlayer, lastPlayer)
-	if robot.WaitingTime >= 3 {
+	if robot.WaitingTime > 3 {
 		delayDestiny()
 	} else {
 		// 如果特殊情况机器人的等待时间是3秒 则快速出牌
 		DelaySomeTime(getWaitTimeOutCardFast())
 	}
-	uptWtChin<- struct{}{}
+	go func() {
+		uptWtChin <- struct{}{}
+	}()
 	robotOutCard(room, robot, nextPlayer, lastPlayer)
 }

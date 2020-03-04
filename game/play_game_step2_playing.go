@@ -76,7 +76,9 @@ func PlayingGame(room *Room, actionPlayerId string) {
 
 	select {
 	case action := <-actionPlayer.ActionChan:
-		uptWtChin <- struct{}{}
+		go func() {
+			uptWtChin <- struct{}{}
+		}()
 		switch action.ActionType {
 		case playerAction.OutCardAction: // 出牌
 			OutCardsAction(room, actionPlayer, nextPlayer, action.ActionCards, action.CardsType)
@@ -85,7 +87,9 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		}
 	//case <-time.After(time.Second * sysSet.GameDelayTime): // 自动不出
 	case <-time.After(time.Second * delayTime): // 自动不出
-		uptWtChin <- struct{}{}
+		go func() {
+			uptWtChin <- struct{}{}
+		}()
 		// todo 进入托管
 		if delayTime != 3 {
 			// 如果是不能出的就不托管
@@ -238,7 +242,9 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 // 托管操作
 func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player,uptWtChin chan struct{}) {
 	DelaySomeTime(1)
-	uptWtChin <- struct{}{}
+	go func() {
+		uptWtChin <- struct{}{}
+	}()
 	if actionPlayer.IsMustDo {
 		// 取牌
 		cards, cType := FindMustBeOutCards(actionPlayer.HandCards)

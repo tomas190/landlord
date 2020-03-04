@@ -132,6 +132,7 @@ func syncSessionInfo(oldSession, session *melody.Session, info *mproto.PlayerInf
 			player.PlayerInfo.Name = info.PlayerName
 			player.PlayerInfo.HeadImg = info.PlayerImg
 			player.Session = session
+			logger.Debug("=============================== 已经恢复连线==============================")
 			player.IsCloseSession = false
 		}
 		game.SetSessionRoomId(session, roomId)

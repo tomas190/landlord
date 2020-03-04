@@ -11,7 +11,7 @@
   "WinGoldNotice": 100,
   "UseRobot": true  ,
 
-  "MongoDBAddr": "10.63.90.28:27017",
+  "MongoDBAddr": "10.63.90.96:27017",
   "MongoDBUser": "fido",
   "MongoDBPwd": "123456",
   "MongoDBAuth": "",
