@@ -8,6 +8,7 @@ import (
 	"landlord/mconst/roomStatus"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
+	"runtime"
 	"time"
 )
 
@@ -278,25 +279,12 @@ func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTi
 		select {
 		case <-tmpChan:
 			logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
-			actionPlayer.WaitingTime = waitTime
-			_, isClose := <-tmpChan
-			if !isClose {
-				//logger.Debug("更新管道没有关闭")
-				close(tmpChan)
-			}
-			//runtime.Goexit()
-			break
+			//actionPlayer.WaitingTime = waitTime
+			runtime.Goexit()
 		case <-time.After(time.Second):
 			if actionPlayer.WaitingTime <= 0 {
-				_, isClose := <-tmpChan
-				if !isClose {
-					//logger.Debug("更新管道没有关闭")
-					close(tmpChan)
-				}
-				//runtime.Goexit()
-				break
+				runtime.Goexit()
 			}
-			//	logger.Debug("更新一次时间:", actionPlayer.WaitingTime)
 			actionPlayer.WaitingTime = actionPlayer.WaitingTime - 1
 		}
 	}
