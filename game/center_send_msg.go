@@ -52,19 +52,22 @@ func UserLogoutCenter(userId string, password string) {
 		DevKey:   Server.DevKey,
 	}
 
-	var num int
-LoginOut:
-	can := canLoginOut(userId)
-	if can || num >=5 {
-		logger.Debug("loginOut normal.", num)
-		WriteMsgToCenter(base)
-		RemoveAgent(userId)
-	} else {
-		t := time.Tick(time.Millisecond*300)
-		<-t
-		num++
-		goto LoginOut
-	}
+	//DelaySomeTime(1)
+	WriteMsgToCenter(base)
+	RemoveAgent(userId)
+	//	var num int
+	//LoginOut:
+	//	can := canLoginOut(userId)
+	//	if can || num >=5 {
+	//		logger.Debug("loginOut normal.", num)
+	//		WriteMsgToCenter(base)
+	//		RemoveAgent(userId)
+	//	} else {
+	//		t := time.Tick(time.Millisecond*300)
+	//		<-t
+	//		num++
+	//		goto LoginOut
+	//	}
 
 	// 发送消息到中心服
 	// 延时1秒后发送退出中心服消息
@@ -73,11 +76,9 @@ LoginOut:
 	//global.RemoveAgent(userId)
 }
 
-
-
 //UserSyncWinScore 同步赢分
 func UserSyncWinScore(playerId string, winMoney float64, roundId string) {
-	addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
+	//	addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	logger.Debug("<-------- 发送赢钱指令 -------->")
 	timeUnix := time.Now().Unix()
 
@@ -100,15 +101,14 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId string) {
 	baseData.Data = userWin
 
 	logger.Debug("发送赢分指令:")
-	PrintMsg("sendCenterMsg:",baseData)
+	PrintMsg("sendCenterMsg:", baseData)
 
 	WriteMsgToCenter(baseData)
 }
 
-
 //UserSyncWinScore 同步输分
 func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
-	addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
+	// addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	logger.Debug("<-------- GenLoseOrder -------->")
 
 	timeUnix := time.Now().Unix()
@@ -155,7 +155,6 @@ func NoticeWinMoreThan(playerId, playerName string, winGold float64) {
 	WriteMsgToCenter(base)
 }
 
-
 func canLoginOut(userId string) bool {
 	agent := GetAgent(userId)
 	if agent == nil {
@@ -172,7 +171,6 @@ func canLoginOut(userId string) bool {
 	}
 	return true
 }
-
 
 func addPlayerMsgNum(playerId string) {
 	agent := GetAgent(playerId)
