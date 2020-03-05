@@ -26,7 +26,7 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	game.PrintMsg("登录请求参数:", req)
 	/*==== 参数验证 =====*/
 	// 延时两秒登录 等待退出处理完毕
-	game.DelaySomeTime(time.Second * 2)
+	game.DelaySomeTime(2)
 	//playerInfo, err := userLoginVerify(req.UserId, req.UserPassword)
 	playerInfo, err := userLoginVerify(req.UserId, req.UserPassword, req.Token)
 	if err != nil {
