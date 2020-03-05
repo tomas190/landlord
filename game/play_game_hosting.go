@@ -59,7 +59,7 @@ func findMinSingle(handCards []*Card) ([]*Card, bool) {
 	// 先统计牌的张输
 	singleCards := getHasNumsCard(handCards, 1)
 
-	logger.Debug("去除大小王之前的单张:",singleCards)
+	logger.Debug("去除大小王之前的单张:", singleCards)
 	// 将同时又大小王的情况下 将其移除
 	if len(singleCards) >= 2 {
 		if singleCards[len(singleCards)-1] == cardConst.CARD_RANK_RED_JOKER &&
@@ -68,7 +68,7 @@ func findMinSingle(handCards []*Card) ([]*Card, bool) {
 		}
 	}
 
-	logger.Debug("去除大小王之后的单张:",singleCards)
+	logger.Debug("去除大小王之后的单张:", singleCards)
 
 	if len(singleCards) == 0 {
 		return nil, false
@@ -151,7 +151,6 @@ func getHasNumsCard(handCards []*Card, nums int) []int {
 	sort.Ints(counts)
 	return counts
 }
-
 
 // 统计[]*card中 相同nums数量的牌有哪些
 /*
@@ -615,7 +614,7 @@ func HostingBeatContinuouslyDouble(handCards, eCards []*Card) ([]*Card, bool, in
 
 	// 1.先去掉手牌中的重复值 要去掉 2 以上大的牌 (2 以上大的牌不能组成 连队)
 	canDoubleCards := continuouslyDoubleHelpRemove(handCards)
-//	logger.Debug(canDoubleCards)
+	//	logger.Debug(canDoubleCards)
 
 	// 有机会组成大过的 连队
 	if len(canDoubleCards) >= cDoubleJunkoLen {
@@ -948,10 +947,16 @@ func HostingBeatBombWithSingles(handCards, eCards []*Card) ([]*Card, bool, int32
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
+	eMainValue := getHasNumsCard(eCards, 4)
+	if len(eMainValue)<=0 {
+		return nil, false, cardConst.CARD_PATTERN_TODO
+	}
+
 	// 3.获取所有四张
 	numTriple := getHasNumsCard(handCards, 4)
 	for i := 0; i < len(numTriple); i++ {
-		if numTriple[i] > int(eCards[0].Value) {
+		//if numTriple[i] > int(eCards[0].Value) {
+		if numTriple[i] > eMainValue[0] {
 			result := findThisValueCard(numTriple[i], handCards, 4)
 			tmpCards := removeCards(handCards, result)
 			// 继续找两张单牌
@@ -991,10 +996,15 @@ func HostingBeatBombWithDouble(handCards, eCards []*Card) ([]*Card, bool, int32)
 		return nil, false, cardConst.CARD_PATTERN_TODO
 	}
 
+	eMainValue := getHasNumsCard(eCards, 4)
+	if len(eMainValue)<=0 {
+		return nil, false, cardConst.CARD_PATTERN_TODO
+	}
+
 	// 3.获取所有四张
 	numTriple := getHasNumsCard(handCards, 4)
 	for i := 0; i < len(numTriple); i++ {
-		if numTriple[i] > int(eCards[0].Value) {
+		if numTriple[i] > int(eMainValue[0]) {
 			result := findThisValueCard(numTriple[i], handCards, 4)
 			tmpCards := removeCards(handCards, result)
 			// 继续找两张单牌

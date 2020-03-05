@@ -2,24 +2,40 @@ package game
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"github.com/wonderivan/logger"
-	"landlord/mconst/msgIdConst"
+	"landlord/mconst/roomType"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
-	"time"
+	"testing"
 )
 
-func pushSpring(room *Room) {
-	var push mproto.PushSpring
-	bytes, _ := proto.Marshal(&push)
-	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushSpring, bytes))
+func TestSettlement(t *testing.T) {
+
+	var room Room
+	room.RoomClass = NewRoomClassify(roomType.MidField)
+
+	room.MultiAll = 100 // 100 金币结算
+
+	land := &Player{
+		PlayerInfo: &PlayerInfo{PlayerId: "地主", Gold: 100},
+		IsLandlord: true,
+	}
+	f1 := &Player{
+		PlayerInfo: &PlayerInfo{PlayerId: "农民1", Gold: 180},
+	}
+	f2 := &Player{
+		PlayerInfo: &PlayerInfo{PlayerId: "农民2", Gold: 10},
+	}
+	mp := make(map[string]*Player, 3)
+	room.Players = mp
+	mp["地主"] = land
+	mp["农民1"] = f1
+	mp["农民2"] = f2
+	SettlementT(&room, f1)
 
 }
 
-// 结算
-// 最小金额计算 玩家只有这么多金币 则 只能输或者赢这么多
-func Settlement(room *Room, winPlayer *Player) {
+func SettlementT(room *Room, winPlayer *Player) {
 	// 1. 计算基本倍数
 
 	mult := room.MultiAll
@@ -27,7 +43,7 @@ func Settlement(room *Room, winPlayer *Player) {
 	origiSettlementGold := settlementGold
 
 	landPlayer, fp1, fp2 := getPlayerClass(room)
-	roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
+	//roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
 	//order := bson.NewObjectId().String()
 
 	var sPush mproto.PushSettlement
@@ -44,13 +60,13 @@ func Settlement(room *Room, winPlayer *Player) {
 		if fp1.PlayerInfo.Gold < settlementGold { // 如果玩家1 的钱不够开
 			showWinLossGold := fmt.Sprintf("-%.2f", fp1.PlayerInfo.Gold)
 			landRealWinGold += fp1.PlayerInfo.Gold
-			syncLossGold(fp1, fp1.PlayerInfo.Gold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+			//syncLossGold(fp1, fp1.PlayerInfo.Gold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 			ss := getSelfSettlement(room, fp1, -1, showWinLossGold, true)
 			sPush.Settlement = append(sPush.Settlement, ss)
 		} else {
 			landRealWinGold += settlementGold
-			syncLossGold(fp1, settlementGold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+			//syncLossGold(fp1, settlementGold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 			showWinLossGold := fmt.Sprintf("-%.2f", settlementGold)
 			ss := getSelfSettlement(room, fp1, -1, showWinLossGold, false)
@@ -61,21 +77,21 @@ func Settlement(room *Room, winPlayer *Player) {
 		if fp2.PlayerInfo.Gold < settlementGold { // 如果玩家2 的钱不够开
 			showWinLossGold := fmt.Sprintf("-%.2f", fp2.PlayerInfo.Gold)
 			landRealWinGold += fp2.PlayerInfo.Gold
-			syncLossGold(fp2, fp2.PlayerInfo.Gold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+			//syncLossGold(fp2, fp2.PlayerInfo.Gold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 			ss := getSelfSettlement(room, fp2, -1, showWinLossGold, true)
 			sPush.Settlement = append(sPush.Settlement, ss)
 		} else {
 			landRealWinGold += settlementGold
-			syncLossGold(fp2, settlementGold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+			//syncLossGold(fp2, settlementGold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 			showWinLossGold := fmt.Sprintf("-%.2f", settlementGold)
 			ss := getSelfSettlement(room, fp2, -1, showWinLossGold, false)
 			sPush.Settlement = append(sPush.Settlement, ss)
 		}
 
-		landRealWinGoldPay := landRealWinGold * (1 - Server.GameTaxRate)                       // 地主实际赢钱 税后
-		syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+		landRealWinGoldPay := landRealWinGold * (1 - Server.GameTaxRate) // 地主实际赢钱 税后
+		//syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId, *room.RoomClass) // 同步金币 到中心服务 session
 
 		showWinLossGold := fmt.Sprintf("%.2f", landRealWinGoldPay)
 		ss := getSelfSettlement(room, landPlayer, 1, showWinLossGold, landRealWinGold < origiSettlementGold*2)
@@ -97,6 +113,7 @@ func Settlement(room *Room, winPlayer *Player) {
 
 		// 2. 判断地主金币是否够开
 		if landPlayer.PlayerInfo.Gold < fp1S+fp2S {
+			logger.Debug("tag  ============  这里小于")
 			//farmerRealWinGold := landPlayer.PlayerInfo.Gold / 2
 			//farmerRealWinGoldPay := farmerRealWinGold * (1 - Server.GameTaxRate)
 			farmerWinGold := landPlayer.PlayerInfo.Gold / 2
@@ -117,9 +134,9 @@ func Settlement(room *Room, winPlayer *Player) {
 			f1RealWinPay = f1RealWin * (1 - Server.GameTaxRate)
 			f2RealWinPay = f2RealWin * (1 - Server.GameTaxRate)
 
-			syncWinGold(fp1, f1RealWin, f1RealWinPay, roundId, *room.RoomClass)
-			syncWinGold(fp2, f2RealWin, f2RealWinPay, roundId, *room.RoomClass)
-			syncLossGold(landPlayer, landRealLoss, roundId, *room.RoomClass)
+			//syncWinGold(fp1, f1RealWin, f1RealWinPay, roundId, *room.RoomClass)
+			//syncWinGold(fp2, f2RealWin, f2RealWinPay, roundId, *room.RoomClass)
+			//syncLossGold(landPlayer, landRealLoss, roundId, *room.RoomClass)
 			//
 			//logger.Debug("地主玩家输钱不够开", landPlayer.PlayerInfo.Gold)
 			//logger.Debug("结算金额基*1", settlementGold)
@@ -140,12 +157,12 @@ func Settlement(room *Room, winPlayer *Player) {
 		} else {
 			// 正常结算
 			fp1WinGoldPay := fp1S * (1 - Server.GameTaxRate)
-			syncWinGold(fp1, fp1S, fp1WinGoldPay, roundId, *room.RoomClass)
+			//syncWinGold(fp1, fp1S, fp1WinGoldPay, roundId, *room.RoomClass)
 
 			fp2WinGoldPay := fp2S * (1 - Server.GameTaxRate)
-			syncWinGold(fp2, fp2S, fp2WinGoldPay, roundId, *room.RoomClass)
+			//syncWinGold(fp2, fp2S, fp2WinGoldPay, roundId, *room.RoomClass)
 
-			syncLossGold(landPlayer, fp1S+fp2S, roundId, *room.RoomClass)
+			//syncLossGold(landPlayer, fp1S+fp2S, roundId, *room.RoomClass)
 
 			fp1ShowWinLossGold := fmt.Sprintf("%.2f", fp1WinGoldPay)
 			fs1 := getSelfSettlement(room, fp1, 1, fp1ShowWinLossGold, fp1S < settlementGold)
@@ -170,79 +187,17 @@ func Settlement(room *Room, winPlayer *Player) {
 	sPush.MultipleInfo = &multiInfo
 	sPush.WaitTime = sysSet.GameDelayReadyTimeInt
 
-	logger.Debug("结算信息:", sPush)
-	logger.Debug(fmt.Println(sPush))
-	bytes, _ := proto.Marshal(&sPush)
-	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushSettlement, bytes))
+	//	logger.Debug("结算信息:", sPush.Settlement)
 
-}
-
-func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType RoomClassify) float64 {
-	//orderId := fmt.Sprintf("%s-%s-win", roundId, player.PlayerInfo.PlayerId)
-	player.PlayerInfo.Gold = player.PlayerInfo.Gold + goldPay // 同步到房间id
-
-	if !player.IsRobot { // 如果不是机器人则同步session信息
-		err := SetSessionGold(player.Session, goldPay) // 同步到session
-		if err != nil {
-			logger.Error("同步进步到session失败: !!!incredible")
-		}
-		UserSyncWinScore(player.PlayerInfo.PlayerId, gold, roundId) // 同步到中心服务
-
-		// 赢钱超过设定值发送 跑马灯
-		if !player.IsRobot && goldPay > Server.WinGoldNotice {
-			NoticeWinMoreThan(player.PlayerInfo.PlayerId, player.PlayerInfo.Name, goldPay)
-		}
+	for i := 0; i < len(sPush.Settlement); i++ {
+		fmt.Println("playerId :", sPush.Settlement[i].PlayerId)
+		fmt.Println("winOrLoss:", sPush.Settlement[i].WinLossGold)
+		fmt.Println("MinSettlement:", sPush.Settlement[i].MinSettlement)
+		fmt.Println("         ")
 	}
 
-	if !player.IsRobot {
-		// 更新盈余池
-		var surplus SurplusPool
-		surplus.RoomType = roomType
-		surplus.CurrentPlayerWin = gold
-		surplus.InsertSurplus()
-	}
+	//logger.Debug(fmt.Println(sPush))
+	//bytes, _ := proto.Marshal(&sPush)
+	//MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushSettlement, bytes))
 
-	return player.PlayerInfo.Gold
-}
-
-func syncLossGold(player *Player, gold float64, roundId string, roomType RoomClassify) float64 {
-	//orderId := fmt.Sprintf("%s-%s-loss", roundId, player.PlayerInfo.PlayerId)
-	player.PlayerInfo.Gold = player.PlayerInfo.Gold - gold
-	if !player.IsRobot { // 如果不是机器人则同步session信息
-		err := SetSessionGold(player.Session, -gold) // 同步到session
-		if err != nil {
-			logger.Error("同步进步到session失败: !!!incredible")
-		}
-		UserSyncLoseScore(player.PlayerInfo.PlayerId, -gold, roundId)
-	}
-
-	if !player.IsRobot {
-		// 更新盈余池
-		var surplus SurplusPool
-		surplus.RoomType = roomType
-		surplus.CurrentPlayerLoss = gold
-		surplus.InsertSurplus()
-	}
-	return player.PlayerInfo.Gold
-}
-
-func getSelfSettlement(room *Room, player *Player, winOrFail int32, winOrLossGold string, isMinSett bool) *mproto.Settlement {
-	var result mproto.Settlement
-
-	if player.IsLandlord {
-		result.IsLandlord = 1
-		result.Multiple = room.MultiAll * 2
-	} else {
-		result.IsLandlord = -1
-		result.Multiple = room.MultiAll
-	}
-	result.PlayerId = player.PlayerInfo.PlayerId
-	result.Position = player.PlayerPosition
-	result.CurrentGold = player.PlayerInfo.Gold
-	result.PlayerName = player.PlayerInfo.Name
-	result.WinOrFail = winOrFail
-	result.WinLossGold = winOrLossGold
-	result.RemainCards = ChangeCardToProto(player.HandCards)
-	result.MinSettlement = isMinSett
-	return &result
 }
