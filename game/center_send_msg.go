@@ -55,12 +55,12 @@ func UserLogoutCenter(userId string, password string) {
 	var num int
 LoginOut:
 	can := canLoginOut(userId)
-	if can || num == 3 {
+	if can || num >=5 {
 		logger.Debug("loginOut normal.", num)
 		WriteMsgToCenter(base)
 		RemoveAgent(userId)
 	} else {
-		t := time.Tick(time.Second * 1)
+		t := time.Tick(time.Millisecond*300)
 		<-t
 		num++
 		goto LoginOut
