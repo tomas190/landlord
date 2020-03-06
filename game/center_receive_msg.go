@@ -48,7 +48,9 @@ func dealUserLogin(data *simplejson.Json) {
 	callChan := GetUserLoginCallChan(user.PlayerId)
 
 	if callChan != nil {
-		callChan <- &userLogin
+		go func() {
+			callChan <- &userLogin
+		}()
 	}
 
 }
@@ -65,8 +67,8 @@ func dealWinSocer(data *simplejson.Json) {
 		return
 	}
 	bytes, _ := json.Marshal(data)
-	playerId := data.Get("msg").Get("id").MustInt()
-	reducePlayerMsgNum(strconv.Itoa(playerId))
+	//playerId := data.Get("msg").Get("id").MustInt()
+	//reducePlayerMsgNum(strconv.Itoa(playerId))
 	fmt.Println("赢钱成功返回:", string(bytes))
 }
 
@@ -82,8 +84,8 @@ func dealLossSocer(data *simplejson.Json) {
 	}
 
 	bytes, _ := json.Marshal(data)
-	playerId := data.Get("msg").Get("id").MustInt()
-	reducePlayerMsgNum(strconv.Itoa(playerId))
+	//playerId := data.Get("msg").Get("id").MustInt()
+	//reducePlayerMsgNum(strconv.Itoa(playerId))
 	fmt.Println("输钱成功返回:", string(bytes))
 }
 

@@ -167,7 +167,10 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 
 	var actionChan PlayerActionChan
 	actionChan.ActionType = req.Action
-	actionPlayer.ActionChan <- actionChan
+
+	go func() {
+		actionPlayer.ActionChan <- actionChan
+	}()
 
 } // 抢地主操作
 
@@ -223,7 +226,9 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 		actionChan.ActionType = playerAction.OutCardAction
 		actionChan.CardsType = cardType
 	}
-	actionPlayer.ActionChan <- actionChan
+	go func() {
+		actionPlayer.ActionChan <- actionChan
+	}()
 
 }
 
@@ -252,23 +257,24 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 	if roomId == "" {
 		logger.Debug(info.PlayerId, "当前在等待队列中..")
 		RemoveWaitUser(info.PlayerId)
-
 		logger.Debug("退出房间.....")
-		if Server.UseRobot {
-			logger.Debug("退出房间.....1")
-			value, exists := session.Get("WaitChan")
-			if exists {
-				logger.Debug("退出房间.....2")
-				wc := value.(*WaitRoomChan)
-				if !wc.IsClose {
-					logger.Debug("退出房间.....3")
-					wc.WaitChan <- struct{}{}
-				}
-			}
-		} else {
-			logger.Debug(info.PlayerId, "当前在等待队列中..")
-			RemoveWaitUser(info.PlayerId)
-		}
+		//if Server.UseRobot {
+		//	//logger.Debug("退出房间.....1")
+		//	//value, exists := session.Get("WaitChan")
+		//	//if exists {
+		//	//	logger.Debug("退出房间.....2")
+		//	//	wc := value.(*WaitRoomChan)
+		//	//	if !wc.IsClose {
+		//	//		logger.Debug("退出房间.....3")
+		//	//		go func() {
+		//	//			wc.WaitChan <- struct{}{}
+		//	//		}()
+		//	//	}
+		//	//}
+		//} else {
+		//	logger.Debug(info.PlayerId, "当前在等待队列中..")
+		//	RemoveWaitUser(info.PlayerId)
+		//}
 		return
 	}
 

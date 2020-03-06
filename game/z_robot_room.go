@@ -6,29 +6,29 @@ import (
 	"time"
 )
 
-type WaitRoomChan struct {
-	IsClose  bool
-	WaitChan chan struct{}
-}
+//type WaitRoomChan struct {
+//	IsClose  bool
+//	WaitChan chan struct{}
+//}
 
 // 处理玩家进入房间 和机器人玩
-func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32, waitRoom *WaitRoomChan) {
-	destiny := getWaitTimePlayerEnterRoom()
-	//mp := make(map[string]*Player, 3)
-	//room := NewRoom(roomType, mp)
-	// fakerIntoRoom(room, playerInfo, session, destiny)
-	select {
-	case <-waitRoom.WaitChan:
-		logger.Debug("============= 玩家在等待过程中退出了房间 =============")
-		waitRoom.IsClose = true
-		close(waitRoom.WaitChan)
-	case <-time.After(time.Second * destiny):
-		waitRoom.IsClose = true
-		close(waitRoom.WaitChan)
-		PlayWithRobot(session, playerInfo, roomType)
-	}
-
-}
+//func DealPlayerEnterRoomWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32, waitRoom *WaitRoomChan) {
+//	destiny := getWaitTimePlayerEnterRoom()
+//	//mp := make(map[string]*Player, 3)
+//	//room := NewRoom(roomType, mp)
+//	// fakerIntoRoom(room, playerInfo, session, destiny)
+//	select {
+//	case <-waitRoom.WaitChan:
+//		logger.Debug("============= 玩家在等待过程中退出了房间 =============")
+//		waitRoom.IsClose = true
+//		close(waitRoom.WaitChan)
+//	case <-time.After(time.Second * destiny):
+//		waitRoom.IsClose = true
+//		close(waitRoom.WaitChan)
+//		PlayWithRobot(session, playerInfo, roomType)
+//	}
+//
+//}
 
 // 匹配机器人并创建房间
 //func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, room *Room) {

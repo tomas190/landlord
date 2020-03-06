@@ -44,7 +44,9 @@ func OnDisconnect(m *melody.Melody, session *melody.Session) {
 		if exists {
 			wc := value.(*game.WaitRoomChan)
 			if !wc.IsClose {
-				wc.WaitChan <- struct{}{}
+				go func() {
+					wc.WaitChan <- struct{}{}
+				}()
 			}
 		}
 	}
