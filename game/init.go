@@ -25,7 +25,7 @@ var Server struct {
 	GameId        string
 	GameTaxRate   float64
 	WinGoldNotice float64
-	UseRobot      bool	 // 启用机器人
+	UseRobot      bool // 启用机器人
 
 	MongoDBAddr string
 	MongoDBUser string
@@ -126,6 +126,7 @@ func initMongoDb() {
 	globalSession.SetMode(mgo.Monotonic, true)
 	logger.Info("连接mongo数据库成功 address:", Server.MongoDBAddr)
 	InitSurplusPool()
+	UptSurplusPoolOne()
 }
 
 // 初始化房间分类信息
