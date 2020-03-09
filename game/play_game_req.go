@@ -48,15 +48,15 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 
 	// 2020年2月20日19:02:20 todo
 	roomId := GetSessionRoomId(session)
-	if roomId!="" {
+	if roomId != "" {
 		room := GetRoom(roomId)
-		if room!=nil {
-			if room.RoomClass.RoomType==req.RoomType {
+		if room != nil {
+			if room.RoomClass.RoomType == req.RoomType {
 				PushRecoverRoom(session, room, playerInfo.PlayerId)
 				return
 			}
 		}
-		logger.Debug("进入房间异常:存在roomId 但无此房间:",roomId)
+		logger.Debug("进入房间异常:存在roomId 但无此房间:", roomId)
 	}
 	// 2020年2月20日19:02:20 todo
 
@@ -68,6 +68,9 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 	//	go DealPlayerEnterRoomWithRobot(session, *playerInfo, req.RoomType, &wr)
 	//	return
 	//}
+
+	// 避免同时进入两个房间 进入之先清除掉 等待队列中的自己 避免同时开始两个房间
+	RemoveWaitUser(playerInfo.PlayerId)
 
 	switch req.RoomType {
 	case roomType.ExperienceField: // 如果是体验场
@@ -168,9 +171,9 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 	var actionChan PlayerActionChan
 	actionChan.ActionType = req.Action
 
-	go func() {
-		actionPlayer.ActionChan <- actionChan
-	}()
+	//go func() {
+	actionPlayer.ActionChan <- actionChan
+	//}()
 
 } // 抢地主操作
 
@@ -226,9 +229,9 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 		actionChan.ActionType = playerAction.OutCardAction
 		actionChan.CardsType = cardType
 	}
-	go func() {
-		actionPlayer.ActionChan <- actionChan
-	}()
+	//go func() {
+	actionPlayer.ActionChan <- actionChan
+	//}()
 
 }
 
