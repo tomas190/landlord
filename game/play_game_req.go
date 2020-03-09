@@ -110,6 +110,9 @@ func ReqEnterRoomCheck(session *melody.Session, data []byte) {
 		return
 	}
 
+	// 调用检查 也清除一下等待队列
+	RemoveWaitUser(playerInfo.PlayerId)
+
 	roomId := GetSessionRoomId(session)
 	if roomId != "" {
 		room := GetRoom(roomId)
