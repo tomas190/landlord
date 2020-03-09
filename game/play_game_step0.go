@@ -69,7 +69,7 @@ func PushFakerPlayerQuitRoom(player *Player) {
 // 2.给玩家发牌
 func PushPlayerStartGame(room *Room) {
 	//cards := CreateBrokenCard()
-	level := RandNum(33, 44)
+	level := RandNum(35, 44)
 	cards := CreateGoodCardAll(level)
 	//cards := CreateSortCard()
 	players := room.Players

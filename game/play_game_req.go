@@ -116,12 +116,12 @@ func ReqEnterRoomCheck(session *melody.Session, data []byte) {
 	roomId := GetSessionRoomId(session)
 	if roomId != "" {
 		room := GetRoom(roomId)
-		if room.RoomClass.RoomType != req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
+		//if room.RoomClass.RoomType != req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
 			//todo  用户waitTime 和上一个操作 上一个牌 待处理
 			RespEnterRoomCheck(session, room.RoomClass.RoomType)
-		} else {
-			RespEnterRoomCheck(session, req.RoomType)
-		}
+		//} else {
+		//	RespEnterRoomCheck(session, req.RoomType)
+		//}
 	} else {
 		RespEnterRoomCheck(session, req.RoomType)
 	}
