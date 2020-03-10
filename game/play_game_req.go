@@ -42,6 +42,20 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		if room.RoomClass.RoomType == req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
 			room.Players[playerInfo.PlayerId].Session = session
 			PushRecoverRoom(session, room, playerInfo.PlayerId)
+		} else {
+			var roomName string
+			switch room.RoomClass.RoomType {
+			case roomType.ExperienceField:
+				roomName = "体验场"
+			case roomType.LowField:
+				roomName = "低级场"
+			case roomType.MidField:
+				roomName = "中级场"
+			case roomType.HighField:
+				roomName = "高级场"
+			}
+			roomName += "房间"
+			SendErrMsg(session, msgIdConst.ReqEnterRoom, "请重新进入"+roomName)
 		}
 		return
 	}
