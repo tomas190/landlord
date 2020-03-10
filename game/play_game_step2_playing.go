@@ -63,14 +63,14 @@ func PlayingGame(room *Room, actionPlayerId string) {
 
 	// todo 用户托管动作
 	if actionPlayer.IsGameHosting {
-		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer,uptWtChin)
+		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer, uptWtChin)
 		// todo 如果机器人假装断线托管 根据70%的几率恢复
 		return
 	}
 
 	if actionPlayer.IsRobot {
 		actionPlayer.GroupCard = GroupHandsCard(actionPlayer.HandCards)
-		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer,uptWtChin)
+		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer, uptWtChin)
 		return
 	}
 
@@ -240,7 +240,7 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 }
 
 // 托管操作
-func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player,uptWtChin chan struct{}) {
+func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, uptWtChin chan struct{}) {
 	DelaySomeTime(1)
 	go func() {
 		uptWtChin <- struct{}{}
@@ -426,6 +426,7 @@ func ClearClosePlayer(session *melody.Session) {
 
 // 出牌前监测牌型是否正确
 func OutCardCheck(outCard []*Card, cardType int32) ([]*Card, int32) {
+
 	// 顺子监测补丁
 	if cardType == cardConst.CARD_PATTERN_SEQUENCE {
 		cardsType := GetCardsType(outCard)
@@ -448,5 +449,14 @@ func OutCardCheck(outCard []*Card, cardType int32) ([]*Card, int32) {
 			}
 		}
 	}
-	return outCard, cardType
+
+
+	getCardsType := GetCardsType(outCard)
+	if getCardsType >= cardConst.CARD_PATTERN_SINGLE && getCardsType <= cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
+		return outCard, cardType
+	}
+
+	return FindMustBeOutCards(outCard)
+
+	//return outCard, cardType
 }
