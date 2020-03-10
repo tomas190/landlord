@@ -37,27 +37,28 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		return
 	}
 
-	//room, b := IsPlayerInRoom(playerInfo.PlayerId)
-	//if b {
-	//	if room.RoomClass.RoomType == req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
-	//		//room.Players[playerInfo.PlayerId].Session = session
-	//		PushRecoverRoom(session, room, playerInfo.PlayerId)
-	//	}
-	//	return
-	//}
+	room, b := IsPlayerInRoom(playerInfo.PlayerId)
+	if b {
+		if room.RoomClass.RoomType == req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
+			room.Players[playerInfo.PlayerId].Session = session
+			PushRecoverRoom(session, room, playerInfo.PlayerId)
+		}
+		return
+	}
 
 	// 2020年2月20日19:02:20 todo
-	roomId := GetSessionRoomId(session)
-	if roomId != "" {
-		room := GetRoom(roomId)
-		if room != nil {
-			if room.RoomClass.RoomType == req.RoomType {
-				PushRecoverRoom(session, room, playerInfo.PlayerId)
-				return
-			}
-		}
-		logger.Debug("进入房间异常:存在roomId 但无此房间:", roomId)
-	}
+	//roomId := GetSessionRoomId(session)
+	//if roomId != "" {
+	//	room := GetRoom(roomId)
+	//	if room != nil {
+	//		if room.RoomClass.RoomType == req.RoomType {
+	//			PushRecoverRoom(session, room, playerInfo.PlayerId)
+	//		}
+	//	}
+	//
+	//	logger.Debug("进入房间异常:存在roomId 但无此房间:", roomId)
+	//	return
+	//}
 	// 2020年2月20日19:02:20 todo
 
 	//if Server.UseRobot { // 如果是开启机器人模式
@@ -117,8 +118,8 @@ func ReqEnterRoomCheck(session *melody.Session, data []byte) {
 	if roomId != "" {
 		room := GetRoom(roomId)
 		//if room.RoomClass.RoomType != req.RoomType { // 如果跟请求的type 不一样则推送原有房间type
-			//todo  用户waitTime 和上一个操作 上一个牌 待处理
-			RespEnterRoomCheck(session, room.RoomClass.RoomType)
+		//todo  用户waitTime 和上一个操作 上一个牌 待处理
+		RespEnterRoomCheck(session, room.RoomClass.RoomType)
 		//} else {
 		//	RespEnterRoomCheck(session, req.RoomType)
 		//}
