@@ -11,6 +11,7 @@ import (
 	"landlord/mconst/roomStatus"
 	"landlord/mconst/roomType"
 	"landlord/msg/mproto"
+	"sync"
 )
 
 // 進入房間
@@ -189,14 +190,19 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 	var actionChan PlayerActionChan
 	actionChan.ActionType = req.Action
 
-	//go func() {
-	actionPlayer.ActionChan <- actionChan
-	//}()
+	go func() {
+		actionPlayer.ActionChan <- actionChan
+	}()
 
 } // 抢地主操作
 
+var mu sync.RWMutex
+
 // 出牌打牌操作
 func ReqOutCardDo(session *melody.Session, data []byte) {
+	mu.Lock()
+	defer mu.Unlock()
+
 	logger.Debug("=== ReqOutCardDo ===")
 	req := &mproto.ReqOutCardDo{}
 	err := proto.Unmarshal(data, req)
@@ -247,9 +253,9 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 		actionChan.ActionType = playerAction.OutCardAction
 		actionChan.CardsType = cardType
 	}
-	//go func() {
-	actionPlayer.ActionChan <- actionChan
-	//}()
+	go func() {
+		actionPlayer.ActionChan <- actionChan
+	}()
 
 }
 
