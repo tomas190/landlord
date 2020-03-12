@@ -223,10 +223,15 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 
 	roomId := GetSessionRoomId(session)
 	room := GetRoom(roomId)
-	if room == nil {
-		logger.Error("ReqOutCardDo:无room信息", roomId)
-		SendErrMsg(session, msgIdConst.ReqOutCardDo, "无room信息:"+roomId)
-		return
+	if room == nil || roomId == "" {
+		inRoom, b := IsPlayerInRoom(info.PlayerId)
+		if !b {
+			logger.Error("ReqOutCardDo:无room信息", roomId)
+			SendErrMsg(session, msgIdConst.ReqOutCardDo, "无room信息:"+roomId)
+			return
+		}
+		room = inRoom
+		SetSessionRoomId(session,room.RoomId)
 	}
 
 	actionPlayer := room.Players[info.PlayerId]
@@ -351,18 +356,31 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 	PrintMsg("ReqGameHosting:"+info.PlayerId, req)
 	/*==== 参数验证 =====*/
 
-	roomId := GetSessionRoomId(session)
-	if roomId == "" {
-		logger.Debug(info.PlayerId, "ReqGameHosting 玩家不在房间")
-		SendErrMsg(session, msgIdConst.ReqGameHosting, "托管失败:玩家不在房间中...")
-		return
-	}
+	//roomId := GetSessionRoomId(session)
+	//if roomId == "" {
+	//	logger.Debug(info.PlayerId, "ReqGameHosting 玩家不在房间")
+	//	SendErrMsg(session, msgIdConst.ReqGameHosting, "托管失败:玩家不在房间中...")
+	//	return
+	//}
+	//
+	//room := GetRoom(roomId)
+	//if room == nil {
+	//	logger.Error("ReqGameHosting:无room信息", roomId)
+	//	SendErrMsg(session, msgIdConst.ReqGameHosting, "无room信息:"+roomId)
+	//	return
+	//}
 
+	roomId := GetSessionRoomId(session)
 	room := GetRoom(roomId)
-	if room == nil {
-		logger.Error("ReqGameHosting:无room信息", roomId)
-		SendErrMsg(session, msgIdConst.ReqGameHosting, "无room信息:"+roomId)
-		return
+	if room == nil || roomId == "" {
+		inRoom, b := IsPlayerInRoom(info.PlayerId)
+		if !b {
+			logger.Error("ReqOutCardDo:无room信息", roomId)
+			SendErrMsg(session, msgIdConst.ReqOutCardDo, "无room信息:"+roomId)
+			return
+		}
+		room = inRoom
+		SetSessionRoomId(session,room.RoomId)
 	}
 
 	if room.Status != roomStatus.Playing {
