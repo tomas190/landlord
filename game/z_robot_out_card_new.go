@@ -336,7 +336,7 @@ func NewLandlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, l
 	// 2020年2月21日19:31:21 这里对拆对子打单牌进行处理
 
 	NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
-	return
+	//return
 
 }
 
@@ -749,7 +749,7 @@ func farmerFallowF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 
 	logger.Debug("F1跟牌 不出")
 	NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
-	return
+	//return
 }
 
 func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
@@ -847,7 +847,7 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 	}
 	logger.Debug("F2 跟牌 不出")
 	NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
-	return
+	//
 
 }
 

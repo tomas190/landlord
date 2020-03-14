@@ -48,6 +48,7 @@ func MakeAuthKey(key string) string {
 }
 
 var count int64
+
 // 获取一个随机数 [startNum:endNum]
 func RandNum(startNum, endNum int) int {
 	count++
@@ -61,7 +62,8 @@ func RandNum(startNum, endNum int) int {
 
 func DelaySomeTime(seconds time.Duration) {
 	// 延时1秒后推送开局信息
-	<-time.After(time.Second * seconds)
+	delay := time.NewTicker(seconds * time.Second)
+	<-delay.C
 }
 
 func changToArrInt32(arr []byte) []int32 {
@@ -72,7 +74,7 @@ func changToArrInt32(arr []byte) []int32 {
 	return result
 }
 
-func printGroup(gc GroupCard)  {
+func printGroup(gc GroupCard) {
 	logger.Debug("单张")
 	rcs := gc.Single
 	for i := 0; i < len(rcs); i++ {

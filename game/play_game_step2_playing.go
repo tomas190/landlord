@@ -204,10 +204,10 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		Settlement(room, actionPlayer)
 
 		//
-		if isSpring {
-			DelaySomeTime(1)
-		}
-		DelaySomeTime(2)
+		//if isSpring {
+		//	DelaySomeTime(1)
+		//}
+		//DelaySomeTime(2)
 		//// 移除房间
 		clearRoomAndPlayer(room)
 		runtime.Goexit()
