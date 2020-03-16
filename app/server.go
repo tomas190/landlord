@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
+	"landlord/controller"
 	"landlord/game"
 	"landlord/handler"
 )
@@ -28,7 +29,7 @@ func StartServer(mode, wsPath string) {
 	})
 
 	//m.Config.PongWait = time.Second * 100
-
+	mController(r)
 	mHandler(m)
 	err := r.Run(":" + game.Server.Port)
 	if err != nil {
@@ -87,4 +88,10 @@ func mHandler(m *melody.Melody) {
 func init() {
 	game.InitConfig()
 	game.StartCenter()
+}
+
+// api
+// 当玩家卡死采用接口踢出玩家
+func mController(r *gin.Engine) {
+	r.GET("/api/kickRoomPlayer", controller.KickRoomPlayer)
 }

@@ -270,9 +270,9 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 	setCurrentPlayerOut(room, landlordPlayer.PlayerInfo.PlayerId, true) // 设置位当前操作玩家
 
 	//pushMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
-	pushFirstMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
-	pushCardCount(room)
-	PlayingGame(room, landlordPlayer.PlayerInfo.PlayerId)
+	go pushFirstMustOutCard(room, landlordPlayer.PlayerInfo.PlayerId)
+	go pushCardCount(room)
+	go PlayingGame(room, landlordPlayer.PlayerInfo.PlayerId)
 
 }
 
