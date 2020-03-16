@@ -11,7 +11,7 @@ import (
 func KickRoomPlayer(c *gin.Context) {
 	playerId := c.PostForm("player_id") // 玩家Id
 	loginOut := c.PostForm("login_out") // 是否退出游戏到大厅(当玩家没有在斗地主游戏中时候)
-	token := c.PostForm("player_id")
+	token := c.PostForm("token")
 
 	if err := verifyKickRoomPlayer(token, playerId, loginOut); err != nil {
 		c.JSON(httpCode, NewResp(ErrCode, err.Error(), nil))
