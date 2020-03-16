@@ -28,6 +28,8 @@ func KickRoomPlayer(c *gin.Context) {
 			if loginOut == "yes" {
 				game.UserLogoutCenter(playerId, game.GetSessionPassword(agent))
 				game.SendErrMsg(agent, msgIdConst.ErrMsg, "系统已将你踢出房间,请重新登录游戏.")
+			}else {
+				game.SendErrMsg(agent, msgIdConst.ErrMsg, "系统已将你踢出房间,请重新进入房间")
 			}
 		}
 		c.JSON(httpCode, NewResp(SuccCode,"已经踢出玩家", nil))
@@ -38,7 +40,7 @@ func KickRoomPlayer(c *gin.Context) {
 }
 
 func verifyKickRoomPlayer(token, playerId, isLoginOut string) error {
-	if token == "" {
+	if token !=game.Server.CenterToken {
 		return errors.New("验证失败")
 	}
 

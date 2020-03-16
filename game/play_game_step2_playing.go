@@ -38,6 +38,12 @@ func getPlayingDelayTime(room *Room, actionPlayer *Player) (time.Duration, int32
 }
 
 func PlayingGame(room *Room, actionPlayerId string) {
+	checkRoom := GetRoom(room.RoomId)
+	if checkRoom == nil {
+		runtime.Goexit()
+		return
+	}
+
 	actionPlayer := room.Players[actionPlayerId]
 	if actionPlayer == nil {
 		logger.Error("房间里无此用户...!!!incredible")
@@ -449,7 +455,6 @@ func OutCardCheck(outCard []*Card, cardType int32) ([]*Card, int32) {
 			}
 		}
 	}
-
 
 	getCardsType := GetCardsType(outCard)
 	if getCardsType >= cardConst.CARD_PATTERN_SINGLE && getCardsType <= cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
