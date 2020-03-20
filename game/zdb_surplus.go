@@ -28,12 +28,10 @@ type SurplusPool struct {
 
 // 插入最新盈余
 func (s *SurplusPool) InsertSurplus() {
-	dbMu.Lock()
-	defer dbMu.Unlock()
+
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
-
-
+	dbMu.Lock()
 	lastSurplus := s.GetLastSurplus()
 
 	lastSurplus.RoomType = s.RoomType
@@ -67,6 +65,7 @@ func (s *SurplusPool) InsertSurplus() {
 	if err != nil {
 		logger.Debug("记录盈余池失败:", err.Error())
 	}
+	dbMu.Unlock()
 	// 同步更新
 	UptSurplusPoolOne()
 }
