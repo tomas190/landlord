@@ -73,8 +73,8 @@ func (s *SurplusPool) InsertSurplus() {
 
 // 当有新玩家插入最新盈余
 func (s *SurplusPool) InsertSurplusNewUser() {
-	dbMu.Lock()
-	defer dbMu.Unlock()
+	//dbMu.Lock()
+	//defer dbMu.Unlock()
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
 
@@ -113,8 +113,8 @@ func (s *SurplusPool) InsertSurplusNewUser() {
 
 // 获取最新盈余
 func (s *SurplusPool) GetLastSurplus() *SurplusPool {
-	dbMu.Lock()
-	defer dbMu.Unlock()
+	//dbMu.Lock()
+	//defer dbMu.Unlock()
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
 

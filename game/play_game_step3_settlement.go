@@ -171,7 +171,7 @@ func Settlement(room *Room, winPlayer *Player) {
 	sPush.WaitTime = sysSet.GameDelayReadyTimeInt
 
 	// 更新就
-	DBUptRecode(room, sPush)
+	go DBUptRecode(room, sPush)
 
 	logger.Debug("结算信息:", sPush)
 	logger.Debug(fmt.Println(sPush))
