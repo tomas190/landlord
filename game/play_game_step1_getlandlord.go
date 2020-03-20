@@ -136,14 +136,14 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 			var truePlayerNum int
 			//
 			for _, p := range room.Players {
-				if !p.IsRobot{
+				if !p.IsRobot {
 					truePlayerNum++
 				}
 			}
 
-			if truePlayerNum==3 {
+			if truePlayerNum == 3 {
 				PushPlayerStartGame(room)
-			}else {
+			} else {
 				PushPlayerStartGameWithRobot2(room)
 			}
 
@@ -265,7 +265,9 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 	DelaySomeTime(1)
 	pushWhoIsLandlord(room, landlordPlayer)
 
-	//
+	// 记录
+	DBRecode(room)
+
 	reSetOutRoomToOut(room, landlordPlayer.PlayerInfo.PlayerId)         // 清空玩家动作
 	setCurrentPlayerOut(room, landlordPlayer.PlayerInfo.PlayerId, true) // 设置位当前操作玩家
 

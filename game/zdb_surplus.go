@@ -4,8 +4,11 @@ import (
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/sysSet"
+	"sync"
 	"time"
 )
+
+var dbMu sync.RWMutex
 
 const SurplusPoolName = "landlord.surplus_pool"
 
@@ -25,8 +28,11 @@ type SurplusPool struct {
 
 // 插入最新盈余
 func (s *SurplusPool) InsertSurplus() {
+	dbMu.Lock()
+	defer dbMu.Unlock()
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
+
 
 	lastSurplus := s.GetLastSurplus()
 
@@ -67,6 +73,8 @@ func (s *SurplusPool) InsertSurplus() {
 
 // 当有新玩家插入最新盈余
 func (s *SurplusPool) InsertSurplusNewUser() {
+	dbMu.Lock()
+	defer dbMu.Unlock()
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
 
@@ -105,6 +113,8 @@ func (s *SurplusPool) InsertSurplusNewUser() {
 
 // 获取最新盈余
 func (s *SurplusPool) GetLastSurplus() *SurplusPool {
+	dbMu.Lock()
+	defer dbMu.Unlock()
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
 

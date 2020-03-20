@@ -7,7 +7,6 @@ import (
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
-	"time"
 )
 
 func pushSpring(room *Room) {
@@ -27,7 +26,8 @@ func Settlement(room *Room, winPlayer *Player) {
 	origiSettlementGold := settlementGold
 
 	landPlayer, fp1, fp2 := getPlayerClass(room)
-	roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
+	//roundId := fmt.Sprintf("room-%d-%d", room.RoomClass.RoomType, time.Now().Unix())
+	roundId := room.RoundId
 	//order := bson.NewObjectId().String()
 
 	var sPush mproto.PushSettlement
@@ -156,7 +156,7 @@ func Settlement(room *Room, winPlayer *Player) {
 			sPush.Settlement = append(sPush.Settlement, fs2)
 
 			landShowWinLossGold := fmt.Sprintf("-%.2f", fp1S+fp2S)
-			ls := getSelfSettlement(room, landPlayer, -1, landShowWinLossGold, (fp1S + fp2S) < settlementGold*2)
+			ls := getSelfSettlement(room, landPlayer, -1, landShowWinLossGold, (fp1S+fp2S) < settlementGold*2)
 			sPush.Settlement = append(sPush.Settlement, ls)
 		}
 
@@ -169,6 +169,9 @@ func Settlement(room *Room, winPlayer *Player) {
 	multiInfo.Rocket = fmt.Sprintf("×%d", room.MultiRocket)
 	sPush.MultipleInfo = &multiInfo
 	sPush.WaitTime = sysSet.GameDelayReadyTimeInt
+
+	// 更新就
+	DBUptRecode(room, sPush)
 
 	logger.Debug("结算信息:", sPush)
 	logger.Debug(fmt.Println(sPush))

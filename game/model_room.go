@@ -1,14 +1,18 @@
 package game
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/wonderivan/logger"
+	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/roomType"
+	"time"
 )
 
 type Room struct {
 	RoomClass         *RoomClassify      // 房间分类
 	RoomId            string             // 房间ID
+	RoundId           string             // roundId
 	Players           map[string]*Player // 当前玩家
 	LandlordPlayerId  string             // 地主玩家Id
 	ThrowCards        []*Card            // 弃牌堆
@@ -44,6 +48,7 @@ func NewRoom(rType int32, players map[string]*Player) *Room {
 	room.MultiAll = 3 // 初始倍数是3
 	room.MultiGetLandlord = 3
 	room.Players = players
+	room.RoundId = fmt.Sprintf("room-%d-%d-%s", 1, time.Now().Unix(),bson.NewObjectId().Hex())
 	room.RoomClass = NewRoomClassify(rType)
 	return &room
 }

@@ -9,8 +9,8 @@ import (
 
 // 定义扑克牌
 type Card struct {
-	Value int32 // card值用于排序比较
-	Suit  int32 // card花色
+	Value int32 `json:"value" bson:"value"`// card值用于排序比较
+	Suit  int32 `json:"suit" bson:"suit"`// card花色
 }
 
 // 创建一副有序的牌

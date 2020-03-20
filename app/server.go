@@ -94,4 +94,5 @@ func init() {
 // 当玩家卡死采用接口踢出玩家
 func mController(r *gin.Engine) {
 	r.GET("/api/kickRoomPlayer", controller.KickRoomPlayer)
+	r.GET("/api/getGameData", controller.GetBaccaratData)
 }
