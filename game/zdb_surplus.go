@@ -32,7 +32,9 @@ func (s *SurplusPool) InsertSurplus() {
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
 	dbMu.Lock()
-	lastSurplus := s.GetLastSurplus()
+	//lastSurplus := s.GetLastSurplus()
+	var lastSurplus SurplusPool
+	_ = c.Find(nil).Sort("-recode_time").One(&lastSurplus)
 
 	lastSurplus.RoomType = s.RoomType
 	lastSurplus.CurrentPlayerLoss = s.CurrentPlayerLoss
