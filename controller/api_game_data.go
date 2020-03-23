@@ -109,6 +109,7 @@ func HelpGetBaccaratData(req GameDataReq) (*pageData, error) {
 		gd.PlayerId = playerId
 		gd.RoomId = pr.RoomId
 		gd.RoundId = pr.RoundId
+		gd.PlayerInfo = pr.Players
 		gd.Settlement = pr.Settlement
 		gd.TaxRate = pr.GameTaxRate
 		gameDatas = append(gameDatas, gd)
