@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/sysSet"
@@ -108,6 +109,10 @@ func (s *SurplusPool) InsertSurplusNewUser() {
 	if err != nil {
 		logger.Debug("记录盈余池失败:", err.Error())
 	}
+
+	logger.Debug("=========== 插入的最新的盈余池数据 =============")
+	fmt.Printf("%+v",lastSurplus)
+
 	// 同步更新
 	UptSurplusPoolOne()
 }
@@ -127,7 +132,7 @@ func (s *SurplusPool) GetLastSurplus() SurplusPool {
 	}
 
 	logger.Debug("============== 取到的最后一条盈余池 ===========")
-	logger.Debug(surplus)
+	fmt.Printf("%+v",surplus)
 
 	return surplus
 }
