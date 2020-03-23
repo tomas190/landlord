@@ -119,7 +119,7 @@ func (s *SurplusPool) GetLastSurplus() *SurplusPool {
 	defer session.Close()
 
 	var surplus SurplusPool
-	err := c.Find(nil).Sort("-id").One(&surplus)
+	err := c.Find(nil).Sort("-_id").One(&surplus)
 	if err != nil {
 		logger.Error("获取盈余池失败:", err.Error())
 		return &surplus
