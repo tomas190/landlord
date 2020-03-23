@@ -68,7 +68,7 @@ func (s *SurplusPool) InsertSurplus() {
 	}
 
 	// 同步更新
-	UptSurplusPoolOne()
+	//UptSurplusPoolOne()
 }
 
 // 当有新玩家插入最新盈余

@@ -112,6 +112,8 @@ func HelpGetBaccaratData(req GameDataReq) (*pageData, error) {
 		gd.PlayerInfo = pr.Players
 		gd.Settlement = pr.Settlement
 		gd.TaxRate = pr.GameTaxRate
+		gd.EndTime = pr.EndTime
+		gd.EndTimeFmt = FormatTime(pr.EndTime, "2006-01-02 15:04:05")
 		gameDatas = append(gameDatas, gd)
 
 	}

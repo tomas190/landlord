@@ -170,8 +170,10 @@ func Settlement(room *Room, winPlayer *Player) {
 	sPush.MultipleInfo = &multiInfo
 	sPush.WaitTime = sysSet.GameDelayReadyTimeInt
 
-	// 更新就
+	// 更新记录
 	go DBUptRecode(room, sPush)
+	// 同步更新
+	go UptSurplusPoolOne()
 
 	logger.Debug("结算信息:", sPush)
 	logger.Debug(fmt.Println(sPush))
