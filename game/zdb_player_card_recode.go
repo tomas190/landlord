@@ -105,7 +105,7 @@ func DBRecode(room *Room) {
 
 func DBUptRecode(room *Room, s mproto.PushSettlement) {
 	var rd PlayCardRecode
-	rd.RoundId = room.RoomId
+	rd.RoundId = room.RoundId
 	recode, err := rd.GetPlayCardRecodeByRoundId()
 	if err != nil {
 		logger.Error("更新结算记录失败:", err.Error())
