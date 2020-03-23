@@ -30,8 +30,8 @@ func (s *SurplusPool) InsertSurplus() {
 
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
-
-	lastSurplus := s.GetLastSurplus()
+	var item SurplusPool
+	lastSurplus := item.GetLastSurplus()
 	//var lastSurplus SurplusPool
 	//_ = c.Find(nil).Sort("-recode_time").One(&lastSurplus)
 
@@ -66,9 +66,10 @@ func (s *SurplusPool) InsertSurplus() {
 	if err != nil {
 		logger.Debug("记录盈余池失败:", err.Error())
 	}
+	logger.Debug("插入之后的最新盈余池:", lastSurplus)
 
 	// 同步更新
-	//UptSurplusPoolOne()
+	UptSurplusPoolOne()
 }
 
 // 当有新玩家插入最新盈余
@@ -112,7 +113,7 @@ func (s *SurplusPool) InsertSurplusNewUser() {
 }
 
 // 获取最新盈余
-func (s *SurplusPool) GetLastSurplus() *SurplusPool {
+func (s *SurplusPool) GetLastSurplus() SurplusPool {
 	//dbMu.Lock()
 	//defer dbMu.Unlock()
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
@@ -122,9 +123,13 @@ func (s *SurplusPool) GetLastSurplus() *SurplusPool {
 	err := c.Find(nil).Sort("-_id").One(&surplus)
 	if err != nil {
 		logger.Error("获取盈余池失败:", err.Error())
-		return &surplus
+		return surplus
 	}
-	return &surplus
+
+	logger.Debug("============== 取到的最后一条盈余池 ===========")
+	logger.Debug(surplus)
+
+	return surplus
 }
 
 // 初始化一条空的数据

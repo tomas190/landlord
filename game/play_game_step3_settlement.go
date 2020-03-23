@@ -173,7 +173,7 @@ func Settlement(room *Room, winPlayer *Player) {
 	// 更新记录
 	go DBUptRecode(room, sPush)
 	// 同步更新
-	go UptSurplusPoolOne()
+	//go UptSurplusPoolOne()
 
 	logger.Debug("结算信息:", sPush)
 	logger.Debug(fmt.Println(sPush))
@@ -204,6 +204,7 @@ func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType
 		var surplus SurplusPool
 		surplus.RoomType = roomType
 		surplus.CurrentPlayerWin = gold
+		logger.Debug("=========== 同步盈余池玩家赢钱 ==========",gold)
 		surplus.InsertSurplus()
 	}
 
@@ -226,6 +227,7 @@ func syncLossGold(player *Player, gold float64, roundId string, roomType RoomCla
 		var surplus SurplusPool
 		surplus.RoomType = roomType
 		surplus.CurrentPlayerLoss = gold
+		logger.Debug("=========== 同步盈余池玩家输钱 ==========",gold)
 		surplus.InsertSurplus()
 	}
 	return player.PlayerInfo.Gold
