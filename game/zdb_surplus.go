@@ -31,9 +31,9 @@ func (s *SurplusPool) InsertSurplus() {
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
 
-	//lastSurplus := s.GetLastSurplus()
-	var lastSurplus SurplusPool
-	_ = c.Find(nil).Sort("-recode_time").One(&lastSurplus)
+	lastSurplus := s.GetLastSurplus()
+	//var lastSurplus SurplusPool
+	//_ = c.Find(nil).Sort("-recode_time").One(&lastSurplus)
 
 	lastSurplus.RoomType = s.RoomType
 	lastSurplus.CurrentPlayerLoss = s.CurrentPlayerLoss
@@ -119,7 +119,7 @@ func (s *SurplusPool) GetLastSurplus() *SurplusPool {
 	defer session.Close()
 
 	var surplus SurplusPool
-	err := c.Find(nil).Sort("-recode_time").One(&surplus)
+	err := c.Find(nil).Sort("-id").One(&surplus)
 	if err != nil {
 		logger.Error("获取盈余池失败:", err.Error())
 		return &surplus
