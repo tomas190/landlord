@@ -67,7 +67,8 @@ func (s *SurplusPool) InsertSurplus() {
 	if err != nil {
 		logger.Debug("记录盈余池失败:", err.Error())
 	}
-	logger.Debug("插入之后的最新盈余池:", lastSurplus)
+	logger.Debug("=========== 插入的最新的盈余池数据 =============")
+	fmt.Printf("%+v",lastSurplus)
 
 	// 同步更新
 	UptSurplusPoolOne()
