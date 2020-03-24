@@ -33,7 +33,7 @@ func (s *SurplusPool) InsertSurplus() {
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
 
-	dbMu.RUnlock()
+	dbMu.RLock()
 	//var item SurplusPool
 	//lastSurplus := item.GetLastSurplus()
 	var lastSurplus SurplusPool
@@ -135,8 +135,8 @@ func (s *SurplusPool) GetLastSurplus() SurplusPool {
 		return surplus
 	}
 
-	logger.Debug("============== 取到的最后一条盈余池 ===========")
-	fmt.Printf("%+v",surplus)
+	//logger.Debug("============== 取到的最后一条盈余池 ===========")
+	//fmt.Printf("%+v",surplus)
 
 	return surplus
 }
