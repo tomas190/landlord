@@ -5,10 +5,11 @@ import (
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/sysSet"
+	"sync"
 	"time"
 )
 
-//var dbMu sync.RWMutex
+var dbMu sync.RWMutex
 
 const SurplusPoolName = "landlord.surplus_pool"
 
@@ -31,6 +32,8 @@ func (s *SurplusPool) InsertSurplus() {
 
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
+
+	dbMu.RUnlock()
 	//var item SurplusPool
 	//lastSurplus := item.GetLastSurplus()
 	var lastSurplus SurplusPool
@@ -69,7 +72,7 @@ func (s *SurplusPool) InsertSurplus() {
 	}
 	logger.Debug("=========== 插入的最新的盈余池数据 =============")
 	fmt.Printf("%+v",lastSurplus)
-
+	dbMu.RUnlock()
 	// 同步更新
 	UptSurplusPoolOne()
 }

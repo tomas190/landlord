@@ -127,6 +127,14 @@ func initMongoDb() {
 	logger.Info("连接mongo数据库成功 address:", Server.MongoDBAddr)
 	InitSurplusPool()
 	UptSurplusPoolOne()
+
+	// 同步盈余池 每隔两秒执行
+	go func() {
+		for true  {
+			DelaySomeTime(2)
+			UptSurplusPoolOne()
+		}
+	}()
 }
 
 // 初始化房间分类信息
