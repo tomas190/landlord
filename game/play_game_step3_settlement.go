@@ -187,6 +187,15 @@ func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType
 	player.PlayerInfo.Gold = player.PlayerInfo.Gold + goldPay // 同步到房间id
 
 	if !player.IsRobot { // 如果不是机器人则同步session信息
+
+		// 更新盈余池
+		var surplus SurplusPool
+		surplus.RoomType = roomType
+		surplus.CurrentPlayerWin = gold
+		logger.Debug("=========== 同步盈余池玩家赢钱 ==========",gold)
+		surplus.InsertSurplus()
+
+
 		err := SetSessionGold(player.Session, goldPay) // 同步到session
 		if err != nil {
 			logger.Error("同步进步到session失败: !!!incredible")
@@ -199,14 +208,14 @@ func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType
 		}
 	}
 
-	if !player.IsRobot {
-		// 更新盈余池
-		var surplus SurplusPool
-		surplus.RoomType = roomType
-		surplus.CurrentPlayerWin = gold
-		logger.Debug("=========== 同步盈余池玩家赢钱 ==========",gold)
-		surplus.InsertSurplus()
-	}
+	//if !player.IsRobot {
+	//	// 更新盈余池
+	//	var surplus SurplusPool
+	//	surplus.RoomType = roomType
+	//	surplus.CurrentPlayerWin = gold
+	//	logger.Debug("=========== 同步盈余池玩家赢钱 ==========",gold)
+	//	surplus.InsertSurplus()
+	//}
 
 	return player.PlayerInfo.Gold
 }
@@ -215,6 +224,13 @@ func syncLossGold(player *Player, gold float64, roundId string, roomType RoomCla
 	//orderId := fmt.Sprintf("%s-%s-loss", roundId, player.PlayerInfo.PlayerId)
 	player.PlayerInfo.Gold = player.PlayerInfo.Gold - gold
 	if !player.IsRobot { // 如果不是机器人则同步session信息
+		// 更新盈余池
+		var surplus SurplusPool
+		surplus.RoomType = roomType
+		surplus.CurrentPlayerLoss = gold
+		logger.Debug("=========== 同步盈余池玩家输钱 ==========",gold)
+		surplus.InsertSurplus()
+
 		err := SetSessionGold(player.Session, -gold) // 同步到session
 		if err != nil {
 			logger.Error("同步进步到session失败: !!!incredible")
@@ -222,14 +238,14 @@ func syncLossGold(player *Player, gold float64, roundId string, roomType RoomCla
 		UserSyncLoseScore(player.PlayerInfo.PlayerId, -gold, roundId)
 	}
 
-	if !player.IsRobot {
-		// 更新盈余池
-		var surplus SurplusPool
-		surplus.RoomType = roomType
-		surplus.CurrentPlayerLoss = gold
-		logger.Debug("=========== 同步盈余池玩家输钱 ==========",gold)
-		surplus.InsertSurplus()
-	}
+	//if !player.IsRobot {
+	//	// 更新盈余池
+	//	var surplus SurplusPool
+	//	surplus.RoomType = roomType
+	//	surplus.CurrentPlayerLoss = gold
+	//	logger.Debug("=========== 同步盈余池玩家输钱 ==========",gold)
+	//	surplus.InsertSurplus()
+	//}
 	return player.PlayerInfo.Gold
 }
 

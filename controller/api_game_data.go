@@ -132,3 +132,8 @@ func FormatTime(timeUnix int64, layout string) string {
 	format := time.Unix(timeUnix, 0).Format(layout)
 	return format
 }
+
+
+func Version(c *gin.Context){
+	c.JSON(httpCode, NewResp(SuccCode, "version 2020324", "2020年3月24日16:05:07"))
+}

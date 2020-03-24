@@ -95,4 +95,5 @@ func init() {
 func mController(r *gin.Engine) {
 	r.GET("/api/kickRoomPlayer", controller.KickRoomPlayer)
 	r.GET("/api/getGameData", controller.GetBaccaratData)
+	r.GET("/api/version", controller.Version)
 }
