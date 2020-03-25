@@ -44,13 +44,13 @@ func Settlement(room *Room, winPlayer *Player) {
 		if fp1.PlayerInfo.Gold < settlementGold { // 如果玩家1 的钱不够开
 			showWinLossGold := fmt.Sprintf("-%.2f", fp1.PlayerInfo.Gold)
 			landRealWinGold += fp1.PlayerInfo.Gold
-			syncLossGold(fp1, fp1.PlayerInfo.Gold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+			syncLossGold(fp1, fp1.PlayerInfo.Gold, roundId, *room.RoomClass,false) // 同步金币 到中心服务 session
 
 			ss := getSelfSettlement(room, fp1, -1, showWinLossGold, true)
 			sPush.Settlement = append(sPush.Settlement, ss)
 		} else {
 			landRealWinGold += settlementGold
-			syncLossGold(fp1, settlementGold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+			syncLossGold(fp1, settlementGold, roundId, *room.RoomClass,false) // 同步金币 到中心服务 session
 
 			showWinLossGold := fmt.Sprintf("-%.2f", settlementGold)
 			ss := getSelfSettlement(room, fp1, -1, showWinLossGold, false)
@@ -61,21 +61,21 @@ func Settlement(room *Room, winPlayer *Player) {
 		if fp2.PlayerInfo.Gold < settlementGold { // 如果玩家2 的钱不够开
 			showWinLossGold := fmt.Sprintf("-%.2f", fp2.PlayerInfo.Gold)
 			landRealWinGold += fp2.PlayerInfo.Gold
-			syncLossGold(fp2, fp2.PlayerInfo.Gold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+			syncLossGold(fp2, fp2.PlayerInfo.Gold, roundId, *room.RoomClass,false) // 同步金币 到中心服务 session
 
 			ss := getSelfSettlement(room, fp2, -1, showWinLossGold, true)
 			sPush.Settlement = append(sPush.Settlement, ss)
 		} else {
 			landRealWinGold += settlementGold
-			syncLossGold(fp2, settlementGold, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+			syncLossGold(fp2, settlementGold, roundId, *room.RoomClass,false) // 同步金币 到中心服务 session
 
 			showWinLossGold := fmt.Sprintf("-%.2f", settlementGold)
 			ss := getSelfSettlement(room, fp2, -1, showWinLossGold, false)
 			sPush.Settlement = append(sPush.Settlement, ss)
 		}
 
-		landRealWinGoldPay := landRealWinGold * (1 - Server.GameTaxRate)                       // 地主实际赢钱 税后
-		syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId, *room.RoomClass) // 同步金币 到中心服务 session
+		landRealWinGoldPay := landRealWinGold * (1 - Server.GameTaxRate)                             // 地主实际赢钱 税后
+		syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId, *room.RoomClass, true) // 同步金币 到中心服务 session
 
 		showWinLossGold := fmt.Sprintf("%.2f", landRealWinGoldPay)
 		ss := getSelfSettlement(room, landPlayer, 1, showWinLossGold, landRealWinGold < origiSettlementGold*2)
@@ -117,9 +117,9 @@ func Settlement(room *Room, winPlayer *Player) {
 			f1RealWinPay = f1RealWin * (1 - Server.GameTaxRate)
 			f2RealWinPay = f2RealWin * (1 - Server.GameTaxRate)
 
-			syncWinGold(fp1, f1RealWin, f1RealWinPay, roundId, *room.RoomClass)
-			syncWinGold(fp2, f2RealWin, f2RealWinPay, roundId, *room.RoomClass)
-			syncLossGold(landPlayer, landRealLoss, roundId, *room.RoomClass)
+			syncWinGold(fp1, f1RealWin, f1RealWinPay, roundId, *room.RoomClass,false)
+			syncWinGold(fp2, f2RealWin, f2RealWinPay, roundId, *room.RoomClass,false)
+			syncLossGold(landPlayer, landRealLoss, roundId, *room.RoomClass,true)
 			//
 			//logger.Debug("地主玩家输钱不够开", landPlayer.PlayerInfo.Gold)
 			//logger.Debug("结算金额基*1", settlementGold)
@@ -140,12 +140,12 @@ func Settlement(room *Room, winPlayer *Player) {
 		} else {
 			// 正常结算
 			fp1WinGoldPay := fp1S * (1 - Server.GameTaxRate)
-			syncWinGold(fp1, fp1S, fp1WinGoldPay, roundId, *room.RoomClass)
+			syncWinGold(fp1, fp1S, fp1WinGoldPay, roundId, *room.RoomClass,false)
 
 			fp2WinGoldPay := fp2S * (1 - Server.GameTaxRate)
-			syncWinGold(fp2, fp2S, fp2WinGoldPay, roundId, *room.RoomClass)
+			syncWinGold(fp2, fp2S, fp2WinGoldPay, roundId, *room.RoomClass,false)
 
-			syncLossGold(landPlayer, fp1S+fp2S, roundId, *room.RoomClass)
+			syncLossGold(landPlayer, fp1S+fp2S, roundId, *room.RoomClass,true)
 
 			fp1ShowWinLossGold := fmt.Sprintf("%.2f", fp1WinGoldPay)
 			fs1 := getSelfSettlement(room, fp1, 1, fp1ShowWinLossGold, fp1S < settlementGold)
@@ -182,19 +182,23 @@ func Settlement(room *Room, winPlayer *Player) {
 
 }
 
-func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType RoomClassify) float64 {
+func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType RoomClassify, isDelay bool) float64 {
 	//orderId := fmt.Sprintf("%s-%s-win", roundId, player.PlayerInfo.PlayerId)
 	player.PlayerInfo.Gold = player.PlayerInfo.Gold + goldPay // 同步到房间id
 
 	if !player.IsRobot { // 如果不是机器人则同步session信息
 
-		// 更新盈余池
-		var surplus SurplusPool
-		surplus.RoomType = roomType
-		surplus.CurrentPlayerWin = gold
-		logger.Debug("=========== 同步盈余池玩家赢钱 ==========",gold)
-		surplus.InsertSurplus(true)
-
+		go func() {
+			if isDelay {
+				DelaySomeTime(1)
+			}
+			// 更新盈余池
+			var surplus SurplusPool
+			surplus.RoomType = roomType
+			surplus.CurrentPlayerWin = gold
+			logger.Debug("=========== 同步盈余池玩家赢钱 ==========", gold)
+			surplus.InsertSurplus(true)
+		}()
 
 		err := SetSessionGold(player.Session, goldPay) // 同步到session
 		if err != nil {
@@ -220,16 +224,23 @@ func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType
 	return player.PlayerInfo.Gold
 }
 
-func syncLossGold(player *Player, gold float64, roundId string, roomType RoomClassify) float64 {
+func syncLossGold(player *Player, gold float64, roundId string, roomType RoomClassify,isDelay bool) float64 {
 	//orderId := fmt.Sprintf("%s-%s-loss", roundId, player.PlayerInfo.PlayerId)
 	player.PlayerInfo.Gold = player.PlayerInfo.Gold - gold
 	if !player.IsRobot { // 如果不是机器人则同步session信息
 		// 更新盈余池
-		var surplus SurplusPool
-		surplus.RoomType = roomType
-		surplus.CurrentPlayerLoss = gold
-		logger.Debug("=========== 同步盈余池玩家输钱 ==========",gold)
-		surplus.InsertSurplus(false)
+
+		go func() {
+			if isDelay {
+				DelaySomeTime(1)
+			}
+			var surplus SurplusPool
+			surplus.RoomType = roomType
+			surplus.CurrentPlayerLoss = gold
+			logger.Debug("=========== 同步盈余池玩家输钱 ==========", gold)
+			surplus.InsertSurplus(false)
+		}()
+
 
 		err := SetSessionGold(player.Session, -gold) // 同步到session
 		if err != nil {
