@@ -28,12 +28,11 @@ type SurplusPool struct {
 }
 
 // 插入最新盈余
-func (s *SurplusPool) InsertSurplus() {
-
+func (s *SurplusPool) InsertSurplus(isWin bool) {
+	dbMu.Lock()
 	session, c := GetDBConn(Server.MongoDBName, SurplusPoolName)
 	defer session.Close()
 
-	dbMu.RLock()
 	//var item SurplusPool
 	//lastSurplus := item.GetLastSurplus()
 	var lastSurplus SurplusPool
@@ -43,8 +42,11 @@ func (s *SurplusPool) InsertSurplus() {
 	lastSurplus.CurrentPlayerLoss = s.CurrentPlayerLoss
 	lastSurplus.CurrentPlayerWin = s.CurrentPlayerWin
 
-	lastSurplus.PlayerAllLoss += s.CurrentPlayerLoss
-	lastSurplus.PlayerAllWin += s.CurrentPlayerWin
+	if isWin {
+		lastSurplus.PlayerAllWin += s.CurrentPlayerWin
+	}else {
+		lastSurplus.PlayerAllLoss += s.CurrentPlayerLoss
+	}
 
 	var p PlayerRecode
 	playersCount := p.CountPlayers()
@@ -71,8 +73,8 @@ func (s *SurplusPool) InsertSurplus() {
 		logger.Debug("记录盈余池失败:", err.Error())
 	}
 	logger.Debug("=========== 插入的最新的盈余池数据 =============")
-	fmt.Printf("%+v",lastSurplus)
-	dbMu.RUnlock()
+	fmt.Printf("%+v\n",lastSurplus)
+	dbMu.Unlock()
 	// 同步更新
 	UptSurplusPoolOne()
 }
@@ -115,7 +117,7 @@ func (s *SurplusPool) InsertSurplusNewUser() {
 	}
 
 	logger.Debug("=========== 插入的最新的盈余池数据 =============")
-	fmt.Printf("%+v",lastSurplus)
+	fmt.Printf("%+v\n",lastSurplus)
 
 	// 同步更新
 	UptSurplusPoolOne()

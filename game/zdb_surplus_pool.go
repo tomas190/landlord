@@ -75,7 +75,7 @@ func (s *SurplusPoolOne) insertSurplusPoolOne() {
 	}
 
 	logger.Debug("========== 单个盈余池 =========")
-	fmt.Printf("%+v",*s)
+	fmt.Printf("%+v\n",*s)
 
 }
 
