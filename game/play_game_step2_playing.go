@@ -224,10 +224,11 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	}
 	setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
 	_, delayTimeInt := getPlayingDelayTime(room, nextPlayer)
-	go pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType, delayTimeInt)
+	pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, cards, cardsType, delayTimeInt)
 	// 推送记牌器
-	go pushCardCount(room)
-	go PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
+	pushCardCount(room)
+	nextPlayer.IsCanDo = true
+	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
 // 不出逻辑
