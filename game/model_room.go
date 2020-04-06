@@ -98,7 +98,8 @@ func GetRoomClassifyBottomEnterPoint(rType int32) float64 {
 
 	switch rType {
 	case roomType.ExperienceField:
-		return 0.6
+		//return 0.6
+		return 5
 	case roomType.LowField:
 		return 10
 	case roomType.MidField:
