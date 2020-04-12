@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/sysSet"
@@ -74,8 +73,8 @@ func (s *SurplusPoolOne) insertSurplusPoolOne() {
 		logger.Error("更新盈余池失败:", err.Error())
 	}
 
-	logger.Debug("========== 单个盈余池 =========")
-	fmt.Printf("%+v\n",*s)
+	//logger.Debug("========== 单个盈余池 =========")
+	//fmt.Printf("%+v\n",*s)
 
 }
 
