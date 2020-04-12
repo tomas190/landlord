@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2/bson"
 	"landlord/game"
+	"os"
 	"time"
 )
 
@@ -133,7 +134,25 @@ func FormatTime(timeUnix int64, layout string) string {
 	return format
 }
 
-
-func Version(c *gin.Context){
+func Version(c *gin.Context) {
 	c.JSON(httpCode, NewResp(SuccCode, "version 2020324", "2020年3月24日16:05:07"))
+}
+
+func GetLog(c *gin.Context) {
+	//http下载地址 csv
+	path := "out.log"
+	if checkFileIsExist(path) {
+		c.File(path)
+		return
+	}
+	c.JSON(httpCode, NewResp(ErrCode, "不存在", nil))
+}
+
+func checkFileIsExist(filename string) bool {
+	var exist = true
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		exist = false
+	}
+	return exist
+
 }

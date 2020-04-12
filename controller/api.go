@@ -27,20 +27,34 @@ func KickRoomPlayer(c *gin.Context) {
 			game.SetSessionRoomId(agent, "")
 			if loginOut == "yes" {
 				game.UserLogoutCenter(playerId, game.GetSessionPassword(agent))
-				game.SendErrMsg(agent, msgIdConst.ErrMsg, "系统已将你踢出房间,请重新登录游戏.")
-			}else {
-				game.SendErrMsg(agent, msgIdConst.ErrMsg, "系统已将你踢出房间,请重新进入房间")
+				//game.SendErrMsg(agent, msgIdConst.ErrMsg, "系统已将你踢出房间,请重新登录游戏")
+				kickAll(room,"系统已将你踢出房间,请重新登录游戏.")
+			} else {
+				kickAll(room,"系统已将你踢出房间,请重新进入房间")
+				//game.SendErrMsg(agent, msgIdConst.ErrMsg, "系统已将你踢出房间,请重新进入房间")
 			}
 		}
-		c.JSON(httpCode, NewResp(SuccCode,"已经踢出玩家", nil))
+		c.JSON(httpCode, NewResp(SuccCode, "已经踢出玩家", nil))
 		return
 	}
-	c.JSON(httpCode, NewResp(ErrCode,"玩家不在房间中", nil))
+	c.JSON(httpCode, NewResp(ErrCode, "玩家不在房间中", nil))
 	return
 }
 
+func kickAll(room *game.Room,msg string) {
+	players := room.Players
+	for _, v := range players {
+		if v != nil {
+			if !v.IsRobot {
+				game.SendErrMsg(v.Session, msgIdConst.ErrMsg, msg)
+			}
+		}
+	}
+
+}
+
 func verifyKickRoomPlayer(token, playerId, isLoginOut string) error {
-	if token !=game.Server.CenterToken {
+	if token != game.Server.CenterToken {
 		return errors.New("验证失败")
 	}
 
