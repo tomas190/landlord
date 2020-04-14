@@ -200,7 +200,7 @@ func NewLandlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, l
 					return
 				} else { //
 					// 寻找炸弹 如果有炸弹 且满足条件 炸
-					cards, b, bType := HostingBeatBomb(robot.HandCards, []*Card{{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}})
+					cards, b, bType := HostingBeatBomb(robot.HandCards, []*Card{{0, 0}, {0, 0}, {0, 0}, {0, 0}})
 					if b { // 如果有炸弹
 						// 这里要不要把炸弹移除了在判断
 						_, godNum := CheckRealGodCard(comRe, nextPlayer.HandCards, lastPlayer.HandCards)
@@ -266,7 +266,7 @@ func NewLandlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, l
 				}
 			} else {
 				// 寻找炸弹 如果有炸弹 且满足条件 炸
-				cards, b, bType := HostingBeatBomb(robot.HandCards, []*Card{{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}})
+				cards, b, bType := HostingBeatBomb(robot.HandCards, []*Card{{0, 0}, {0, 0}, {0, 0}, {0, 0}})
 				if b { // 如果有炸弹
 					// 这里要不要把炸弹移除了在判断
 					_, godNum := CheckRealGodCard(comRe, nextPlayer.HandCards, lastPlayer.HandCards)
