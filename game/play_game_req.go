@@ -264,9 +264,9 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 		SendErrMsg(session, msgIdConst.ReqOutCardDo,"当前不该你出牌")
 	}
 
-	go func() {
-		actionPlayer.ActionChan <- actionChan
-	}()
+	//go func() {
+	//	actionPlayer.ActionChan <- actionChan
+	//}()
 
 }
 
