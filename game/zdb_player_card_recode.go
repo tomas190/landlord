@@ -17,6 +17,7 @@ type PlayCardRecode struct {
 	PlayerIds   string                `json:"player_ids" bson:"player_ids"`
 	RoundId     string                `json:"round_id" bson:"round_id"`
 	RoomId      string                `json:"room_id" bson:"room_id"`
+	RoomType    int32                   `json:"room_type" bson:"room_type"`
 	BottomCard  []*Card               `json:"bottom_card" bson:"bottom_card"`
 	Settlement  []SettlementInfo      `json:"settlement" bson:"settlement"`
 	EndTime     int64                 `json:"end_time" bson:"end_time"`
@@ -98,6 +99,7 @@ func DBRecode(room *Room) {
 	r.Players = getPlayers(room)
 	r.PlayerIds = getPlayerIds(room)
 	r.BottomCard = room.BottomCards
+	r.RoomType = room.RoomClass.RoomType
 	r.StartTime = time.Now().Unix()
 
 	r.AddPlayCardRecode()
@@ -131,6 +133,10 @@ func DBUptRecode(room *Room, s mproto.PushSettlement) {
 		st.WinLossGold = sti.WinLossGold
 		sts = append(sts, st)
 	}
+
+	recode.BottomCard = room.BottomCards
+	recode.RoomType = room.RoomClass.RoomType
+
 	recode.Settlement = sts
 	recode.UptPlayCardRecode()
 

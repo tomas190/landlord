@@ -48,7 +48,7 @@ func NewRoom(rType int32, players map[string]*Player) *Room {
 	room.MultiAll = 3 // 初始倍数是3
 	room.MultiGetLandlord = 3
 	room.Players = players
-	room.RoundId = fmt.Sprintf("room-%d-%d-%s", 1, time.Now().Unix(),bson.NewObjectId().Hex())
+	room.RoundId = fmt.Sprintf("room-%d-%d-%s", rType, time.Now().Unix(),bson.NewObjectId().Hex())
 	room.RoomClass = NewRoomClassify(rType)
 	return &room
 }
