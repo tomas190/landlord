@@ -28,6 +28,8 @@ type GameData struct {
 	PlayerId   string      `json:"player_id"`
 	RoundId    string      `json:"round_id"`
 	RoomId     string      `json:"room_id"`
+	RoomType   int32       `json:"room_type"`
+	BottomCard interface{} `json:"bottom_card"`
 	TaxRate    float64     `json:"tax_rate"`
 	PlayerInfo interface{} `json:"player_info"`
 	Settlement interface{} `json:"settlement"` // 结算信息 输赢结果
@@ -110,6 +112,8 @@ func HelpGetBaccaratData(req GameDataReq) (*pageData, error) {
 		gd.PlayerId = playerId
 		gd.RoomId = pr.RoomId
 		gd.RoundId = pr.RoundId
+		gd.RoomType = pr.RoomType
+		gd.BottomCard = pr.BottomCard
 		gd.PlayerInfo = pr.Players
 		gd.Settlement = pr.Settlement
 		gd.TaxRate = pr.GameTaxRate
