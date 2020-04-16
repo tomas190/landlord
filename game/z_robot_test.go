@@ -1,8 +1,10 @@
 package game
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/wonderivan/logger"
+	"landlord/mconst/cardConst"
 	"landlord/mconst/roomType"
 	"testing"
 )
@@ -107,7 +109,7 @@ func TestJunko(t *testing.T) {
 		{9, 1}, {9, 2}, // {9, 3}, //{9, 4},
 		//{10, 1}, {10, 2}, //{10, 3}, {10, 4},
 
-		{11, 1}, {11, 2},          //{11, 3}, {11, 4},
+		{11, 1}, {11, 2}, //{11, 3}, {11, 4},
 		{12, 1}, {12, 2}, {12, 3}, // {12, 4},
 		{13, 1}, {13, 2}, {13, 3}, //{13, 4},
 		{14, 1}, {15, 2},
@@ -127,8 +129,8 @@ func TestJunko(t *testing.T) {
 		{10, 1}, //{10, 2}, //{10, 3}, {10, 4},
 
 		{11, 1}, {11, 2}, //{11, 3}, {11, 4},
-		{12, 1},          // {12, 2}, {12, 3}, // {12, 4},
-		{13, 1},          //{13, 2}, {13, 3}, //{13, 4},
+		{12, 1}, // {12, 2}, {12, 3}, // {12, 4},
+		{13, 1}, //{13, 2}, {13, 3}, //{13, 4},
 		{14, 1}, {15, 2},
 	}
 
@@ -175,9 +177,9 @@ func TestPriorityJunko(t *testing.T) {
 
 		{6, 1}, {6, 2}, {6, 3}, // {6, 4},
 		{7, 1}, {7, 2}, {7, 3}, //{7, 4},
-		{8, 1},                 //{8, 2},   //{8, 3}, {8, 4},
-		{9, 1},                 //{9, 2},   // {9, 3}, //{9, 4},
-		{10, 1},                //{10, 2}, //{10, 3}, {10, 4},
+		{8, 1},  //{8, 2},   //{8, 3}, {8, 4},
+		{9, 1},  //{9, 2},   // {9, 3}, //{9, 4},
+		{10, 1}, //{10, 2}, //{10, 3}, {10, 4},
 
 		{11, 1}, // {11, 2}, // {11, 3}, {11, 4},
 		//{12, 1}, //{12, 2}, //{12, 3}, //{12, 4},
@@ -241,9 +243,9 @@ func TestCr(t *testing.T) {
 
 		{6, 1}, {6, 2}, {6, 3}, // {6, 4},
 		{7, 1}, {7, 2}, {7, 3}, //{7, 4},
-		{8, 1},                 //{8, 2},   //{8, 3}, {8, 4},
-		{9, 1},                 //{9, 2},   // {9, 3}, //{9, 4},
-		{10, 1},                //{10, 2}, //{10, 3}, {10, 4},
+		{8, 1},  //{8, 2},   //{8, 3}, {8, 4},
+		{9, 1},  //{9, 2},   // {9, 3}, //{9, 4},
+		{10, 1}, //{10, 2}, //{10, 3}, {10, 4},
 
 		{11, 1}, // {11, 2}, // {11, 3}, {11, 4},
 		//{12, 1}, //{12, 2}, //{12, 3}, //{12, 4},
@@ -342,7 +344,7 @@ func TestCreateRobot(t *testing.T) {
 		if i%4 == 0 {
 			fmt.Println()
 		}
-		PrintCard(append([]*Card{},a[i]))
+		PrintCard(append([]*Card{}, a[i]))
 	}
 
 }
@@ -352,4 +354,528 @@ func TestAddHighFieldWaitUser(t *testing.T) {
 	fmt.Println(getRobotGold(roomType.LowField))
 	fmt.Println(getRobotGold(roomType.MidField))
 	fmt.Println(getRobotGold(roomType.HighField))
+}
+
+func TestChangeArrPlayerToRoomPlayerProtoKs(t *testing.T) {
+	//landlosrStrCard := `[
+    //                        {
+    //                            "value": 13,
+    //                            "suit": 3
+    //                        },
+    //                        {
+    //                            "value": 12,
+    //                            "suit": 4
+    //                        },
+    //                        {
+    //                            "value": 12,
+    //                            "suit": 1
+    //                        },
+    //                        {
+    //                            "value": 11,
+    //                            "suit": 4
+    //                        },
+    //                        {
+    //                            "value": 10,
+    //                            "suit": 2
+    //                        },
+    //                        {
+    //                            "value": 9,
+    //                            "suit": 3
+    //                        },
+    //                        {
+    //                            "value": 8,
+    //                            "suit": 4
+    //                        },
+    //                        {
+    //                            "value": 8,
+    //                            "suit": 3
+    //                        },
+    //                        {
+    //                            "value": 6,
+    //                            "suit": 3
+    //                        },
+    //                        {
+    //                            "value": 6,
+    //                            "suit": 1
+    //                        },
+    //                        {
+    //                            "value": 5,
+    //                            "suit": 3
+    //                        },
+    //                        {
+    //                            "value": 4,
+    //                            "suit": 4
+    //                        },
+    //                        {
+    //                            "value": 4,
+    //                            "suit": 3
+    //                        },
+    //                        {
+    //                            "value": 4,
+    //                            "suit": 2
+    //                        },
+    //                        {
+    //                            "value": 3,
+    //                            "suit": 4
+    //                        },
+    //                        {
+    //                            "value": 3,
+    //                            "suit": 3
+    //                        },
+    //                        {
+    //                            "value": 2,
+    //                            "suit": 1
+    //                        },
+    //                        {
+    //                            "value": 1,
+    //                            "suit": 4
+    //                        },
+    //                        {
+    //                            "value": 1,
+    //                            "suit": 2
+    //                        },
+    //                        {
+    //                            "value": 1,
+    //                            "suit": 1
+    //                        }
+    //                    ]`
+	f1StrCard := `[
+                            {
+                                "value": 11,
+                                "suit": 2
+                            },
+                            {
+                                "value": 10,
+                                "suit": 3
+                            },
+                            {
+                                "value": 13,
+                                "suit": 2
+                            },
+                            {
+                                "value": 13,
+                                "suit": 1
+                            },
+                            {
+                                "value": 10,
+                                "suit": 4
+                            },
+                            {
+                                "value": 14,
+                                "suit": 5
+                            },
+                            {
+                                "value": 11,
+                                "suit": 1
+                            },
+                            {
+                                "value": 12,
+                                "suit": 3
+                            },
+                            {
+                                "value": 5,
+                                "suit": 1
+                            },
+                            {
+                                "value": 13,
+                                "suit": 4
+                            },
+                            {
+                                "value": 10,
+                                "suit": 1
+                            },
+                            {
+                                "value": 5,
+                                "suit": 2
+                            },
+                            {
+                                "value": 15,
+                                "suit": 5
+                            },
+                            {
+                                "value": 8,
+                                "suit": 1
+                            },
+                            {
+                                "value": 8,
+                                "suit": 2
+                            },
+                            {
+                                "value": 7,
+                                "suit": 1
+                            },
+                            {
+                                "value": 7,
+                                "suit": 2
+                            }
+                        ]`
+	/*f1StrCard := `[
+                            {
+                                "value": 11,
+                                "suit": 2
+                            },
+                          
+                            {
+                                "value": 13,
+                                "suit": 2
+                            },
+                            {
+                                "value": 13,
+                                "suit": 1
+                            },
+                        
+                            {
+                                "value": 14,
+                                "suit": 5
+                            },
+                            {
+                                "value": 11,
+                                "suit": 1
+                            },
+                        
+                            {
+                                "value": 5,
+                                "suit": 1
+                            },
+                            {
+                                "value": 13,
+                                "suit": 4
+                            },
+                          
+                            {
+                                "value": 5,
+                                "suit": 2
+                            },
+                            {
+                                "value": 15,
+                                "suit": 5
+                            },
+                            {
+                                "value": 8,
+                                "suit": 1
+                            },
+                            {
+                                "value": 8,
+                                "suit": 2
+                            },
+                            {
+                                "value": 7,
+                                "suit": 1
+                            },
+                            {
+                                "value": 7,
+                                "suit": 2
+                            }
+                        ]`*/
+
+	//var landCard []*Card
+	var f1Card []*Card
+
+	//_ = json.Unmarshal([]byte(landlosrStrCard), &landCard)
+	_ = json.Unmarshal([]byte(f1StrCard), &f1Card)
+
+	//SortCard(landCard)
+	SortCard(f1Card)
+
+	//PrintCard(landCard)
+	PrintCard(f1Card)
+
+	gc := CreateGroupCard(f1Card)
+	gc = completeGroupCard(gc)
+
+	logger.Debug("单张")
+	rcs := gc.Single
+	for i := 0; i < len(rcs); i++ {
+		fmt.Print("weight:", rcs[i].Wight, "  ")
+		PrintCard(rcs[i].Card)
+	}
+
+	logger.Debug("对子")
+	rcd := gc.Double
+	for i := 0; i < len(rcd); i++ {
+		fmt.Print("weight:", rcd[i].Wight, "  ")
+		PrintCard(rcd[i].Card)
+	}
+
+	logger.Debug("三张")
+	rct := gc.Triple
+	for i := 0; i < len(rct); i++ {
+		fmt.Print("weight:", rct[i].Wight, "  ")
+		PrintCard(rct[i].Card)
+	}
+
+	logger.Debug("炸弹")
+	rcb:= gc.Bomb
+	for i := 0; i < len(rcb); i++ {
+		fmt.Print("weight:", rcb[i].Wight, "  ")
+		PrintCard(rcb[i].Card)
+	}
+
+	logger.Debug("火箭")
+	rcr := gc.Rocket
+	for i := 0; i < len(rcr); i++ {
+		fmt.Print("weight:", rcr[i].Wight, "  ")
+		PrintCard(rcr[i].Card)
+	}
+
+}
+
+func TestF1Follow(t *testing.T) {
+	landlosrStrCard := `[
+	                       {
+	                           "value": 13,
+	                           "suit": 3
+	                       },
+	                       {
+	                           "value": 12,
+	                           "suit": 4
+	                       },
+	                       {
+	                           "value": 12,
+	                           "suit": 1
+	                       },
+	                       {
+	                           "value": 11,
+	                           "suit": 4
+	                       },
+	                       {
+	                           "value": 10,
+	                           "suit": 2
+	                       },
+	                       {
+	                           "value": 9,
+	                           "suit": 3
+	                       },
+	                       {
+	                           "value": 8,
+	                           "suit": 4
+	                       },
+	                       {
+	                           "value": 8,
+	                           "suit": 3
+	                       },
+	                       {
+	                           "value": 6,
+	                           "suit": 3
+	                       },
+	                       {
+	                           "value": 6,
+	                           "suit": 1
+	                       },
+	                       {
+	                           "value": 5,
+	                           "suit": 3
+	                       },
+	                       {
+	                           "value": 4,
+	                           "suit": 4
+	                       },
+	                       {
+	                           "value": 4,
+	                           "suit": 3
+	                       },
+	                       {
+	                           "value": 4,
+	                           "suit": 2
+	                       },
+	                       {
+	                           "value": 3,
+	                           "suit": 4
+	                       },
+	                       {
+	                           "value": 3,
+	                           "suit": 3
+	                       },
+	                       {
+	                           "value": 2,
+	                           "suit": 1
+	                       },
+	                       {
+	                           "value": 1,
+	                           "suit": 4
+	                       },
+	                       {
+	                           "value": 1,
+	                           "suit": 2
+	                       },
+	                       {
+	                           "value": 1,
+	                           "suit": 1
+	                       }
+	                   ]`
+	f1StrCard := `[
+                            {
+                                "value": 11,
+                                "suit": 2
+                            },
+                            {
+                                "value": 10,
+                                "suit": 3
+                            },
+                            {
+                                "value": 13,
+                                "suit": 2
+                            },
+                            {
+                                "value": 13,
+                                "suit": 1
+                            },
+                            {
+                                "value": 10,
+                                "suit": 4
+                            },
+                            {
+                                "value": 14,
+                                "suit": 5
+                            },
+                            {
+                                "value": 11,
+                                "suit": 1
+                            },
+                            {
+                                "value": 12,
+                                "suit": 3
+                            },
+                            {
+                                "value": 5,
+                                "suit": 1
+                            },
+                            {
+                                "value": 13,
+                                "suit": 4
+                            },
+                            {
+                                "value": 10,
+                                "suit": 1
+                            },
+                            {
+                                "value": 5,
+                                "suit": 2
+                            },
+                            {
+                                "value": 15,
+                                "suit": 5
+                            },
+                            {
+                                "value": 8,
+                                "suit": 1
+                            },
+                            {
+                                "value": 8,
+                                "suit": 2
+                            },
+                            {
+                                "value": 7,
+                                "suit": 1
+                            },
+                            {
+                                "value": 7,
+                                "suit": 2
+                            }
+                        ]`
+	playerStrCard:=`[
+                            {
+                                "value": 12,
+                                "suit": 2
+                            },
+                            {
+                                "value": 9,
+                                "suit": 2
+                            },
+                            {
+                                "value": 5,
+                                "suit": 4
+                            },
+                            {
+                                "value": 3,
+                                "suit": 1
+                            },
+                            {
+                                "value": 9,
+                                "suit": 1
+                            },
+                            {
+                                "value": 3,
+                                "suit": 2
+                            },
+                            {
+                                "value": 9,
+                                "suit": 4
+                            },
+                            {
+                                "value": 2,
+                                "suit": 4
+                            },
+                            {
+                                "value": 2,
+                                "suit": 2
+                            },
+                            {
+                                "value": 1,
+                                "suit": 3
+                            },
+                            {
+                                "value": 11,
+                                "suit": 3
+                            },
+                            {
+                                "value": 2,
+                                "suit": 3
+                            },
+                            {
+                                "value": 4,
+                                "suit": 1
+                            },
+                            {
+                                "value": 6,
+                                "suit": 2
+                            },
+                            {
+                                "value": 6,
+                                "suit": 4
+                            },
+                            {
+                                "value": 7,
+                                "suit": 4
+                            },
+                            {
+                                "value": 7,
+                                "suit": 3
+                            }
+                        ]`
+
+	var landCard []*Card
+	var f1cards []*Card
+	var playerCards[]*Card
+
+	_ = json.Unmarshal([]byte(landlosrStrCard), &landCard)
+	_ = json.Unmarshal([]byte(f1StrCard), &f1cards)
+	_ = json.Unmarshal([]byte(playerStrCard), &playerCards)
+
+	e := []*Card{
+		{1, 1}, {1, 2}, {1, 3}, // {1, 4},
+		{2, 1},
+	}
+
+	var room Room
+	room.EffectiveCard = e
+	room.EffectiveType = cardConst.CARD_PATTERN_TRIPLET_WITH_SINGLE
+
+	var robot Player
+	var robotPinfo PlayerInfo
+	robotPinfo.PlayerId = "346488086"
+	robot.HandCards = f1cards
+	robot.PlayerInfo = &robotPinfo
+
+	var player Player
+	var playerPinfo PlayerInfo
+	playerPinfo.PlayerId = "108201502"
+	player.HandCards = playerCards
+	player.PlayerInfo = &playerPinfo
+
+	var landlord Player
+	landlord.HandCards = landCard
+
+	//FarmerFallowF1(&room, &robot, &player, &landlord )
+
 }

@@ -122,7 +122,7 @@ func DealPlayerEnterExpField(session *melody.Session, playerInfo PlayerInfo) {
 			p.PlayerPosition = position
 			p.Session = wPlayer.Session
 			//p.IsReady = true
-			p.ActionChan = make(chan PlayerActionChan,10)
+			p.ActionChan = make(chan PlayerActionChan)
 			players[id] = &p
 
 			//设置用户全局房间Id
@@ -135,7 +135,7 @@ func DealPlayerEnterExpField(session *melody.Session, playerInfo PlayerInfo) {
 		p.PlayerPosition = 3
 		p.Session = session
 		//p.IsReady = true
-		p.ActionChan = make(chan PlayerActionChan,10)
+		p.ActionChan = make(chan PlayerActionChan)
 		players[playerInfo.PlayerId] = &p
 		room.Players = players
 
@@ -225,7 +225,7 @@ func DealPlayerEnterLowField(session *melody.Session, playerInfo PlayerInfo) {
 			p.PlayerPosition = position
 			p.Session = wPlayer.Session
 			//p.IsReady = true
-			p.ActionChan = make(chan PlayerActionChan,10)
+			p.ActionChan = make(chan PlayerActionChan)
 			players[id] = &p
 
 			//设置用户全局房间Id
@@ -238,7 +238,7 @@ func DealPlayerEnterLowField(session *melody.Session, playerInfo PlayerInfo) {
 		p.PlayerPosition = 3
 		p.Session = session
 		//p.IsReady = true
-		p.ActionChan = make(chan PlayerActionChan,10)
+		p.ActionChan = make(chan PlayerActionChan)
 		players[playerInfo.PlayerId] = &p
 		room.Players = players
 
@@ -328,7 +328,7 @@ func DealPlayerEnterMidField(session *melody.Session, playerInfo PlayerInfo) {
 			p.PlayerPosition = position
 			p.Session = wPlayer.Session
 			//p.IsReady = true
-			p.ActionChan = make(chan PlayerActionChan,10)
+			p.ActionChan = make(chan PlayerActionChan)
 			players[id] = &p
 
 			//设置用户全局房间Id
@@ -341,7 +341,7 @@ func DealPlayerEnterMidField(session *melody.Session, playerInfo PlayerInfo) {
 		p.PlayerPosition = 3
 		p.Session = session
 		//p.IsReady = true
-		p.ActionChan = make(chan PlayerActionChan,10)
+		p.ActionChan = make(chan PlayerActionChan)
 		players[playerInfo.PlayerId] = &p
 		room.Players = players
 
@@ -432,7 +432,7 @@ func DealPlayerEnterHighField(session *melody.Session, playerInfo PlayerInfo) {
 			p.PlayerPosition = position
 			p.Session = wPlayer.Session
 			//p.IsReady = true
-			p.ActionChan = make(chan PlayerActionChan,10)
+			p.ActionChan = make(chan PlayerActionChan)
 			players[id] = &p
 
 			//设置用户全局房间Id
@@ -445,7 +445,7 @@ func DealPlayerEnterHighField(session *melody.Session, playerInfo PlayerInfo) {
 		p.PlayerPosition = 3
 		p.Session = session
 		//p.IsReady = true
-		p.ActionChan = make(chan PlayerActionChan,10)
+		p.ActionChan = make(chan PlayerActionChan)
 		players[playerInfo.PlayerId] = &p
 		room.Players = players
 

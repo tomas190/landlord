@@ -80,6 +80,7 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		return
 	}
 
+	actionPlayer.ActionChan = make(chan PlayerActionChan)
 	select {
 	case action := <-actionPlayer.ActionChan:
 		go func() {
