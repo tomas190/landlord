@@ -82,7 +82,7 @@ func HelpGetBaccaratData(req GameDataReq) (*pageData, error) {
 	selector["player_ids"] = bson.M{"$regex": bson.RegEx{Pattern: pattern, Options: "im"}}
 
 	if roundId != "" {
-		selector["rand_id"] = roundId
+		selector["round_id"] = roundId
 	}
 
 	if startTime != 0 && endTime != 0 {
