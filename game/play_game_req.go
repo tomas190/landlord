@@ -7,6 +7,7 @@ import (
 	"gopkg.in/olahol/melody.v1"
 	"landlord/mconst/cardConst"
 	"landlord/mconst/msgIdConst"
+	"landlord/mconst/playerAction"
 	"landlord/mconst/roomStatus"
 	"landlord/mconst/roomType"
 	"landlord/msg/mproto"
@@ -185,12 +186,30 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 		return
 	}
 
-	var actionChan PlayerActionChan
-	actionChan.ActionType = req.Action
 
-	go func() {
-		actionPlayer.ActionChan <- actionChan
-	}()
+	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
+	nextPlayer := getPlayerByPosition(room, nextPosition)
+
+	lastPosition := getLastPosition(actionPlayer.PlayerPosition)
+	lastPlayer := getPlayerByPosition(room, lastPosition)
+
+	switch req.Action {
+	case playerAction.CallLandlord: // 叫地主动作
+		CallLandlordAction(room, actionPlayer, nextPlayer)
+	case playerAction.GetLandlord: // 抢地主动作
+		GetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
+	case playerAction.NotCallLandlord: // 不叫
+		NotCallLandlordAction(room, actionPlayer, nextPlayer)
+	case playerAction.NotGetLandlord: // 不抢
+		NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
+	}
+
+	//var actionChan PlayerActionChan
+	//actionChan.ActionType = req.Action
+	//
+	//go func() {
+	//	actionPlayer.ActionChan <- actionChan
+	//}()
 
 } // 抢地主操作
 

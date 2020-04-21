@@ -25,9 +25,9 @@ func CallLandlord(room *Room, playerId string) {
 	}
 
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
-	uptWtChin := make(chan struct{})
+	//uptWtChin := make(chan struct{})
 
-	go updatePlayerWaitingTime(actionPlayer, uptWtChin, sysSet.GameDelayGetLandlordTimeInt)
+	go updatePlayingWaitingTime(actionPlayer, sysSet.GameDelayGetLandlordTimeInt)
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
@@ -41,32 +41,44 @@ func CallLandlord(room *Room, playerId string) {
 		return
 	}
 
+	oNum := room.OutNum
+	go func(delayTime time.Duration, outNum int32, acPlayer *Player, r *Room) {
+		DelaySomeTime(delayTime)
+		if outNum == r.OutNum && acPlayer.IsCanDo {
+			if r.Status == roomStatus.CallLandlord {
+				NotCallLandlordAction(r, actionPlayer, nextPlayer) // 不叫
+			} else if r.Status == roomStatus.GetLandlord {
+				NotGetLandlordAction(r, actionPlayer, nextPlayer, lastPlayer) // 不抢
+			}
+		}
+	}(sysSet.GameDelayGetLandlordTime, oNum, actionPlayer, room)
+
 	// 阻塞等待当前玩家的动作 超过系统设置时间后自动处理
-	select {
-	case action := <-actionPlayer.ActionChan:
-		go func() {
-			uptWtChin <- struct{}{}
-		}()
-		switch action.ActionType {
-		case playerAction.CallLandlord: // 叫地主动作
-			CallLandlordAction(room, actionPlayer, nextPlayer)
-		case playerAction.GetLandlord: // 抢地主动作
-			GetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
-		case playerAction.NotCallLandlord: // 不叫
-			NotCallLandlordAction(room, actionPlayer, nextPlayer)
-		case playerAction.NotGetLandlord: // 不抢
-			NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
-		}
-	case <-time.After(time.Second * sysSet.GameDelayGetLandlordTime): // 自动进行不叫或者不抢
-		go func() {
-			uptWtChin <- struct{}{}
-		}()
-		if room.Status == roomStatus.CallLandlord {
-			NotCallLandlordAction(room, actionPlayer, nextPlayer) // 不叫
-		} else if room.Status == roomStatus.GetLandlord {
-			NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer) // 不抢
-		}
-	}
+	//select {
+	//case action := <-actionPlayer.ActionChan:
+	//	go func() {
+	//		uptWtChin <- struct{}{}
+	//	}()
+	//	switch action.ActionType {
+	//	case playerAction.CallLandlord: // 叫地主动作
+	//		CallLandlordAction(room, actionPlayer, nextPlayer)
+	//	case playerAction.GetLandlord: // 抢地主动作
+	//		GetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
+	//	case playerAction.NotCallLandlord: // 不叫
+	//		NotCallLandlordAction(room, actionPlayer, nextPlayer)
+	//	case playerAction.NotGetLandlord: // 不抢
+	//		NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
+	//	}
+	//case <-time.After(time.Second * sysSet.GameDelayGetLandlordTime): // 自动进行不叫或者不抢
+	//	go func() {
+	//		uptWtChin <- struct{}{}
+	//	}()
+	//	if room.Status == roomStatus.CallLandlord {
+	//		NotCallLandlordAction(room, actionPlayer, nextPlayer) // 不叫
+	//	} else if room.Status == roomStatus.GetLandlord {
+	//		NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer) // 不抢
+	//	}
+	//}
 }
 
 /* ==========================================  四大 action ===========================================*/
@@ -75,6 +87,7 @@ func CallLandlord(room *Room, playerId string) {
 func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 	//playerId := actionPlayer.PlayerInfo.PlayerId
 	// room.MultiAll = room.MultiAll * 2 叫地主不加倍
+	room.OutNum=room.OutNum+1
 	actionPlayer.LastAction = playerAction.CallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 叫地主的动作...")
 	room.Status = roomStatus.GetLandlord
@@ -89,6 +102,7 @@ func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 
 // 抢地主
 func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, ) {
+	room.OutNum=room.OutNum+1
 	room.MultiAll = room.MultiAll * 2
 	room.MultiGetLandlord = room.MultiGetLandlord * 2
 	lastAction := actionPlayer.LastAction
@@ -113,6 +127,7 @@ func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player,
 
 // 不叫
 func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
+	room.OutNum=room.OutNum+1
 	actionPlayer.LastAction = playerAction.NotCallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 不叫...")
 	if nextPlayer.LastAction == playerAction.NotCallLandlord { // 如果下一个玩家已经做了不叫的动作 重新发牌
@@ -164,6 +179,7 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 
 // 不抢
 func NotGetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, ) {
+	room.OutNum=room.OutNum+1
 	actionPlayer.LastAction = playerAction.NotGetLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 不抢...")
 	if lastPlayer.LastAction < playerAction.NoAction { // 如果上一个玩家已经做了不抢的动作  那么下一个玩家就是地主
@@ -279,25 +295,25 @@ func ensureWhoIsLandlord(room *Room, landlordPlayer, actionPlayer *Player) {
 }
 
 // 叫地主阶段 保存更新用户等待时间点
-func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTime int32) {
-	actionPlayer.WaitingTime = waitTime
-	for {
-		select {
-		case <-tmpChan:
-			logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
-			//actionPlayer.WaitingTime = waitTime
-			runtime.Goexit()
-		case <-time.After(time.Second):
-			if actionPlayer.WaitingTime <= 0 {
-				runtime.Goexit()
-			}
-			actionPlayer.WaitingTime = actionPlayer.WaitingTime - 1
-		}
-	}
-}
+//func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTime int32) {
+//	actionPlayer.WaitingTime = waitTime
+//	for {
+//		select {
+//		case <-tmpChan:
+//			logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
+//			//actionPlayer.WaitingTime = waitTime
+//			runtime.Goexit()
+//		case <-time.After(time.Second):
+//			if actionPlayer.WaitingTime <= 0 {
+//				runtime.Goexit()
+//			}
+//			actionPlayer.WaitingTime = actionPlayer.WaitingTime - 1
+//		}
+//	}
+//}
 
 // 出牌阶段
-func updatePlayingWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTime int32) {
+func updatePlayingWaitingTime(actionPlayer *Player, waitTime int32) {
 	actionPlayer.WaitingTime = waitTime
 	for {
 		DelaySomeTime(1)
@@ -316,5 +332,3 @@ func updatePlayingWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitT
 		//}
 	}
 }
-
-

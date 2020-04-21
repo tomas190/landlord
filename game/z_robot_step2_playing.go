@@ -5,7 +5,7 @@ import (
 )
 
 // 机器人打牌阶段操作
-func RobotPlayAction(room *Room, robot, nextPlayer, lastPlayer *Player, uptWtChin chan struct{}) {
+func RobotPlayAction(room *Room, robot, nextPlayer, lastPlayer *Player) {
 	// 机器人打牌了
 	logger.Debug("机器人打牌阶段...")
 
@@ -15,8 +15,8 @@ func RobotPlayAction(room *Room, robot, nextPlayer, lastPlayer *Player, uptWtChi
 		// 如果特殊情况机器人的等待时间是3秒 则快速出牌
 		DelaySomeTime(getWaitTimeOutCardFast())
 	}
-	go func() {
-		uptWtChin <- struct{}{}
-	}()
+	//go func() {
+	//	uptWtChin <- struct{}{}
+	//}()
 	robotOutCard(room, robot, nextPlayer, lastPlayer)
 }

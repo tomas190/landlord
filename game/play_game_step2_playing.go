@@ -51,13 +51,13 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	}
 
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
-	uptWtChin := make(chan struct{})
+	//uptWtChin := make(chan struct{})
 
 	// 2020年2月25日15:21:31
 	delayTime, delayTimeInt := getPlayingDelayTime(room, actionPlayer)
 	// 2020年2月25日15:21:31
 	//go updatePlayerWaitingTime(actionPlayer, uptWtChin, sysSet.GameDelayTimeInt)
-	go updatePlayingWaitingTime(actionPlayer, uptWtChin, delayTimeInt)
+	go updatePlayingWaitingTime(actionPlayer, delayTimeInt)
 	// todo 每秒记录玩家的时间点用户 玩家再次阶段退出后 再次进入房间
 
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
@@ -69,14 +69,14 @@ func PlayingGame(room *Room, actionPlayerId string) {
 
 	// todo 用户托管动作
 	if actionPlayer.IsGameHosting {
-		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer, uptWtChin)
+		DoGameHosting(room, actionPlayer, nextPlayer, lastPlayer)
 		// todo 如果机器人假装断线托管 根据70%的几率恢复
 		return
 	}
 
 	if actionPlayer.IsRobot {
 		actionPlayer.GroupCard = GroupHandsCard(actionPlayer.HandCards)
-		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer, uptWtChin)
+		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer)
 		return
 	}
 
@@ -268,11 +268,8 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 }
 
 // 托管操作
-func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, uptWtChin chan struct{}) {
+func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
 	DelaySomeTime(1)
-	go func() {
-		uptWtChin <- struct{}{}
-	}()
 	if actionPlayer.IsMustDo {
 		// 取牌
 		cards, cType := FindMustBeOutCards(actionPlayer.HandCards)

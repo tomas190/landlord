@@ -336,7 +336,8 @@ func NewLandlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, l
 
 
 	// 2020年2月21日19:31:21 这里对拆对子打单牌进行处理
-	if eType==cardConst.CARD_PATTERN_SINGLE&&robot.LastAction==playerAction.NotOutCardAction{
+	if (eType==cardConst.CARD_PATTERN_SINGLE||eType==cardConst.CARD_PATTERN_PAIR)&&
+		robot.LastAction==playerAction.NotOutCardAction{
 		// 如果这首是单牌 并且上把牌地主也没出的情况下 60%的几率拆牌压
 		rand:=RandNum(0,10)
 		if rand>=4 {
