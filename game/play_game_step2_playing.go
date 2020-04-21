@@ -84,17 +84,18 @@ func PlayingGame(room *Room, actionPlayerId string) {
 	go func(delayTime time.Duration, outNum int32, acPlayer *Player, r *Room) {
 		DelaySomeTime(delayTime)
 		if outNum == r.OutNum && acPlayer.IsCanDo {
+			if delayTime != 3 {
+				// 如果是不能出的就不托管
+				acPlayer.IsGameHosting = true
+				RespGameHosting(r, playerStatus.GameHosting, acPlayer.PlayerPosition, acPlayer.PlayerInfo.PlayerId)
+			}
+
 			if acPlayer.IsMustDo {
 				//DoGameHosting(room, acPlayer, nextPlayer, lastPlayer) // 走托管逻辑
 				cards, cType := FindMustBeOutCards(acPlayer.HandCards)
 				OutCardsAction(r, acPlayer, nextPlayer, cards, cType)
 			} else {
 				NotOutCardsAction(r, acPlayer, lastPlayer, nextPlayer) // 走不出逻辑
-			}
-			if delayTime != 3 {
-				// 如果是不能出的就不托管
-				acPlayer.IsGameHosting = true
-				RespGameHosting(r, playerStatus.GameHosting, acPlayer.PlayerPosition, acPlayer.PlayerInfo.PlayerId)
 			}
 		}
 	}(delayTime, oNum, actionPlayer, room)
