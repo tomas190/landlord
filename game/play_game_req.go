@@ -7,7 +7,6 @@ import (
 	"gopkg.in/olahol/melody.v1"
 	"landlord/mconst/cardConst"
 	"landlord/mconst/msgIdConst"
-	"landlord/mconst/playerAction"
 	"landlord/mconst/roomStatus"
 	"landlord/mconst/roomType"
 	"landlord/msg/mproto"
@@ -230,7 +229,7 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 			return
 		}
 		room = inRoom
-		SetSessionRoomId(session,room.RoomId)
+		SetSessionRoomId(session, room.RoomId)
 	}
 
 	actionPlayer := room.Players[info.PlayerId]
@@ -249,24 +248,34 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 		return
 	}
 
-	var actionChan PlayerActionChan
+	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
+	nextPlayer := getPlayerByPosition(room, nextPosition)
+
+	lastPosition := getLastPosition(actionPlayer.PlayerPosition)
+	lastPlayer := getPlayerByPosition(room, lastPosition)
+
+	logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
+	actionPlayer.WaitingTime = -1
 	if len(req.Cards) <= 0 {
-		actionChan.ActionType = playerAction.NotOutCardAction
+		NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 	} else {
-		actionChan.ActionCards = ChangeProtoToCard(req.Cards)
-		actionChan.ActionType = playerAction.OutCardAction
-		actionChan.CardsType = cardType
+		OutCardsAction(room, actionPlayer, nextPlayer, outCards, cardType)
 	}
 
-	if actionPlayer.IsCanDo {
-		actionPlayer.ActionChan <- actionChan
-	}else {
-		SendErrMsg(session, msgIdConst.ReqOutCardDo,"当前不该你出牌")
-	}
-
-	//go func() {
+	//var actionChan PlayerActionChan
+	//if len(req.Cards) <= 0 {
+	//	actionChan.ActionType = playerAction.NotOutCardAction
+	//} else {
+	//	actionChan.ActionCards = ChangeProtoToCard(req.Cards)
+	//	actionChan.ActionType = playerAction.OutCardAction
+	//	actionChan.CardsType = cardType
+	//}
+	//
+	//if actionPlayer.IsCanDo {
 	//	actionPlayer.ActionChan <- actionChan
-	//}()
+	//}else {
+	//	SendErrMsg(session, msgIdConst.ReqOutCardDo,"当前不该你出牌")
+	//}
 
 }
 
@@ -386,7 +395,7 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 			return
 		}
 		room = inRoom
-		SetSessionRoomId(session,room.RoomId)
+		SetSessionRoomId(session, room.RoomId)
 	}
 
 	if room.Status != roomStatus.Playing {

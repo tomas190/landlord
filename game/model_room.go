@@ -28,6 +28,7 @@ type Room struct {
 	MultiRocket       int32              // 火箭倍数
 	LandlordOutNum    int32              // 地主出了多少首牌 用于计算春天
 	Status            int32              // 房间状态 0 等待中 1叫地主 2.抢地主, 3正在玩
+	OutNum            int32              // 总共出了多少次
 }
 
 type RoomClassify struct {
@@ -48,7 +49,7 @@ func NewRoom(rType int32, players map[string]*Player) *Room {
 	room.MultiAll = 3 // 初始倍数是3
 	room.MultiGetLandlord = 3
 	room.Players = players
-	room.RoundId = fmt.Sprintf("room-%d-%d-%s", rType, time.Now().Unix(),bson.NewObjectId().Hex())
+	room.RoundId = fmt.Sprintf("room-%d-%d-%s", rType, time.Now().Unix(), bson.NewObjectId().Hex())
 	room.RoomClass = NewRoomClassify(rType)
 	return &room
 }

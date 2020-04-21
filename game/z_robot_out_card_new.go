@@ -26,11 +26,25 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 	// 2020年2月21日16:41:43 如果能一首出完
 	hc := robot.HandCards
 	cardsType := GetCardsType(hc)
-	if cardsType>=cardConst.CARD_PATTERN_SINGLE&&cardsType<=cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS {
+	if cardsType>=cardConst.CARD_PATTERN_SINGLE&&cardsType<=cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
 		OutCardsAction(room, robot, nextPlayer, hc, cardsType)
 		return
 	}
+
+	//// 如果是四代两单
+	//if cardsType==cardConst.CARD_PATTERN_QUADPLEX_WITH_SINGLES {
+	//
+	//}
+	//
+	//// 如果是四代两对
+	//if cardsType==cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
+	//
+	//}
+	//
+
 	// 2020年2月21日16:41:43 如果能一首出完
+
+
 
 	comG := completeGroupCard(robot.GroupCard)
 	comRe := changeGroupToReCard(comG)

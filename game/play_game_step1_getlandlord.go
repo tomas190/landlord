@@ -295,3 +295,26 @@ func updatePlayerWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTi
 		}
 	}
 }
+
+// 出牌阶段
+func updatePlayingWaitingTime(actionPlayer *Player, tmpChan chan struct{}, waitTime int32) {
+	actionPlayer.WaitingTime = waitTime
+	for {
+		DelaySomeTime(1)
+		if actionPlayer.WaitingTime <= 0 {
+			runtime.Goexit()
+		}
+		actionPlayer.WaitingTime = actionPlayer.WaitingTime - 1
+
+		//select {
+		//case <-tmpChan:
+		//	logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
+		//	//actionPlayer.WaitingTime = waitTime
+		//	runtime.Goexit()
+		//case <-time.After(time.Second):
+		//
+		//}
+	}
+}
+
+
