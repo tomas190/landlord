@@ -10,7 +10,6 @@ import (
 	"landlord/mconst/playerStatus"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
-	"runtime"
 	"time"
 )
 
@@ -237,7 +236,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		//DelaySomeTime(2)
 		//// 移除房间
 		clearRoomAndPlayer(room)
-		runtime.Goexit()
+		//runtime.Goexit()
 		return
 	}
 	if actionPlayer.IsRobot { // 重新组排
