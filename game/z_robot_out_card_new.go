@@ -26,7 +26,7 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 	// 2020年2月21日16:41:43 如果能一首出完
 	hc := robot.HandCards
 	cardsType := GetCardsType(hc)
-	if cardsType>=cardConst.CARD_PATTERN_SINGLE&&cardsType<=cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
+	if cardsType >= cardConst.CARD_PATTERN_SINGLE && cardsType <= cardConst.CARD_PATTERN_ROCKET {
 		OutCardsAction(room, robot, nextPlayer, hc, cardsType)
 		return
 	}
@@ -43,8 +43,6 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 	//
 
 	// 2020年2月21日16:41:43 如果能一首出完
-
-
 
 	comG := completeGroupCard(robot.GroupCard)
 	comRe := changeGroupToReCard(comG)
@@ -106,6 +104,17 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 				logger.Debug("地主首出 农民保单 非类型最小权重")
 				outCard := comRe[i].Card
 				cardType := comRe[i].CardType
+
+				if cardType == cardConst.CARD_PATTERN_BOMB &&
+					cardsType==cardConst.CARD_PATTERN_QUADPLEX_WITH_SINGLES{
+					OutCardsAction(room, robot, nextPlayer, hc, cardType)
+					return
+				}
+
+				if cardType==cardConst.CARD_PATTERN_ROCKET {
+					continue
+				}
+
 				OutCardsAction(room, robot, nextPlayer, outCard, cardType)
 				return
 			}
@@ -126,6 +135,17 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 				logger.Debug("地主首出 农民保双 非类型最小权重")
 				outCard := comRe[i].Card
 				cardType := comRe[i].CardType
+
+				if cardType == cardConst.CARD_PATTERN_BOMB &&
+					cardsType==cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS{
+					OutCardsAction(room, robot, nextPlayer, hc, cardType)
+					return
+				}
+
+				if cardType==cardConst.CARD_PATTERN_ROCKET {
+					continue
+				}
+
 				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
@@ -334,15 +354,14 @@ func NewLandlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, l
 
 	}
 
-
 	// 2020年2月21日19:31:21 这里对拆对子打单牌进行处理
-	if (eType==cardConst.CARD_PATTERN_SINGLE||eType==cardConst.CARD_PATTERN_PAIR)&&
-		robot.LastAction==playerAction.NotOutCardAction{
+	if (eType == cardConst.CARD_PATTERN_SINGLE || eType == cardConst.CARD_PATTERN_PAIR) &&
+		robot.LastAction == playerAction.NotOutCardAction {
 		// 如果这首是单牌 并且上把牌地主也没出的情况下 60%的几率拆牌压
-		rand:=RandNum(0,10)
-		if rand>=4 {
+		rand := RandNum(0, 10)
+		if rand >= 4 {
 			beatCards, b3, bType := FindCanBeatCards(robot.HandCards, eCards, eType)
-			if  b3{
+			if b3 {
 				OutCardsAction(room, robot, nextPlayer, beatCards, bType)
 				return
 			}
@@ -390,7 +409,7 @@ func NewRobotFarmerMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastP
 	// 2020年2月21日16:41:43 如果能一首出完
 	hc := robot.HandCards
 	cardsType := GetCardsType(hc)
-	if cardsType>=cardConst.CARD_PATTERN_SINGLE&&cardsType<=cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS {
+	if cardsType >= cardConst.CARD_PATTERN_SINGLE && cardsType <= cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS {
 		OutCardsAction(room, robot, nextPlayer, hc, cardsType)
 		return
 	}
@@ -557,7 +576,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 	// 2020年2月21日16:41:43 如果能一首出完
 	hc := robot.HandCards
 	cardsType := GetCardsType(hc)
-	if cardsType>=cardConst.CARD_PATTERN_SINGLE&&cardsType<=cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS {
+	if cardsType >= cardConst.CARD_PATTERN_SINGLE && cardsType <= cardConst.CARD_PATTERN_SEQUENCE_OF_TRIPLETS_WITH_ATTACHED_PAIRS {
 		OutCardsAction(room, robot, nextPlayer, hc, cardsType)
 		return
 	}
@@ -603,7 +622,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 			if upReCards[i].IsGodCard {
 				outCard := upReCards[i].RC.Card
 				cardType := upReCards[i].RC.CardType
-				OutCardsAction(room, robot, nextPlayer,  SpecialHandle(outCard), cardType)
+				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -617,7 +636,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 				logger.Debug("F1首出 地主保单 非类型最小权重")
 				outCard := comRe[i].Card
 				cardType := comRe[i].CardType
-				OutCardsAction(room, robot, nextPlayer,  SpecialHandle(outCard), cardType)
+				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -635,7 +654,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 				logger.Debug("F1首出 地主保双 非类型最小权重")
 				outCard := comRe[i].Card
 				cardType := comRe[i].CardType
-				OutCardsAction(room, robot, nextPlayer,  SpecialHandle(outCard), cardType)
+				OutCardsAction(room, robot, nextPlayer, SpecialHandle(outCard), cardType)
 				return
 			}
 		}
@@ -647,7 +666,7 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 	}
 
 	logger.Debug("F1首出 无人最后一手牌 取最小权值牌")
-	OutCardsAction(room, robot, nextPlayer,  SpecialHandle(comRe[0].Card), comRe[0].CardType)
+	OutCardsAction(room, robot, nextPlayer, SpecialHandle(comRe[0].Card), comRe[0].CardType)
 }
 
 /*
@@ -697,7 +716,7 @@ func farmerFallowF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 		}
 
 		// 如果农民保单
-		lastType, b := checkPlayerHasLast(nextPlayer) // 判断下架农民是否最后一首牌
+		lastType, b := checkPlayerHasLast(nextPlayer)       // 判断下架农民是否最后一首牌
 		if b && lastType == cardConst.CARD_PATTERN_SINGLE { // 是否保单
 			// 寻找天炸
 			logger.Debug("F1跟牌  有能大过的跟牌  上家是出牌是农民 农民保单====================")
@@ -718,7 +737,7 @@ func farmerFallowF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 			logger.Debug("F1跟牌  有能大过的跟牌  上家是出牌是农民====================")
 			//nextCompG := completeGroupCard(lastPlayer.GroupCard)
 			//nextComRe := changeGroupToReCard(nextCompG)
-			if !(countCardWight(followCards, oType) >= cardConst.CARD_RANK_ACE){//||
+			if !(countCardWight(followCards, oType) >= cardConst.CARD_RANK_ACE) { //||
 				//len(nextComRe)+1 >= allLen) {
 				tmpG := CreateGroupCard(removeCards(robot.HandCards, followCards))
 				tmpComG := completeGroupCard(tmpG)
@@ -810,7 +829,7 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 			}
 
 		} else { // 如果是下家农民出的
-			lastType, b := checkPlayerHasLast(nextPlayer) // 判断地主否最后一首牌
+			lastType, b := checkPlayerHasLast(nextPlayer)       // 判断地主否最后一首牌
 			if b && lastType == cardConst.CARD_PATTERN_SINGLE { // 是否保单
 				// 寻找天炸
 				logger.Debug("F2跟牌")
@@ -837,7 +856,7 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 			logger.Debug("F2跟牌  有能大过的跟牌  上家是出牌是农民====================")
 			//lastCompG := completeGroupCard(lastPlayer.GroupCard)
 			//nextComRe := changeGroupToReCard(lastCompG)
-			if !(countCardWight(followCards, oType) >= cardConst.CARD_RANK_ACE ){
+			if !(countCardWight(followCards, oType) >= cardConst.CARD_RANK_ACE) {
 				//len(nextComRe)+1 >= allLen) || nextPlayer.LastAction == playerAction.OutCardAction {
 				// 最小跟拍
 
@@ -854,8 +873,8 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 					}
 				} else { // 如果返回的不是炸弹 拆牌之后 手术牌值多一首 可以出
 
-						OutCardsAction(room, robot, nextPlayer, followCards, oType)
-						return
+					OutCardsAction(room, robot, nextPlayer, followCards, oType)
+					return
 				}
 			}
 		}
@@ -866,31 +885,29 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 
 }
 
-
-
 // bug特殊处理
 /*
 	3456788大鬼能出牌 123456615
 	3456788大鬼出牌 123456614
 */
-func SpecialHandle(outCard []*Card)[]*Card  {
-	if len(outCard)!=8 {
+func SpecialHandle(outCard []*Card) []*Card {
+	if len(outCard) != 8 {
 		return outCard
 	}
 	var exp string
 	SortCardSL(outCard)
-	for i:=0; i<len(outCard);i++  {
-		exp+=strconv.Itoa(int(outCard[i].Value))
+	for i := 0; i < len(outCard); i++ {
+		exp += strconv.Itoa(int(outCard[i].Value))
 	}
 
 	var res []*Card
-	if strings.Contains(exp,"123456")&&GetCardsType(outCard)==cardConst.CARD_PATTERN_ERROR{
-		for i:=1;i<=6 ;  i++{
-			card:=findThisValueCard(i,outCard,1)
+	if strings.Contains(exp, "123456") && GetCardsType(outCard) == cardConst.CARD_PATTERN_ERROR {
+		for i := 1; i <= 6; i++ {
+			card := findThisValueCard(i, outCard, 1)
 			res = append(res, card...)
 		}
 		return res
-	}else {
+	} else {
 		return outCard
 	}
 }
