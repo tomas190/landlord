@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"github.com/bitly/go-simplejson"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2/bson"
 	"landlord/game"
@@ -17,6 +18,7 @@ type GameDataReq struct {
 	RoundId   string `form:"round_id" json:"round_id"`
 	Skip      int    `form:"skip" json:"skip"`
 	Limit     int    `form:"limit" json:"limit"`
+	Roundres  int    `form:"roundres" json:"roundres"`
 }
 
 type GameData struct {
@@ -47,6 +49,13 @@ func GetBaccaratData(c *gin.Context) {
 	data, err := HelpGetBaccaratData(req)
 	if err != nil {
 		c.JSON(httpCode, NewResp(ErrCode, err.Error(), nil))
+		return
+	}
+
+	if req.Roundres == 1 {
+		r := simplejson.New()
+		r.Set("total", data.Total)
+		c.JSON(httpCode, NewResp(SuccCode, "ok", r))
 		return
 	}
 	c.JSON(httpCode, NewResp(SuccCode, "ok", data))
