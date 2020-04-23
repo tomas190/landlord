@@ -92,9 +92,9 @@ func PlayingGame(room *Room, actionPlayerId string) {
 			if acPlayer.IsMustDo {
 				//DoGameHosting(room, acPlayer, nextPlayer, lastPlayer) // 走托管逻辑
 				cards, cType := FindMustBeOutCards(acPlayer.HandCards)
-				OutCardsAction(r, acPlayer, nextPlayer, cards, cType)
+				go OutCardsAction(r, acPlayer, nextPlayer, cards, cType)
 			} else {
-				NotOutCardsAction(r, acPlayer, lastPlayer, nextPlayer) // 走不出逻辑
+				go NotOutCardsAction(r, acPlayer, lastPlayer, nextPlayer) // 走不出逻辑
 			}
 		}
 	}(delayTime, oNum, actionPlayer, room)
@@ -158,7 +158,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 					// 检测出没有打过的牌 则不出
 					lastPosition := getLastPosition(actionPlayer.PlayerPosition)
 					lastPlayer := getPlayerByPosition(room, lastPosition)
-					NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
+					go NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 					return
 				}
 				cards = append([]*Card{}, beatCards...)
@@ -248,7 +248,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	// 推送记牌器
 	pushCardCount(room)
 	nextPlayer.IsCanDo = true
-	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
+	go PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
 // 不出逻辑
@@ -264,7 +264,7 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 		pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, nil, -3, delayTimeInt)
 	}
 	room.OutNum++
-	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
+	go PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
 // 托管操作
@@ -273,13 +273,13 @@ func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
 	if actionPlayer.IsMustDo {
 		// 取牌
 		cards, cType := FindMustBeOutCards(actionPlayer.HandCards)
-		OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
+		go OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
 	} else if bCards, b, bType := FindCanBeatCards(actionPlayer.HandCards, room.EffectiveCard, room.EffectiveType); b {
 		//  判断出上家的牌型 如果有能大过上家的牌 则出没有则不出
-		OutCardsAction(room, actionPlayer, nextPlayer, bCards, bType)
+		go OutCardsAction(room, actionPlayer, nextPlayer, bCards, bType)
 	} else {
 		//  判断出上家的牌型 如果有能大过上家的牌 则出没有则不出
-		NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
+		go NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 	}
 }
 

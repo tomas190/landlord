@@ -276,9 +276,9 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 	logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
 	actionPlayer.WaitingTime = -1
 	if len(req.Cards) <= 0 {
-		NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
+		go NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 	} else {
-		OutCardsAction(room, actionPlayer, nextPlayer, outCards, cardType)
+		go OutCardsAction(room, actionPlayer, nextPlayer, outCards, cardType)
 	}
 
 	//var actionChan PlayerActionChan

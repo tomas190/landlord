@@ -27,8 +27,30 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 	hc := robot.HandCards
 	cardsType := GetCardsType(hc)
 	if cardsType >= cardConst.CARD_PATTERN_SINGLE && cardsType <= cardConst.CARD_PATTERN_ROCKET {
-		OutCardsAction(room, robot, nextPlayer, hc, cardsType)
-		return
+
+		_, b, _ := hasRacket(hc)
+		// 如果最后一首 只是火箭
+		if b && cardsType == cardConst.CARD_PATTERN_ROCKET {
+			OutCardsAction(room, robot, nextPlayer, hc, cardsType)
+			return
+		}
+
+		// 如果最后一首 只是炸弹
+		_, b2 := findMinBoom(hc)
+		if b2 && cardsType == cardConst.CARD_PATTERN_BOMB {
+			OutCardsAction(room, robot, nextPlayer, hc, cardsType)
+			return
+		}
+
+		if !(cardsType != cardConst.CARD_PATTERN_ROCKET && b) {
+			OutCardsAction(room, robot, nextPlayer, hc, cardsType)
+			return
+		}
+
+		if !(cardsType != cardConst.CARD_PATTERN_BOMB && b2) {
+			OutCardsAction(room, robot, nextPlayer, hc, cardsType)
+			return
+		}
 	}
 
 	//// 如果是四代两单
@@ -106,12 +128,12 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 				cardType := comRe[i].CardType
 
 				if cardType == cardConst.CARD_PATTERN_BOMB &&
-					cardsType==cardConst.CARD_PATTERN_QUADPLEX_WITH_SINGLES{
+					cardsType == cardConst.CARD_PATTERN_QUADPLEX_WITH_SINGLES {
 					OutCardsAction(room, robot, nextPlayer, hc, cardType)
 					return
 				}
 
-				if cardType==cardConst.CARD_PATTERN_ROCKET {
+				if cardType == cardConst.CARD_PATTERN_ROCKET {
 					continue
 				}
 
@@ -137,12 +159,12 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 				cardType := comRe[i].CardType
 
 				if cardType == cardConst.CARD_PATTERN_BOMB &&
-					cardsType==cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS{
+					cardsType == cardConst.CARD_PATTERN_QUADPLEX_WITH_PAIRS {
 					OutCardsAction(room, robot, nextPlayer, hc, cardType)
 					return
 				}
 
-				if cardType==cardConst.CARD_PATTERN_ROCKET {
+				if cardType == cardConst.CARD_PATTERN_ROCKET {
 					continue
 				}
 
