@@ -248,7 +248,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	// 推送记牌器
 	pushCardCount(room)
 	nextPlayer.IsCanDo = true
-	go PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
+	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
 // 不出逻辑
@@ -264,7 +264,7 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 		pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, nil, -3, delayTimeInt)
 	}
 	room.OutNum++
-	go PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
+	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
 // 托管操作
@@ -273,13 +273,13 @@ func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
 	if actionPlayer.IsMustDo {
 		// 取牌
 		cards, cType := FindMustBeOutCards(actionPlayer.HandCards)
-		go OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
+		OutCardsAction(room, actionPlayer, nextPlayer, cards, cType)
 	} else if bCards, b, bType := FindCanBeatCards(actionPlayer.HandCards, room.EffectiveCard, room.EffectiveType); b {
 		//  判断出上家的牌型 如果有能大过上家的牌 则出没有则不出
-		go OutCardsAction(room, actionPlayer, nextPlayer, bCards, bType)
+		OutCardsAction(room, actionPlayer, nextPlayer, bCards, bType)
 	} else {
 		//  判断出上家的牌型 如果有能大过上家的牌 则出没有则不出
-		go NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
+		NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 	}
 }
 
