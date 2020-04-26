@@ -77,27 +77,33 @@ func PlayingGame(room *Room, actionPlayerId string) {
 		actionPlayer.GroupCard = GroupHandsCard(actionPlayer.HandCards)
 		RobotPlayAction(room, actionPlayer, nextPlayer, lastPlayer)
 		return
+	} else {
+		oNum := GetRoomNum(room)
+		go func(delayTime time.Duration, outNum int32, acPlayer *Player, r *Room) {
+			DelaySomeTime(delayTime)
+
+			checkRoom := GetRoom(r.RoomId)
+			if checkRoom == nil {
+				return
+			}
+
+			if outNum == GetRoomNum(r) && acPlayer.IsCanDo {
+				if delayTime != 3 {
+					// 如果是不能出的就不托管
+					acPlayer.IsGameHosting = true
+					RespGameHosting(r, playerStatus.GameHosting, acPlayer.PlayerPosition, acPlayer.PlayerInfo.PlayerId)
+				}
+
+				if acPlayer.IsMustDo {
+					//DoGameHosting(room, acPlayer, nextPlayer, lastPlayer) // 走托管逻辑
+					cards, cType := FindMustBeOutCards(acPlayer.HandCards)
+					OutCardsAction(r, acPlayer, nextPlayer, cards, cType)
+				} else {
+					NotOutCardsAction(r, acPlayer, lastPlayer, nextPlayer) // 走不出逻辑
+				}
+			}
+		}(delayTime, oNum, actionPlayer, room)
 	}
-
-	oNum := room.OutNum
-	go func(delayTime time.Duration, outNum int32, acPlayer *Player, r *Room) {
-		DelaySomeTime(delayTime)
-		if outNum == r.OutNum && acPlayer.IsCanDo {
-			if delayTime != 3 {
-				// 如果是不能出的就不托管
-				acPlayer.IsGameHosting = true
-				RespGameHosting(r, playerStatus.GameHosting, acPlayer.PlayerPosition, acPlayer.PlayerInfo.PlayerId)
-			}
-
-			if acPlayer.IsMustDo {
-				//DoGameHosting(room, acPlayer, nextPlayer, lastPlayer) // 走托管逻辑
-				cards, cType := FindMustBeOutCards(acPlayer.HandCards)
-				go OutCardsAction(r, acPlayer, nextPlayer, cards, cType)
-			} else {
-				go NotOutCardsAction(r, acPlayer, lastPlayer, nextPlayer) // 走不出逻辑
-			}
-		}
-	}(delayTime, oNum, actionPlayer, room)
 
 	//actionPlayer.ActionChan = make(chan PlayerActionChan)
 	//select {
@@ -173,7 +179,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	if actionPlayer.IsLandlord {
 		room.LandlordOutNum++
 	}
-	room.OutNum++
+	SetRoomNum(room)
 
 	// 炸弹计算翻倍
 	if cardsType == cardConst.CARD_PATTERN_BOMB {
@@ -236,7 +242,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		//DelaySomeTime(2)
 		//// 移除房间
 		clearRoomAndPlayer(room)
-		//runtime.Goexit()
+		// runtime.Goexit()
 		return
 	}
 	if actionPlayer.IsRobot { // 重新组排
@@ -248,6 +254,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	// 推送记牌器
 	pushCardCount(room)
 	nextPlayer.IsCanDo = true
+
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
@@ -288,6 +295,8 @@ func DoGameHosting(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
 // 设置房间重新出牌
 // 及玩家 出的牌 下两家都不要
 func reSetOutRoomToOut(room *Room, playerId string) {
+	room.mu.Lock()
+	defer room.mu.Unlock()
 	room.EffectiveCard = nil
 	// 重新设置玩家位无动作
 	for _, v := range room.Players {
@@ -305,6 +314,8 @@ func reSetOutRoomToOut(room *Room, playerId string) {
 
 // 设置当前玩家出牌
 func setCurrentPlayerOut(room *Room, playerId string, isMustDo bool) {
+	room.mu.Lock()
+	defer room.mu.Unlock()
 	for _, v := range room.Players {
 		if v.PlayerInfo.PlayerId == playerId {
 			v.IsCanDo = true

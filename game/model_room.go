@@ -6,10 +6,12 @@ import (
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/roomType"
+	"sync"
 	"time"
 )
 
 type Room struct {
+	mu                sync.Mutex
 	RoomClass         *RoomClassify      // 房间分类
 	RoomId            string             // 房间ID
 	RoundId           string             // roundId
@@ -109,4 +111,19 @@ func GetRoomClassifyBottomEnterPoint(rType int32) float64 {
 		return 100
 	}
 	return 0
+}
+
+func GetRoomNum(r *Room) int32 {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	outNum := r.OutNum
+	return outNum
+
+}
+
+func SetRoomNum(r *Room) {
+	o := GetRoomNum(r)
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.OutNum = o + 1
 }

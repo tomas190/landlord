@@ -14,7 +14,7 @@ func CreateRobot(roomType int32) *Player {
 	pi.HeadImg = getRobotImg()
 	player.PlayerInfo = &pi
 	player.IsRobot = true
-	player.ActionChan = make(chan PlayerActionChan)
+	//player.ActionChan = make(chan PlayerActionChan)
 	return &player
 }
 

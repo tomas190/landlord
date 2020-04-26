@@ -276,9 +276,9 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 	logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
 	actionPlayer.WaitingTime = -1
 	if len(req.Cards) <= 0 {
-		go NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
+		NotOutCardsAction(room, actionPlayer, lastPlayer, nextPlayer)
 	} else {
-		go OutCardsAction(room, actionPlayer, nextPlayer, outCards, cardType)
+		OutCardsAction(room, actionPlayer, nextPlayer, outCards, cardType)
 	}
 
 	//var actionChan PlayerActionChan
@@ -318,9 +318,10 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 	PrintMsg("ReqExitRoom:"+info.PlayerId, req)
 	/*==== 参数验证 =====*/
 
-	roomId := GetSessionRoomId(session)
+	room, b := IsPlayerInRoom(info.PlayerId)
+	//roomId := GetSessionRoomId(session)
 	// 1. 如果roomId为空代表玩家是在等待队列 则移除等待队列
-	if roomId == "" {
+	if !b {
 		logger.Debug(info.PlayerId, "当前在等待队列中..")
 		RemoveWaitUser(info.PlayerId)
 		logger.Debug("退出房间.....")
@@ -350,10 +351,10 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 	//}
 
 	// 2. 如果玩家在游戏中 则设置退出房间标记
-	room := GetRoom(roomId)
+	// room := GetRoom(roomId)
 	if room == nil {
-		logger.Error("ReqOutCardDo:无room信息", roomId)
-		SendErrMsg(session, msgIdConst.ReqExitRoom, "无room信息:"+roomId)
+		logger.Error("ReqExitRoom:无room信息")
+		SendErrMsg(session, msgIdConst.ReqExitRoom, "无room信息:")
 		return
 	}
 	// 设置退出房间标记
@@ -454,11 +455,13 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 
 func RespGameHosting(room *Room, ghType, position int32, PlayerId string) {
 	logger.Debug("resp发送托管")
+
 	var resp mproto.RespGameHosting
 	resp.GameHostType = ghType
 	resp.PlayerId = PlayerId
 	resp.Position = position
 	bytes, _ := proto.Marshal(&resp) // 广播给房间的人
+	PrintMsg("resp发送托管",resp)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.RespGameHosting, bytes))
 }
 

@@ -41,7 +41,7 @@ func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int3
 	p.PlayerInfo = &playerInfo
 	p.Session = session
 	p.PlayerPosition = 1
-	p.ActionChan = make(chan PlayerActionChan)
+	//p.ActionChan = make(chan PlayerActionChan)
 
 	robot2 := CreateRobot(roomType)
 	robot2.PlayerPosition = 2
@@ -90,7 +90,7 @@ func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, d
 			p.PlayerInfo = &playerInfo
 			p.Session = session
 			p.PlayerPosition = 1
-			p.ActionChan = make(chan PlayerActionChan)
+		//	p.ActionChan = make(chan PlayerActionChan)
 			room.Players[p.PlayerInfo.PlayerId] = &p
 
 			// 第一个进入的机器人
@@ -116,7 +116,7 @@ func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, d
 			p.PlayerInfo = &playerInfo
 			p.Session = session
 			p.PlayerPosition = 1
-			p.ActionChan = make(chan PlayerActionChan)
+			//p.ActionChan = make(chan PlayerActionChan)
 			room.Players[p.PlayerInfo.PlayerId] = &p
 
 			// 第一个进入的机器人
