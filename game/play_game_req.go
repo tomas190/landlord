@@ -89,13 +89,13 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 
 	switch req.RoomType {
 	case roomType.ExperienceField: // 如果是体验场
-		DealPlayerEnterExpField(session, *playerInfo)
+		go DealPlayerEnterExpField(session, *playerInfo)
 	case roomType.LowField:
-		DealPlayerEnterLowField(session, *playerInfo)
+		go DealPlayerEnterLowField(session, *playerInfo)
 	case roomType.MidField:
-		DealPlayerEnterMidField(session, *playerInfo)
+		go DealPlayerEnterMidField(session, *playerInfo)
 	case roomType.HighField:
-		DealPlayerEnterHighField(session, *playerInfo)
+		go DealPlayerEnterHighField(session, *playerInfo)
 	default:
 		logger.Error("进入房间失败:无此房间类型", req.RoomType)
 	}
