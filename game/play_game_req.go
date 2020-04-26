@@ -89,13 +89,13 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 
 	switch req.RoomType {
 	case roomType.ExperienceField: // 如果是体验场
-		go DealPlayerEnterExpField(session, *playerInfo)
+		DealPlayerEnterExpField(session, *playerInfo)
 	case roomType.LowField:
-		go DealPlayerEnterLowField(session, *playerInfo)
+		DealPlayerEnterLowField(session, *playerInfo)
 	case roomType.MidField:
-		go DealPlayerEnterMidField(session, *playerInfo)
+		DealPlayerEnterMidField(session, *playerInfo)
 	case roomType.HighField:
-		go DealPlayerEnterHighField(session, *playerInfo)
+		DealPlayerEnterHighField(session, *playerInfo)
 	default:
 		logger.Error("进入房间失败:无此房间类型", req.RoomType)
 	}
@@ -195,13 +195,13 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 
 	switch req.Action {
 	case playerAction.CallLandlord: // 叫地主动作
-		CallLandlordAction(room, actionPlayer, nextPlayer)
+		go CallLandlordAction(room, actionPlayer, nextPlayer)
 	case playerAction.GetLandlord: // 抢地主动作
-		GetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
+		go GetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
 	case playerAction.NotCallLandlord: // 不叫
-		NotCallLandlordAction(room, actionPlayer, nextPlayer)
+		go NotCallLandlordAction(room, actionPlayer, nextPlayer)
 	case playerAction.NotGetLandlord: // 不抢
-		NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
+		go NotGetLandlordAction(room, actionPlayer, nextPlayer, lastPlayer)
 	}
 
 	//var actionChan PlayerActionChan
