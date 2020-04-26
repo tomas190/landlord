@@ -96,7 +96,7 @@ func getWaitTimeOutCardMedium() time.Duration {
 // 玩家一般玩牌 在正常情况会 在6到15秒 做出选择
 // 机器人慢出牌速度
 func getWaitTimeOutCardSlowly() time.Duration {
-	delayTime := RandNum(6, 15)
+	delayTime := RandNum(5, 9)
 	return time.Duration(delayTime)
 }
 
