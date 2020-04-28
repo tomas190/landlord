@@ -144,6 +144,14 @@ func PlayingGame(room *Room, actionPlayerId string) {
 // 逻辑能到这一步  是确保能正常操作的
 func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card, cardsType int32) {
 
+	/* 2020年4月28日11:47:17 玩家连续扣钱两次*/
+	getRoom := GetRoom(room.RoomId)
+	if getRoom == nil || len(actionPlayer.HandCards) <= 0 {
+		logger.Debug("!!!incredible",len(actionPlayer.HandCards))
+		return
+	}
+	/* 2020年4月28日11:47:17 玩家连续扣钱两次*/
+
 	// 机器人出牌补丁
 	if actionPlayer.IsRobot {
 		// 机器人出牌全面检测 是否符合出牌规则
@@ -234,15 +242,14 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		}
 		//
 		// 结算
+		//// 移除房间
+		clearRoomAndPlayer(room)
 		Settlement(room, actionPlayer)
-
 		//
 		//if isSpring {
 		//	DelaySomeTime(1)
 		//}
 		//DelaySomeTime(2)
-		//// 移除房间
-		clearRoomAndPlayer(room)
 		runtime.Goexit()
 		return
 	}
