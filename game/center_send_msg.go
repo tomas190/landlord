@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
+	"strconv"
 	"time"
 )
 
@@ -13,17 +14,22 @@ func UserLogin(playerId, password, token string) {
 	baseData := &ToCenterMessage{}
 	baseData.Event = msgUserLogin
 
+	pId, err := strconv.Atoi(playerId)
+	if err!=nil {
+		logger.Debug("非法用户id:",playerId)
+	}
+
 	// 要改成判断token
 	if token != "" {
 		baseData.Data = &UserReqToken{
-			ID:      playerId,
+			Id:      pId,
 			Token:   token,
 			GameId:  Server.GameId,
 			DevName: Server.DevName,
 			DevKey:  Server.DevKey}
 	} else {
 		baseData.Data = &UserReqPassword{
-			ID:       playerId,
+			Id:       pId,
 			PassWord: password,
 			GameId:   Server.GameId,
 			DevName:  Server.DevName,
@@ -40,11 +46,16 @@ func UserLogin(playerId, password, token string) {
 
 //UserLogoutCenter 用户登出
 func UserLogoutCenter(userId string, password string) {
+	pId, err := strconv.Atoi(userId)
+	if err!=nil {
+		logger.Debug("非法用户id:",userId)
+	}
 	logger.Debug("<-------- UserLogoutCenter  -------->")
 	base := &ToCenterMessage{}
 	base.Event = msgUserLogout
 	base.Data = &UserReq{
-		ID:       userId,
+		//ID:       userId,
+		ID:       pId,
 		Password: password,
 		GameId:   Server.GameId,
 		Token:    password,
@@ -78,6 +89,10 @@ func UserLogoutCenter(userId string, password string) {
 
 //UserSyncWinScore 同步赢分
 func UserSyncWinScore(playerId string, winMoney float64, roundId string) {
+	pId, err := strconv.Atoi(playerId)
+	if err!=nil {
+		logger.Debug("非法用户id:",playerId)
+	}
 	//	addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	logger.Debug("<-------- 发送赢钱指令 -------->")
 	timeUnix := time.Now().Unix()
@@ -90,7 +105,7 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId string) {
 	userWin.Auth.DevKey = Server.DevKey
 	userWin.Info.CreateTime = timeUnix
 	userWin.Info.GameId = Server.GameId
-	userWin.Info.ID = playerId
+	userWin.Info.ID = pId
 	//userWin.Info.LockMoney = 0
 	userWin.Info.Money = winMoney
 	//userWin.Info.Order = orderId
@@ -109,6 +124,10 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId string) {
 //UserSyncWinScore 同步输分
 func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
 	// addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
+	pId, err := strconv.Atoi(playerId)
+	if err!=nil {
+		logger.Debug("非法用户id:",playerId)
+	}
 	logger.Debug("<-------- GenLoseOrder -------->")
 
 	timeUnix := time.Now().Unix()
@@ -121,7 +140,7 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
 	userLose.Auth.DevKey = Server.DevKey
 	userLose.Info.CreateTime = timeUnix
 	userLose.Info.GameId = Server.GameId
-	userLose.Info.ID = playerId
+	userLose.Info.ID = pId
 	//userLose.Info.LockMoney = 0
 	userLose.Info.Money = lossMoney
 	//userLose.Info.Order = orderId
@@ -136,7 +155,10 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
 
 func NoticeWinMoreThan(playerId, playerName string, winGold float64) {
 	logger.Debug("<-------- NoticeWinMoreThan  -------->")
-
+	pId, err := strconv.Atoi(playerId)
+	if err!=nil {
+		logger.Debug("非法用户id:",playerId)
+	}
 	//style := `<size=20><color=YELLOW>恭喜!</color><color=orange>888888888</color><color=YELLOW>在</color></><color=WHITE><b><size=25>龙虎斗</color></b></><color=YELLOW><size=20>中一把赢了</color></><color=YELLOW><b><size=35>8888.88</color></b></><color=YELLOW><size=20>金币！</color></>`
 
 	//msg := fmt.Sprintf("<size=20><color=YELLOW>恭喜!</color><color=orange>%s</color><color=YELLOW>在</color></><color=WHITE><b><size=25>斗地主</color></b></><color=YELLOW><size=20>中一把赢了</color></><color=YELLOW><b><size=35>%.2f</color></b></><color=YELLOW><size=20>金币！</color></>", playerName, winGold)
@@ -146,7 +168,7 @@ func NoticeWinMoreThan(playerId, playerName string, winGold float64) {
 	base.Data = &Notice{
 		DevName: Server.DevName,
 		DevKey:  Server.DevKey,
-		ID:      playerId,
+		ID:      pId,
 		GameId:  Server.GameId,
 		Type:    2000,
 		Message: msg,

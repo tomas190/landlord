@@ -5,6 +5,7 @@ import (
 	"github.com/bitly/go-simplejson"
 	"github.com/gorilla/websocket"
 	"github.com/wonderivan/logger"
+	"strconv"
 	"time"
 )
 
@@ -14,7 +15,7 @@ var centerServerConn *websocket.Conn
 func ConnectCenterWs() {
 	wsAddr := "ws://" + Server.CenterDomain + "/"
 	//c4c.centerUrl = "ws" + strings.TrimPrefix(conf.Server.CenterServer, "http") //域名生成使用
-	logger.Debug("centerAddr:",wsAddr)
+	logger.Debug("centerAddr:", wsAddr)
 	conn, _, err := websocket.DefaultDialer.Dial(wsAddr, nil)
 	if err != nil {
 		logger.Fatal(err.Error())
@@ -65,9 +66,16 @@ func startCenterServer() {
 }
 
 func loginCenterServer() {
+
+	port, err := strconv.Atoi(Server.Port)
+	if err != nil {
+		logger.Error("port非法:", port)
+	}
+
 	var loginReq ServerLoginReq
 	loginReq.Host = Server.CenterDomain
-	loginReq.Port = Server.Port
+	//loginReq.Port = Server.Port
+	loginReq.Port = port
 	loginReq.DevKey = Server.DevKey
 	loginReq.GameId = Server.GameId
 	// 	loginReq.Token = TokenOfCenter
