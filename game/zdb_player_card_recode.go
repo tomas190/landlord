@@ -17,7 +17,7 @@ type PlayCardRecode struct {
 	PlayerIds   string                `json:"player_ids" bson:"player_ids"`
 	RoundId     string                `json:"round_id" bson:"round_id"`
 	RoomId      string                `json:"room_id" bson:"room_id"`
-	RoomType    int32                   `json:"room_type" bson:"room_type"`
+	RoomType    int32                 `json:"room_type" bson:"room_type"`
 	BottomCard  []*Card               `json:"bottom_card" bson:"bottom_card"`
 	Settlement  []SettlementInfo      `json:"settlement" bson:"settlement"`
 	EndTime     int64                 `json:"end_time" bson:"end_time"`
@@ -142,7 +142,7 @@ func DBUptRecode(room *Room, s mproto.PushSettlement) {
 
 }
 
-func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int, selector bson.M, sortBy string) ([]PlayCardRecode, int, error) {
+func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int, selector bson.M, sortBy string, r int) ([]PlayCardRecode, int, int, error) {
 	session, c := GetDBConn(Server.MongoDBName, playCardRecodeName)
 	defer session.Close()
 
@@ -150,14 +150,27 @@ func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int, selector bson.M,
 
 	n, err := c.Find(selector).Count()
 	if err != nil {
-		return nil, 0, err
-	}
-	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
-	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, err
 	}
 
-	return wts, n, nil
+	var winCount int
+	if r == 1 {
+		winSelector := selector
+		winSelector["settlement"] = bson.M{"$elemMatch":
+		bson.M{"PlayerId": selector["player_id"],
+			"WinOrFail": 1}}
+		winCount, err = c.Find(winSelector).Count()
+		if err != nil {
+			return nil, 0, 0, err
+		}
+	}
+
+	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
+	if err != nil {
+		return nil, 0, winCount, err
+	}
+
+	return wts, n, winCount, nil
 }
 
 func getPlayers(room *Room) map[string]RoomPlayer {

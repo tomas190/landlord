@@ -37,7 +37,7 @@ type GameData struct {
 	Settlement interface{} `json:"settlement"` // 结算信息 输赢结果
 }
 
-func GetBaccaratData(c *gin.Context) {
+func GetLandlordData(c *gin.Context) {
 	var req GameDataReq
 
 	err := c.Bind(&req)
@@ -46,7 +46,7 @@ func GetBaccaratData(c *gin.Context) {
 		return
 	}
 
-	data, err := HelpGetBaccaratData(req)
+	data,winCount, err := HelpGetLandlordData(req)
 	if err != nil {
 		c.JSON(httpCode, NewResp(ErrCode, err.Error(), nil))
 		return
@@ -55,6 +55,7 @@ func GetBaccaratData(c *gin.Context) {
 	if req.Roundres == 1 {
 		r := simplejson.New()
 		r.Set("total", data.Total)
+		r.Set("winround", winCount)
 		c.JSON(httpCode, NewResp(SuccCode, "ok", r))
 		return
 	}
@@ -66,16 +67,16 @@ type pageData struct {
 	List  interface{} `json:"list"`
 }
 
-func HelpGetBaccaratData(req GameDataReq) (*pageData, error) {
+func HelpGetLandlordData(req GameDataReq) (*pageData,int, error) {
 
 	// verify param
 	if req.GameId != game.Server.GameId {
-		return nil, errors.New("auth fail")
+		return nil,0, errors.New("auth fail")
 	}
 
 	selector := bson.M{}
 	if req.Id == "" {
-		return nil, errors.New("err params")
+		return nil,0, errors.New("err params")
 	}
 
 	playerId := req.Id
@@ -106,10 +107,12 @@ func HelpGetBaccaratData(req GameDataReq) (*pageData, error) {
 		selector["start_time"] = bson.M{"$lt": endTime}
 	}
 
+
+
 	var item game.PlayCardRecode
-	recodes, count, err := item.GetPlayCardRecodeList(skip, limit, selector, "down_bet_time")
+	recodes, count,winCount, err := item.GetPlayCardRecodeList(skip, limit, selector, "down_bet_time",req.Roundres)
 	if err != nil {
-		return nil, err
+		return nil,0, err
 	}
 
 	var gameDatas []GameData
@@ -135,7 +138,7 @@ func HelpGetBaccaratData(req GameDataReq) (*pageData, error) {
 	var result pageData
 	result.Total = count
 	result.List = gameDatas
-	return &result, nil
+	return &result,winCount, nil
 
 }
 
