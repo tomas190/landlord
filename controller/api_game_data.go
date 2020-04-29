@@ -110,7 +110,7 @@ func HelpGetLandlordData(req GameDataReq) (*pageData,int, error) {
 
 
 	var item game.PlayCardRecode
-	recodes, count,winCount, err := item.GetPlayCardRecodeList(skip, limit, selector, "down_bet_time",req.Roundres)
+	recodes, count,winCount, err := item.GetPlayCardRecodeList(skip, limit, selector, "down_bet_time",req.Roundres,playerId)
 	if err != nil {
 		return nil,0, err
 	}

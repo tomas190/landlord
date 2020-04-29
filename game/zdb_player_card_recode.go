@@ -142,7 +142,9 @@ func DBUptRecode(room *Room, s mproto.PushSettlement) {
 
 }
 
-func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int, selector bson.M, sortBy string, r int) ([]PlayCardRecode, int, int, error) {
+func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int,
+	selector bson.M, sortBy string,
+	r int,pId string) ([]PlayCardRecode, int, int, error) {
 	session, c := GetDBConn(Server.MongoDBName, playCardRecodeName)
 	defer session.Close()
 
@@ -157,7 +159,7 @@ func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int, selector bson.M,
 	if r == 1 {
 		winSelector := selector
 		winSelector["settlement"] = bson.M{"$elemMatch":
-		bson.M{"PlayerId": selector["player_id"],
+		bson.M{"PlayerId": pId,
 			"WinOrFail": 1}}
 		winCount, err = c.Find(winSelector).Count()
 		if err != nil {
