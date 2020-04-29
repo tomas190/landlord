@@ -159,16 +159,13 @@ func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int,
 	if r == 1 {
 		winSelector := selector
 		winSelector["settlement"] = bson.M{"$elemMatch":
-		bson.M{"PlayerId": pId,
-			"WinOrFail": 1}}
+		bson.M{"playerid": pId,
+			"winorfail": 1}}
 		winCount, err = c.Find(winSelector).Count()
 		if err != nil {
 			logger.Debug("err:",err.Error())
 			return nil, 0, 0, err
 		}
-		logger.Debug("winSelector:")
-		logger.Debug(winSelector)
-		logger.Debug("winCount:",winCount)
 	}
 
 	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
