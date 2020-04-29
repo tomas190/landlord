@@ -168,6 +168,7 @@ func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int,
 		}
 		logger.Debug("winSelector:")
 		logger.Debug(winSelector)
+		logger.Debug("winCount:",winCount)
 	}
 
 	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
