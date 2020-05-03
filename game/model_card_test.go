@@ -35,12 +35,12 @@ func TestReqEnterRoom(t *testing.T) {
 
 func TestCreateGoodCard(t *testing.T)  {
 
-	var base []int
-	for i:=1;i<=13 ;i++  {
-		base=append(base, i)
-	}
-
-	OutOfSort(base,0)
+	//var base []int
+	//for i:=1;i<=13 ;i++  {
+	//	base=append(base, i)
+	//}
+	//
+	//OutOfSort(base,0)
 
 	dSort := RandNum(35, 48)
 	a1, a2, a3, bo := CreateGoodCard(dSort)

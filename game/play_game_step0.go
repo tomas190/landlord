@@ -70,23 +70,44 @@ func PushFakerPlayerQuitRoom(player *Player) {
 func PushPlayerStartGame(room *Room) {
 	//cards := CreateBrokenCard()
 	level := RandNum(35, 44)
-	cards := CreateGoodCardAll(level)
+	//cards := CreateGoodCardAll(level)
+	i, i2, i3, bCards := CreateGoodCard(level)
 	//cards := CreateSortCard()
+	//players := room.Players
+	//for _, v := range players {
+	//	v.HandCards = append([]*Card{}, cards[:17]...)
+	//	SortCard(v.HandCards)
+	//	logger.Debug("玩家" + v.PlayerInfo.PlayerId + "的牌：")
+	//	PrintCard(v.HandCards)
+	//	cards = append([]*Card{}, cards[17:]...)
+	//	var push mproto.PushStartGame
+	//	push.Cards = ChangeCardToProto(v.HandCards)
+	//	bytes, _ := proto.Marshal(&push)
+	//	PlayerSendMsg(v, PkgMsg(msgIdConst.PushStartGame, bytes))
+	//}
 	players := room.Players
+	var num int
 	for _, v := range players {
-		v.HandCards = append([]*Card{}, cards[:17]...)
+		if num == 0 {
+			v.HandCards = append([]*Card{}, i...)
+		} else if num == 1 {
+			v.HandCards = append([]*Card{}, i2...)
+		} else {
+			v.HandCards = append([]*Card{}, i3...)
+		}
+		num++
 		SortCard(v.HandCards)
 		logger.Debug("玩家" + v.PlayerInfo.PlayerId + "的牌：")
 		PrintCard(v.HandCards)
-		cards = append([]*Card{}, cards[17:]...)
 		var push mproto.PushStartGame
 		push.Cards = ChangeCardToProto(v.HandCards)
 		bytes, _ := proto.Marshal(&push)
 		PlayerSendMsg(v, PkgMsg(msgIdConst.PushStartGame, bytes))
 	}
-	room.BottomCards = append([]*Card{}, cards...)
+
+	room.BottomCards = append([]*Card{}, bCards...)
 	logger.Debug("底牌:")
-	PrintCard(cards)
+	PrintCard(bCards)
 	room.Status = roomStatus.CallLandlord
 
 	// 随机叫地主写在发牌里面 是因为三个玩家如果都不叫 则可以直接调用 PushPlayerStartGame 重新开始发牌逻辑
