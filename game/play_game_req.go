@@ -273,7 +273,9 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 
 	lastPosition := getLastPosition(actionPlayer.PlayerPosition)
 	lastPlayer := getPlayerByPosition(room, lastPosition)
-
+	// 防止快速重复多次点击
+	setCurrentPlayerOut(room, nextPlayer.PlayerInfo.PlayerId, false)
+	// 防止快速重复多次点击
 	logger.Debug("玩家已经确认操作:操作时间点:", actionPlayer.WaitingTime)
 	actionPlayer.WaitingTime = -1
 	if len(req.Cards) <= 0 {
