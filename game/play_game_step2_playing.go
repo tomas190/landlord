@@ -268,6 +268,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 
 // 不出逻辑
 func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player, ) {
+	SetRoomNum(room)
 	actionPlayer.LastAction = playerAction.NotOutCardAction
 	if lastPlayer.LastAction == playerAction.NotOutCardAction { // 如果上一个玩家不出 则又下一个玩家重新出牌
 		reSetOutRoomToOut(room, nextPlayer.PlayerInfo.PlayerId)
@@ -278,7 +279,7 @@ func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player,
 		_, delayTimeInt := getPlayingDelayTime(room, nextPlayer)
 		pushOutCardHelp(room, nextPlayer, actionPlayer, playerAction.NotOutCardAction, false, nil, -3, delayTimeInt)
 	}
-	room.OutNum++
+
 	PlayingGame(room, nextPlayer.PlayerInfo.PlayerId)
 }
 
