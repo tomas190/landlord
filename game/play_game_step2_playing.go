@@ -242,9 +242,10 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		}
 		//
 		// 结算
+		Settlement(room, actionPlayer)
+
 		//// 移除房间
 		clearRoomAndPlayer(room)
-		Settlement(room, actionPlayer)
 		//
 		//if isSpring {
 		//	DelaySomeTime(1)
