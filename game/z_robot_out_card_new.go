@@ -803,6 +803,25 @@ func farmerFallowF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 		}
 	}
 
+	// 如果地主是 保单或者报双
+	cType1, b1 := checkPlayerHasLast(lastPlayer)
+	if b1 {
+		if cType1 == cardConst.CARD_PATTERN_SINGLE {
+			if len(robot.GroupCard.Single) <= 1 {
+				OutCardsAction(room, robot, nextPlayer, followCards, oType)
+				return
+			}
+		}
+
+		if cType1 == cardConst.CARD_PATTERN_PAIR {
+			num := RandNum(0, 10)
+			if num <= 6 {
+				OutCardsAction(room, robot, nextPlayer, followCards, oType)
+				return
+			}
+		}
+	}
+
 	logger.Debug("F1跟牌 不出")
 	NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
 	//return
@@ -901,6 +920,27 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 			}
 		}
 	}
+
+
+	// 如果地主是 保单或者报双
+	cType1, b1 := checkPlayerHasLast(nextPlayer)
+	if b1 {
+		if cType1 == cardConst.CARD_PATTERN_SINGLE {
+			if len(robot.GroupCard.Single) <= 1 {
+				OutCardsAction(room, robot, nextPlayer, followCards, oType)
+				return
+			}
+		}
+
+		if cType1 == cardConst.CARD_PATTERN_PAIR {
+			num := RandNum(0, 10)
+			if num <= 6 {
+				OutCardsAction(room, robot, nextPlayer, followCards, oType)
+				return
+			}
+		}
+	}
+
 	logger.Debug("F2 跟牌 不出")
 	NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
 	//
