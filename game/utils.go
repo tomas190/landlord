@@ -63,6 +63,7 @@ func RandNum(startNum, endNum int) int {
 func DelaySomeTime(seconds time.Duration) {
 	// 延时1秒后推送开局信息
 	delay := time.NewTicker(seconds * time.Second)
+	defer delay.Stop()
 	<-delay.C
 }
 
