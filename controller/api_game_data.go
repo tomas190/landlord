@@ -16,9 +16,10 @@ type GameDataReq struct {
 	StartTime int64  `form:"start_time" json:"start_time"`
 	EndTime   int64  `form:"end_time" json:"end_time"`
 	RoundId   string `form:"round_id" json:"round_id"`
-	Skip      int    `form:"skip" json:"skip"`
+	Page      int    `form:"page" json:"page"`
 	Limit     int    `form:"limit" json:"limit"`
 	Roundres  int    `form:"roundres" json:"roundres"`
+	//Skip      int    `form:"skip" json:"skip"`
 }
 
 type GameData struct {
@@ -46,7 +47,7 @@ func GetLandlordData(c *gin.Context) {
 		return
 	}
 
-	data,winCount, err := HelpGetLandlordData(req)
+	data, winCount, err := HelpGetLandlordData(req)
 	if err != nil {
 		c.JSON(httpCode, NewResp(ErrCode, err.Error(), nil))
 		return
@@ -67,25 +68,26 @@ type pageData struct {
 	List  interface{} `json:"list"`
 }
 
-func HelpGetLandlordData(req GameDataReq) (*pageData,int, error) {
+func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 
 	// verify param
 	if req.GameId != game.Server.GameId {
-		return nil,0, errors.New("auth fail")
+		return nil, 0, errors.New("auth fail")
 	}
 
 	selector := bson.M{}
 	if req.Id == "" {
-		return nil,0, errors.New("err params")
+		return nil, 0, errors.New("err params")
 	}
 
 	playerId := req.Id
 	roundId := req.RoundId
 	startTime := req.StartTime
 	endTime := req.EndTime
-	skip := req.Skip
+	page := req.Page
 	limit := req.Limit
 
+	skip := limit * (page - 1)
 	//selector["player_id"] = playerId
 
 	pattern := ".*" + playerId + ".*"
@@ -107,12 +109,10 @@ func HelpGetLandlordData(req GameDataReq) (*pageData,int, error) {
 		selector["start_time"] = bson.M{"$lt": endTime}
 	}
 
-
-
 	var item game.PlayCardRecode
-	recodes, count,winCount, err := item.GetPlayCardRecodeList(skip, limit, selector, "down_bet_time",req.Roundres,playerId)
+	recodes, count, winCount, err := item.GetPlayCardRecodeList(skip, limit, selector, "down_bet_time", req.Roundres, playerId)
 	if err != nil {
-		return nil,0, err
+		return nil, 0, err
 	}
 
 	var gameDatas []GameData
@@ -138,7 +138,7 @@ func HelpGetLandlordData(req GameDataReq) (*pageData,int, error) {
 	var result pageData
 	result.Total = count
 	result.List = gameDatas
-	return &result,winCount, nil
+	return &result, winCount, nil
 
 }
 
