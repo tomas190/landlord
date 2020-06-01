@@ -86,7 +86,9 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	endTime := req.EndTime
 	page := req.Page
 	limit := req.Limit
-
+	if page == 0 {
+		page = 1
+	}
 	skip := limit * (page - 1)
 	//selector["player_id"] = playerId
 
