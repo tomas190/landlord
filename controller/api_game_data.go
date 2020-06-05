@@ -6,7 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2/bson"
 	"landlord/game"
+	"landlord/mconst/roomType"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -36,6 +38,12 @@ type GameData struct {
 	TaxRate    float64     `json:"tax_rate"`
 	PlayerInfo interface{} `json:"player_info"`
 	Settlement interface{} `json:"settlement"` // 结算信息 输赢结果
+
+	CreatedAt       int64       `json:"created_at"` // 创建时间
+	RoomName        string      `json:"room_name"`
+	SettlementFunds float64     `json:"settlement_funds"` // 结算信资金 税后
+	Card            interface{} `json:"card"`
+	SpareCash       float64     `json:"spare_cash"` // 玩家剩余资金
 }
 
 func GetLandlordData(c *gin.Context) {
@@ -121,7 +129,7 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	for i := 0; i < len(recodes); i++ {
 		var gd GameData
 		pr := recodes[i]
-		gd.StartTime = pr.StartTime * 1000
+		gd.StartTime = pr.StartTime
 		gd.StartTimeFmt = FormatTime(pr.StartTime, "2006-01-02 15:04:05")
 		gd.PlayerId = playerId
 		gd.RoomId = pr.RoomId
@@ -133,8 +141,14 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 		gd.TaxRate = pr.GameTaxRate
 		gd.EndTime = pr.EndTime
 		gd.EndTimeFmt = FormatTime(pr.EndTime, "2006-01-02 15:04:05")
-		gameDatas = append(gameDatas, gd)
 
+		gd.CreatedAt = pr.StartTime
+		settlementFunds, spareCash := GetSettlementFundsAndSpare(pr.Settlement, playerId)
+		gd.SpareCash = spareCash // todo
+		gd.SettlementFunds = settlementFunds
+		gd.RoomName = GetRoomName(pr.RoomType)
+		gd.Card = pr.Players
+		gameDatas = append(gameDatas, gd)
 	}
 
 	var result pageData
@@ -142,6 +156,35 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	result.List = gameDatas
 	return &result, winCount, nil
 
+}
+
+func GetSettlementFundsAndSpare(ss []game.SettlementInfo, playerId string) (float64, float64) {
+	var res, res2 float64
+	for i := 0; i < len(ss); i++ {
+		if ss[i].PlayerId == playerId {
+			f, _ := strconv.ParseFloat(ss[i].WinLossGold, 64)
+			f2, _ := ss[i].CurrentGold, 64
+			res = f
+			res2 = f2
+			break
+		}
+	}
+	return res, res2
+}
+
+func GetRoomName(rType int32) string {
+	var roomName string
+	switch rType {
+	case roomType.ExperienceField:
+		roomName = "体验场"
+	case roomType.LowField:
+		roomName = "低级场"
+	case roomType.MidField:
+		roomName = "中级场"
+	case roomType.HighField:
+		roomName = "高级场"
+	}
+	return roomName
 }
 
 func FormatTime(timeUnix int64, layout string) string {
