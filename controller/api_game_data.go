@@ -84,9 +84,9 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	}
 
 	selector := bson.M{}
-	if req.Id == "" {
-		return nil, 0, errors.New("err params")
-	}
+	//if req.Id == "" {
+	//	return nil, 0, errors.New("err params")
+	//}
 
 	playerId := req.Id
 	roundId := req.RoundId
@@ -100,9 +100,10 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	skip := limit * (page - 1)
 	//selector["player_id"] = playerId
 
-	pattern := ".*" + playerId + ".*"
-	selector["player_ids"] = bson.M{"$regex": bson.RegEx{Pattern: pattern, Options: "im"}}
-
+	if playerId!= "" {
+		pattern := ".*" + playerId + ".*"
+		selector["player_ids"] = bson.M{"$regex": bson.RegEx{Pattern: pattern, Options: "im"}}
+	}
 	if roundId != "" {
 		selector["round_id"] = roundId
 	}
