@@ -6,6 +6,7 @@ import (
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2"
 	"io/ioutil"
+	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
 	"strings"
 	"time"
@@ -45,6 +46,7 @@ func InitConfig() {
 	initMongoDb()
 	initRoomClassify()
 
+	initSurplusConf()
 	//cornMatch()
 }
 
@@ -130,7 +132,7 @@ func initMongoDb() {
 
 	// 同步盈余池 每隔两秒执行
 	go func() {
-		for true  {
+		for true {
 			DelaySomeTime(2)
 			UptSurplusPoolOne()
 		}
@@ -169,4 +171,18 @@ func originalCardNum() map[int32]int32 {
 		}
 	}
 	return m
+}
+
+func initSurplusConf() {
+	var s SurplusPoolOne
+
+	one, err := s.GetLastSurplusOne()
+	if err != nil {
+		panic("初始化盈余池配置失败!" + err.Error())
+	}
+	sysSet.InitSurplusConf(
+		one.PercentageToTotalWin,
+		one.PlayerLoseRateAfterSurplusPool,
+		one.CoefficientToTotalPlayer,
+		one.FinalPercentage)
 }

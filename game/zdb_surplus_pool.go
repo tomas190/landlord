@@ -88,3 +88,38 @@ func (s *SurplusPoolOne) EmptyData() {
 		logger.Debug("清空数据失败err:", err.Error())
 	}
 }
+
+func (s *SurplusPoolOne) GetLastSurplusOne() (*SurplusPoolOne, error) {
+	session, c := GetDBConn(Server.MongoDBName, SurplusPoolOneName)
+	defer session.Close()
+
+	var surplus SurplusPoolOne
+	err := c.Find(nil).Sort("-_id").One(&surplus)
+	if err != nil {
+		//SendLogToCenter("ERR", "game/zdb_surplus_new.go", "62", "获取盈余池失败:"+err.Error())
+		logger.Error("获取盈余池失败:", err.Error())
+		return &surplus, err
+	}
+	return &surplus, nil
+}
+
+func UptSurplusConf(percentageToTotalWin,
+	playerLoseRateAfterSurplusPool,
+	coefficientToTotalPlayer,
+	finalPercentage float64) {
+	if percentageToTotalWin != -1 {
+		sysSet.PERCENTAGE_TO_TOTAL_WIN = percentageToTotalWin
+	}
+	if percentageToTotalWin != -1 {
+		sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL = playerLoseRateAfterSurplusPool
+	}
+
+	if coefficientToTotalPlayer != -1 {
+		sysSet.COEFFICIENT_TO_TOTAL_PLAYER = coefficientToTotalPlayer
+	}
+	if finalPercentage != -1 {
+		sysSet.FINAL_PERCENTAGE = finalPercentage
+	}
+
+	UptSurplusPoolOne()
+}

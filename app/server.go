@@ -97,4 +97,7 @@ func mController(r *gin.Engine) {
 	r.GET("/api/getGameData", controller.GetLandlordData)
 	r.GET("/api/version", controller.Version)
 	r.GET("/api/getLog", controller.GetLog)
+
+	r.GET("/api/getSurplusOne", controller.GetSurplusOne)
+	r.GET("/api/getSurplusOne", controller.UptSurplusConf)
 }
