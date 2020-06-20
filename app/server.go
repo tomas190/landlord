@@ -99,5 +99,5 @@ func mController(r *gin.Engine) {
 	r.GET("/api/getLog", controller.GetLog)
 
 	r.GET("/api/getSurplusOne", controller.GetSurplusOne)
-	r.GET("/api/uptSurplusConf", controller.UptSurplusConf)
+	r.POST("/api/uptSurplusConf", controller.UptSurplusConf)
 }
