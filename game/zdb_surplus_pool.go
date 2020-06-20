@@ -110,7 +110,7 @@ func UptSurplusConf(percentageToTotalWin,
 	if percentageToTotalWin != -1 {
 		sysSet.PERCENTAGE_TO_TOTAL_WIN = percentageToTotalWin
 	}
-	if percentageToTotalWin != -1 {
+	if playerLoseRateAfterSurplusPool != -1 {
 		sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL = playerLoseRateAfterSurplusPool
 	}
 
