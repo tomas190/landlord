@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/wonderivan/logger"
 	"landlord/game"
+	"landlord/mconst/sysSet"
 )
 
 func GetSurplusOne(c *gin.Context) {
@@ -89,16 +90,10 @@ func UptSurplusConf(c *gin.Context) {
 		req.CoefficientToTotalPlayer,
 		req.FinalPercentage)
 
-	var s game.SurplusPoolOne
-	one, err := s.GetLastSurplusOne()
-	if err != nil {
-		c.JSON(httpCode, NewResp(ErrCode, err.Error(), nil))
-		return
-	}
-	req.PlayerLoseRateAfterSurplusPool = one.PlayerLoseRateAfterSurplusPool
-	req.CoefficientToTotalPlayer = one.CoefficientToTotalPlayer
-	req.FinalPercentage = one.FinalPercentage
-	req.PercentageToTotalWin = one.PercentageToTotalWin
+	req.PlayerLoseRateAfterSurplusPool = sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL
+	req.CoefficientToTotalPlayer = sysSet.COEFFICIENT_TO_TOTAL_PLAYER
+	req.FinalPercentage = sysSet.FINAL_PERCENTAGE
+	req.PercentageToTotalWin = sysSet.PERCENTAGE_TO_TOTAL_WIN
 	c.JSON(httpCode, NewResp(SuccCode, "ok", req))
 	return
 }
