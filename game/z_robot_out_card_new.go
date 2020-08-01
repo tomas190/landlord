@@ -205,6 +205,13 @@ func NewLandlordRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player
 
 */
 func NewLandlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
+	// 如果地主只剩两张牌 并且是王炸 直接出
+	racket, b3, _ := hasRacket(robot.HandCards)
+	if b3 && len(robot.HandCards) == 2 {
+		OutCardsAction(room, robot, nextPlayer, racket, cardConst.CARD_PATTERN_ROCKET)
+		return
+	}
+
 	eType := room.EffectiveType
 	eCards := room.EffectiveCard
 
@@ -718,7 +725,15 @@ func NewRobotFarmerMustDoF2(room *Room, robot *Player, nextPlayer *Player, lastP
 
 */
 func farmerFallowF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
+
 	logger.Debug("F1跟牌 ====================")
+	// 如果最后两张牌是王炸直接出
+	racket, b3, _ := hasRacket(robot.HandCards)
+	if b3 && len(robot.HandCards) == 2 {
+		OutCardsAction(room, robot, nextPlayer, racket, cardConst.CARD_PATTERN_ROCKET)
+		return
+	}
+
 	ePlayer := room.Players[room.EffectivePlayerId]
 	eType := room.EffectiveType
 	eCards := room.EffectiveCard
@@ -829,6 +844,15 @@ func farmerFallowF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 
 func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
 	logger.Debug("F2跟牌====================")
+
+	// 如果最后两张牌是王炸直接出
+	racket, b3, _ := hasRacket(robot.HandCards)
+	if b3 && len(robot.HandCards) == 2 {
+		OutCardsAction(room, robot, nextPlayer, racket, cardConst.CARD_PATTERN_ROCKET)
+		return
+	}
+
+
 	ePlayer := room.Players[room.EffectivePlayerId]
 	eType := room.EffectiveType
 	eCards := room.EffectiveCard
@@ -920,7 +944,6 @@ func farmerFallowF2(room *Room, robot *Player, nextPlayer *Player, lastPlayer *P
 			}
 		}
 	}
-
 
 	// 如果地主是 保单或者报双
 	cType1, b1 := checkPlayerHasLast(nextPlayer)
