@@ -154,8 +154,6 @@ func RespEnterRoomCheck(session *melody.Session, roomType int32) {
 
 // 抢地主操作
 func ReqGetLandlordDo(session *melody.Session, data []byte) {
-	muGet.Lock()
-	defer muGet.Unlock()
 	logger.Debug("=== ReqGetLandlordDo ===")
 	req := &mproto.ReqGetLandlordDo{}
 	err := proto.Unmarshal(data, req)
@@ -188,21 +186,13 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "room无用户信息:"+roomId+"--"+info.PlayerId)
 		return
 	}
-	if !actionPlayer.IsCanDo {
-		logger.Error("ReqDoAction:不该你操作", roomId)
-		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "当前不该你操作")
-		return
-	}
+
 
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
 	nextPlayer := getPlayerByPosition(room, nextPosition)
 
 	lastPosition := getLastPosition(actionPlayer.PlayerPosition)
 	lastPlayer := getPlayerByPosition(room, lastPosition)
-
-	// 防止快速重复多次点击
-	setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
-	// 防止快速重复多次点击
 
 	switch req.Action {
 	case playerAction.CallLandlord: // 叫地主动作
@@ -225,7 +215,6 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 } // 抢地主操作
 
 var mu sync.RWMutex
-var muGet sync.RWMutex
 
 // 出牌打牌操作
 func ReqOutCardDo(session *melody.Session, data []byte) {
