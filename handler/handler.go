@@ -277,10 +277,11 @@ func dealCloseConn(session *melody.Session) {
 		return
 	}
 
+	game.RemoveWaitUser(info.PlayerId)
+
 	roomId := game.GetSessionRoomId(session)
 	if roomId == "" { // 证明用户不在游戏中
 		game.ClearClosePlayer(session)
-		game.RemoveWaitUser(info.PlayerId)
 	} else { // 设置清除标记
 		room := game.GetRoom(roomId)
 
