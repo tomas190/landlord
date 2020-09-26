@@ -50,17 +50,17 @@ func UptSurplusPoolOne() {
 	spo.FinalPercentage = sysSet.FINAL_PERCENTAGE
 	spo.PlayerLoseRateAfterSurplusPool = sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL
 
-	if sp.CurrentSurplus == sp.PlayerAllLoss-sp.PlayerAllWin {
+	//if sp.CurrentSurplus == sp.PlayerAllLoss-sp.PlayerAllWin {
 		var p PlayerRecode
 		playersCount := p.CountPlayers()
 		spo.SurplusPool = (sp.PlayerAllLoss -
 			sp.PlayerAllWin*sysSet.PERCENTAGE_TO_TOTAL_WIN -
 			float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER) *
 			sysSet.FINAL_PERCENTAGE
-	}
+	//}
 	spo.SurplusPool = sp.CurrentSurplus
 	spo.PlayerTotalLoseWin = sp.PlayerAllLoss - sp.PlayerAllWin
-
+	logger.Debug("更新后的盈余池:",spo)
 	spo.EmptyData()
 	spo.insertSurplusPoolOne()
 }
