@@ -49,7 +49,7 @@ func UptSurplusPoolOne() {
 	spo.CoefficientToTotalPlayer = sysSet.COEFFICIENT_TO_TOTAL_PLAYER
 	spo.FinalPercentage = sysSet.FINAL_PERCENTAGE
 	spo.PlayerLoseRateAfterSurplusPool = sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL
-	spo.SurplusPool = sp.CurrentSurplus
+
 	if sp.CurrentSurplus == sp.PlayerAllLoss-sp.PlayerAllWin {
 		var p PlayerRecode
 		playersCount := p.CountPlayers()
@@ -58,7 +58,7 @@ func UptSurplusPoolOne() {
 			float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER) *
 			sysSet.FINAL_PERCENTAGE
 	}
-
+	spo.SurplusPool = sp.CurrentSurplus
 	spo.PlayerTotalLoseWin = sp.PlayerAllLoss - sp.PlayerAllWin
 
 	spo.EmptyData()
