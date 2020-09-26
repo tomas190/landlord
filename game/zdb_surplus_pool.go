@@ -58,7 +58,7 @@ func UptSurplusPoolOne() {
 			float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER) *
 			sysSet.FINAL_PERCENTAGE
 	//}
-	spo.SurplusPool = sp.CurrentSurplus
+	//spo.SurplusPool = sp.CurrentSurplus
 	spo.PlayerTotalLoseWin = sp.PlayerAllLoss - sp.PlayerAllWin
 	logger.Debug("更新后的盈余池:",spo)
 	spo.EmptyData()
