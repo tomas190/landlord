@@ -34,6 +34,7 @@ type SurplusPoolOne struct {
 	PlayerLoseRateAfterSurplusPool float64 `json:"player_lose_rate_after_surplus_pool" bson:"player_lose_rate_after_surplus_pool"`
 	SurplusPool                    float64 `json:"surplus_pool" bson:"surplus_pool"`
 	PlayerTotalLoseWin             float64 `json:"player_total_lose_win" bson:"player_total_lose_win"`
+	DataCorrection                 float64 `json:"data_correction" form:"data_correction"`
 }
 
 // 初始化盈余池数据
@@ -49,7 +50,7 @@ func UptSurplusPoolOne() {
 	spo.CoefficientToTotalPlayer = sysSet.COEFFICIENT_TO_TOTAL_PLAYER
 	spo.FinalPercentage = sysSet.FINAL_PERCENTAGE
 	spo.PlayerLoseRateAfterSurplusPool = sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL
-
+	spo.DataCorrection = sysSet.DATA_CORRECTION
 	//if sp.CurrentSurplus == sp.PlayerAllLoss-sp.PlayerAllWin {
 		var p PlayerRecode
 		playersCount := p.CountPlayers()
