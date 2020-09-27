@@ -28,6 +28,7 @@ type UptSurplusConfReq struct {
 	CoefficientToTotalPlayer       float64 `json:"coefficient_to_total_player" form:"coefficient_to_total_player"`
 	FinalPercentage                float64 `json:"final_percentage" form:"final_percentage"`
 	PlayerLoseRateAfterSurplusPool float64 `json:"player_lose_rate_after_surplus_pool" form:"player_lose_rate_after_surplus_pool"`
+	DataCorrection                 float64 `json:"data_correction" form:"data_correction"`
 }
 
 func UptSurplusConf(c *gin.Context) {
@@ -50,6 +51,9 @@ func UptSurplusConf(c *gin.Context) {
 	coefficientToTotalPlayer := c.DefaultPostForm("coefficient_to_total_player", "-1")
 	finalPercentage := c.DefaultPostForm("final_percentage", "-1")
 	playerLoseRateAfterSurplusPool := c.DefaultPostForm("player_lose_rate_after_surplus_pool", "-1")
+	dataCorrection := c.DefaultPostForm("data_correction", "null") // 这个字段比较特殊可以传0
+
+
 
 	var paramsNum int
 	if percentageToTotalWin == "-1" {
@@ -69,8 +73,13 @@ func UptSurplusConf(c *gin.Context) {
 		req.PlayerLoseRateAfterSurplusPool = -1
 	}
 
+	if dataCorrection == "null" {
+		paramsNum++
+		req.DataCorrection = sysSet.DATA_CORRECTION
+	}
+
 	// 如果都没传参数 返回当前配置
-	if paramsNum == 4 {
+	if paramsNum == 5 {
 		var s game.SurplusPoolOne
 		one, err := s.GetLastSurplusOne()
 		if err != nil {
@@ -88,7 +97,7 @@ func UptSurplusConf(c *gin.Context) {
 	game.UptSurplusConf(req.PercentageToTotalWin,
 		req.PlayerLoseRateAfterSurplusPool,
 		req.CoefficientToTotalPlayer,
-		req.FinalPercentage)
+		req.FinalPercentage,req.DataCorrection)
 
 	req.PlayerLoseRateAfterSurplusPool = sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL
 	req.CoefficientToTotalPlayer = sysSet.COEFFICIENT_TO_TOTAL_PLAYER

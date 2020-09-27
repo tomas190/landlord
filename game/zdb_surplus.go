@@ -59,7 +59,8 @@ func (s *SurplusPool) InsertSurplus(isWin bool) {
 	//surplus := lastSurplus.PlayerAllLoss - lastSurplus.PlayerAllWin*1.03 - float64(playersCount)*6
 	surplus := (lastSurplus.PlayerAllLoss -
 		lastSurplus.PlayerAllWin*sysSet.PERCENTAGE_TO_TOTAL_WIN -
-		float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER) *
+		float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER+
+		sysSet.DATA_CORRECTION) *
 		sysSet.FINAL_PERCENTAGE
 	lastSurplus.CurrentSurplus = surplus
 	lastSurplus.PlayerCount = playersCount

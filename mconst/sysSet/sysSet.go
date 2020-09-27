@@ -26,6 +26,7 @@ var (
 	PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL float64 = 0.7 // 70%  盈余池后的玩家输百分比（70%那个值）
 	COEFFICIENT_TO_TOTAL_PLAYER         float64 = 0   // 0    玩家总数所剩的系数（0那个值)
 	FINAL_PERCENTAGE                    float64 = 0.5 // 50%  最后百分比（50%那个值）
+	DATA_CORRECTION                     float64 = 0   // 异常数据修正
 )
 
 func InitSurplusConf(percentageToTotalWin,

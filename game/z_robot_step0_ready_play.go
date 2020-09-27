@@ -101,10 +101,10 @@ func PushPlayerStartGameWithRobot2(room *Room) {
 	//}
 
 	var p1, p2, p3, bottomCard []*Card
-	var s SurplusPool
-	surplus := s.GetLastSurplus()
-	logger.Debug("当前盈余池:", surplus.CurrentSurplus)
-	if surplus.CurrentSurplus <= 500 {
+	var s SurplusPoolOne
+	surplus,_ := s.GetLastSurplusOne()
+	logger.Debug("当前盈余池:", surplus.SurplusPool)
+	if surplus.SurplusPool <= 500 {
 		logger.Debug("盈余池小于0 发好牌")
 		num := RandNum(0, 10)
 		if num >= 5 {

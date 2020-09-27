@@ -55,7 +55,8 @@ func UptSurplusPoolOne() {
 		playersCount := p.CountPlayers()
 		spo.SurplusPool = (sp.PlayerAllLoss -
 			sp.PlayerAllWin*sysSet.PERCENTAGE_TO_TOTAL_WIN -
-			float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER) *
+			float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER+
+			sysSet.DATA_CORRECTION) *
 			sysSet.FINAL_PERCENTAGE
 	//}
 	//spo.SurplusPool = sp.CurrentSurplus
@@ -106,7 +107,7 @@ func (s *SurplusPoolOne) GetLastSurplusOne() (*SurplusPoolOne, error) {
 func UptSurplusConf(percentageToTotalWin,
 	playerLoseRateAfterSurplusPool,
 	coefficientToTotalPlayer,
-	finalPercentage float64) {
+	finalPercentage ,dataCorrection float64) {
 	if percentageToTotalWin != -1 {
 		sysSet.PERCENTAGE_TO_TOTAL_WIN = percentageToTotalWin
 	}
@@ -120,6 +121,8 @@ func UptSurplusConf(percentageToTotalWin,
 	if finalPercentage != -1 {
 		sysSet.FINAL_PERCENTAGE = finalPercentage
 	}
+
+	sysSet.DATA_CORRECTION = dataCorrection
 
 	UptSurplusPoolOne()
 }
