@@ -61,7 +61,7 @@ func UptSurplusPoolOne() {
 	//}
 	//spo.SurplusPool = sp.CurrentSurplus
 	spo.PlayerTotalLoseWin = sp.PlayerAllLoss - sp.PlayerAllWin
-	logger.Debug("更新后的盈余池:",spo)
+	//logger.Debug("更新后的盈余池:",spo)
 	spo.EmptyData()
 	spo.insertSurplusPoolOne()
 }
