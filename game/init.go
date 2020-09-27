@@ -184,5 +184,5 @@ func initSurplusConf() {
 		one.PercentageToTotalWin,
 		one.PlayerLoseRateAfterSurplusPool,
 		one.CoefficientToTotalPlayer,
-		one.FinalPercentage)
+		one.FinalPercentage,one.DataCorrection)
 }

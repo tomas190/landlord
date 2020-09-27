@@ -32,10 +32,11 @@ var (
 func InitSurplusConf(percentageToTotalWin,
 	playerLoseRateAfterSurplusPool,
 	coefficientToTotalPlayer,
-	finalPercentage float64) {
+	finalPercentage ,dataCorrection float64) {
 
 	PERCENTAGE_TO_TOTAL_WIN = percentageToTotalWin
 	PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL = playerLoseRateAfterSurplusPool
 	COEFFICIENT_TO_TOTAL_PLAYER = coefficientToTotalPlayer
 	FINAL_PERCENTAGE = finalPercentage
+	DATA_CORRECTION = dataCorrection
 }
