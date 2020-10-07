@@ -110,7 +110,12 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 		selector["round_id"] = roundId
 	}
 	if roomId != "" {
-		selector["room_id"] = roomId
+		//selector["room_id"] = roomId
+		ri, err := strconv.Atoi(roomId)
+		if err!=nil {
+			return nil, 0, errors.New("room_id不正确")
+		}
+		selector["room_id"] = int32(ri)
 	}
 
 	if startTime != 0 && endTime != 0 {
