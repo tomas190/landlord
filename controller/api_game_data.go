@@ -21,6 +21,7 @@ type GameDataReq struct {
 	Page      int    `form:"page" json:"page"`
 	Limit     int    `form:"limit" json:"limit"`
 	Roundres  int    `form:"roundres" json:"roundres"`
+	RoomId    string `form:"room_id" json:"room_id"`
 	//Skip      int    `form:"skip" json:"skip"`
 }
 
@@ -94,6 +95,7 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	endTime := req.EndTime
 	page := req.Page
 	limit := req.Limit
+	roomId:=req.RoomId
 	if page == 0 {
 		page = 1
 	}
@@ -106,6 +108,9 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	}
 	if roundId != "" {
 		selector["round_id"] = roundId
+	}
+	if roomId != "" {
+		selector["room_id"] = roomId
 	}
 
 	if startTime != 0 && endTime != 0 {
@@ -121,7 +126,7 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	}
 
 	var item game.PlayCardRecode
-	recodes, count, winCount, err := item.GetPlayCardRecodeList(skip, limit, selector, "down_bet_time", req.Roundres, playerId)
+	recodes, count, winCount, err := item.GetPlayCardRecodeList(skip, limit, selector, "-down_bet_time", req.Roundres, playerId)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -133,7 +138,8 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 		gd.StartTime = pr.StartTime
 		gd.StartTimeFmt = FormatTime(pr.StartTime, "2006-01-02 15:04:05")
 		gd.PlayerId = playerId
-		gd.RoomId = pr.RoomId
+		//gd.RoomId = pr.RoomId
+		gd.RoomId = strconv.Itoa(int(pr.RoomType))
 		gd.RoundId = pr.RoundId
 		gd.RoomType = pr.RoomType
 		gd.BottomCard = pr.BottomCard
