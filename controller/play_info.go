@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
@@ -97,7 +98,9 @@ func GetPlayInfoHep(req PlayInfoReq) (PlayInfoResp, error) {
 		}
 		resp.GameFlow += winLoseGold
 	}
-
+	resp.GameFlow = Decimal2(resp.GameFlow)
+	resp.WinGold = Decimal2(resp.WinGold)
+	resp.LoseGold = Decimal2(resp.LoseGold)
 	return resp, nil
 }
 
@@ -116,4 +119,9 @@ func isPlayerWin(id string, info []game.SettlementInfo) (bool, float64) {
 	logger.Debug("id:", id)
 	logger.Debug("info:", info)
 	return false, 0
+}
+
+func Decimal2(value float64) float64 {
+	value, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", value), 64)
+	return value
 }
