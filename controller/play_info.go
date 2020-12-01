@@ -87,7 +87,7 @@ func GetPlayInfoHep(req PlayInfoReq) (PlayInfoResp, error) {
 	for i := 0; i < len(list); i++ {
 		pc := list[i]
 
-		isWin,winLoseGold:=isPlayerWin(req.Id, pc.Settlement)
+		isWin, winLoseGold := isPlayerWin(req.Id, pc.Settlement)
 		if isWin {
 			resp.WinNum += 1
 			resp.WinGold += winLoseGold
@@ -106,7 +106,8 @@ func isPlayerWin(id string, info []game.SettlementInfo) (bool, float64) {
 		if info[i].PlayerId == id {
 			winLoseGold, _ := strconv.ParseFloat(info[i].WinLossGold, 64)
 			if info[i].WinOrFail == 1 {
-				return true, winLoseGold
+				// 税前
+				return true, winLoseGold / 0.95
 			} else {
 				return false, -winLoseGold
 			}
