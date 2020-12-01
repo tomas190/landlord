@@ -100,4 +100,6 @@ func mController(r *gin.Engine) {
 
 	r.GET("/api/getSurplusOne", controller.GetSurplusOne)
 	r.POST("/api/uptSurplusConf", controller.UptSurplusConf)
+
+	r.GET("/api/getPlayInfo", controller.GetPlayInfo)
 }

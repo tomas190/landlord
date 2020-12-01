@@ -196,3 +196,18 @@ func getPlayerIds(room *Room) string {
 	}
 	return ids
 }
+
+
+
+// 根据查询条件获取玩家玩牌信息
+func (p *PlayCardRecode) GetPlayInfoList(selector bson.M, ) ([]PlayCardRecode, error) {
+	session, c := GetDBConn(Server.MongoDBName, playCardRecodeName)
+	defer session.Close()
+
+	var wts []PlayCardRecode
+	err := c.Find(selector).All(&wts)
+	if err != nil {
+		return nil, err
+	}
+	return wts, nil
+}
