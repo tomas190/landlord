@@ -879,3 +879,9 @@ func TestF1Follow(t *testing.T) {
 	//FarmerFallowF1(&room, &robot, &player, &landlord )
 
 }
+
+func TestGetCardResult(t *testing.T) {
+	for i:=0;i<1000 ;i++  {
+		fmt.Println(GetCardResult())
+	}
+}

@@ -5,52 +5,53 @@ import (
 	"github.com/wonderivan/logger"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/roomStatus"
+	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
 )
 
 // 1.给玩家和机器人发牌
-func PushPlayerStartGameWithRobot(room *Room) {
-	cards := CreateBrokenCard()
-	//cards := CreateSortCard()
-
-	//player, r1, r2 := getPlayersWithRobot(room)
-	//// todo 玩家发牌策略
-	//player.HandCards = append([]*Card{}, cards[:17]...)
-	//var push mproto.PushStartGame
-	//push.Cards = ChangeCardToProto(player.HandCards)
-	//bytes, _ := proto.Marshal(&push)
-	//PlayerSendMsg(player, PkgMsg(msgIdConst.PushStartGame, bytes))
-	//
-	//r1.HandCards = append([]*Card{}, cards[17:34]...)
-	//r2.HandCards = append([]*Card{}, cards[34:51]...)
-	//room.BottomCards = append([]*Card{}, cards[51:]...)
-	//logger.Debug("底牌:")
-	//PrintCard(room.BottomCards)
-
-	// 随机发牌
-	for _, v := range room.Players {
-		v.HandCards = append([]*Card{}, cards[:17]...)
-		SortCard(v.HandCards)
-		logger.Debug("玩家" + v.PlayerInfo.PlayerId + "的牌：")
-		PrintCard(v.HandCards)
-		cards = append([]*Card{}, cards[17:]...)
-		var push mproto.PushStartGame
-		push.Cards = ChangeCardToProto(v.HandCards)
-		bytes, _ := proto.Marshal(&push)
-		PlayerSendMsg(v, PkgMsg(msgIdConst.PushStartGame, bytes))
-	}
-	room.BottomCards = append([]*Card{}, cards...)
-	logger.Debug("底牌:")
-	PrintCard(cards)
-	room.Status = roomStatus.CallLandlord
-	// 随机发牌
-
-	// 随机叫地主写在发牌里面 是因为三个玩家如果都不叫 则可以直接调用 PushPlayerStartGameWithRobot 重新开始发牌逻辑
-	DelaySomeTime(4)
-	// 3.随机叫地主
-	actionPlayerId := pushFirstCallLandlord(room)
-	CallLandlord(room, actionPlayerId)
-}
+//func PushPlayerStartGameWithRobot(room *Room) {
+//	cards := CreateBrokenCard()
+//	//cards := CreateSortCard()
+//
+//	//player, r1, r2 := getPlayersWithRobot(room)
+//	//// todo 玩家发牌策略
+//	//player.HandCards = append([]*Card{}, cards[:17]...)
+//	//var push mproto.PushStartGame
+//	//push.Cards = ChangeCardToProto(player.HandCards)
+//	//bytes, _ := proto.Marshal(&push)
+//	//PlayerSendMsg(player, PkgMsg(msgIdConst.PushStartGame, bytes))
+//	//
+//	//r1.HandCards = append([]*Card{}, cards[17:34]...)
+//	//r2.HandCards = append([]*Card{}, cards[34:51]...)
+//	//room.BottomCards = append([]*Card{}, cards[51:]...)
+//	//logger.Debug("底牌:")
+//	//PrintCard(room.BottomCards)
+//
+//	// 随机发牌
+//	for _, v := range room.Players {
+//		v.HandCards = append([]*Card{}, cards[:17]...)
+//		SortCard(v.HandCards)
+//		logger.Debug("玩家" + v.PlayerInfo.PlayerId + "的牌：")
+//		PrintCard(v.HandCards)
+//		cards = append([]*Card{}, cards[17:]...)
+//		var push mproto.PushStartGame
+//		push.Cards = ChangeCardToProto(v.HandCards)
+//		bytes, _ := proto.Marshal(&push)
+//		PlayerSendMsg(v, PkgMsg(msgIdConst.PushStartGame, bytes))
+//	}
+//	room.BottomCards = append([]*Card{}, cards...)
+//	logger.Debug("底牌:")
+//	PrintCard(cards)
+//	room.Status = roomStatus.CallLandlord
+//	// 随机发牌
+//
+//	// 随机叫地主写在发牌里面 是因为三个玩家如果都不叫 则可以直接调用 PushPlayerStartGameWithRobot 重新开始发牌逻辑
+//	DelaySomeTime(4)
+//	// 3.随机叫地主
+//	actionPlayerId := pushFirstCallLandlord(room)
+//	CallLandlord(room, actionPlayerId)
+//}
 
 // 1.给玩家和机器人发牌
 func PushPlayerStartGameWithRobot2(room *Room) {
@@ -102,7 +103,7 @@ func PushPlayerStartGameWithRobot2(room *Room) {
 
 	var p1, p2, p3, bottomCard []*Card
 	var s SurplusPoolOne
-	surplus,_ := s.GetLastSurplusOne()
+	surplus, _ := s.GetLastSurplusOne()
 	logger.Debug("当前盈余池:", surplus.SurplusPool)
 	if surplus.SurplusPool <= 500 {
 		logger.Debug("盈余池小于0 发好牌")
@@ -119,12 +120,53 @@ func PushPlayerStartGameWithRobot2(room *Room) {
 		//	level := RandNum(35, 42)
 		//	p1, p2, p3, bottomCard = CreateGoodCard(level)
 		//} else { // 反之则正常发牌
-			p1, p2, p3, bottomCard = CreateCardsNew()
+		p1, p2, p3, bottomCard = CreateCardsNew()
 		//}
 	}
 
 	player, r1, r2 := getPlayersWithRobot(room)
 	// todo 玩家发牌策略
+	player.HandCards = append([]*Card{}, p1...)
+	var push mproto.PushStartGame
+	push.Cards = ChangeCardToProto(player.HandCards)
+	bytes, _ := proto.Marshal(&push)
+	PlayerSendMsg(player, PkgMsg(msgIdConst.PushStartGame, bytes))
+
+	r1.HandCards = append([]*Card{}, p2...)
+	r2.HandCards = append([]*Card{}, p3...)
+	room.BottomCards = append([]*Card{}, bottomCard...)
+
+	logger.Debug("底牌:")
+	PrintCard(room.BottomCards)
+
+	PrintCard(bottomCard)
+	room.Status = roomStatus.CallLandlord
+
+	// 组
+	CountRobotCardValue(r1, r2)
+
+	// 随机叫地主写在发牌里面 是因为三个玩家如果都不叫 则可以直接调用 PushPlayerStartGameWithRobot 重新开始发牌逻辑
+	DelaySomeTime(4)
+	// 3.随机叫地主
+	actionPlayerId := pushFirstCallLandlord(room)
+	CallLandlord(room, actionPlayerId)
+}
+
+// 1.给玩家和机器人发牌
+func PushPlayerStartGameWithRobot3(room *Room) {
+	isLetRobotGetGoodCard := GetCardResult()
+	var p1, p2, p3, bottomCard []*Card
+	if isLetRobotGetGoodCard { // 根据结果发牌
+		num := RandNum(0, 10)
+		if num >= 5 {
+			p3, p2, p1, bottomCard = CreateGodCards()
+		} else {
+			p2, p1, p3, bottomCard = CreateGodCards()
+		}
+	} else {
+		p1, p2, p3, bottomCard = CreateCardsNew()
+	}
+	player, r1, r2 := getPlayersWithRobot(room)
 	player.HandCards = append([]*Card{}, p1...)
 	var push mproto.PushStartGame
 	push.Cards = ChangeCardToProto(player.HandCards)
@@ -216,4 +258,76 @@ func getGodCardIndex() []int {
 	}
 
 	return arr[:13]
+}
+
+// 随机获取机器人是否获得好牌
+func isRobotGetGodCard() bool {
+	des := RandNum(0, 10)
+	if des%2 == 0 {
+		return true
+	}
+	return false
+}
+
+// 通过盈余池获取牌
+// true 机器人得好牌
+func robotGetCardResultBySurplusPool() bool {
+
+	var surplus SurplusPoolOne
+	surplus.SurplusPool=1000
+	//var s SurplusPoolOne
+	//surplus, _ := s.GetLastSurplusOne()
+	//logger.Debug("当前盈余池:", surplus.SurplusPool)
+	if surplus.SurplusPool <= 0 {
+		return true
+	} else if surplus.SurplusPool <= 500 {
+		if RandNum(0, 100) > 70 {
+			return true
+		} else {
+			return false
+		}
+	}
+	return false
+}
+
+func GetCardResult() bool {
+	isLetRobotGetGoodCard := isRobotGetGodCard() // 是否让机器人获得好牌
+	var randWinCount, randLoseCount float64
+
+	// ===========
+	// 机器人拿到好牌(玩家拿到坏牌)
+	if isLetRobotGetGoodCard { // 玩家输
+	afterLose:
+		if randLoseCount < sysSet.RANDOM_COUNT_AFTER_LOSE {
+			des := RandNum(0, 100)
+			if float64(des)/100 < sysSet.RANDOM_PERCENTAGE_AFTER_LOSE {
+				isLetRobotGetGoodCard = isRobotGetGodCard()
+				if !isLetRobotGetGoodCard { //如果 玩家好牌 盈余池判断
+					isLetRobotGetGoodCard = robotGetCardResultBySurplusPool()
+				} else { // 如果玩家坏牌
+					randLoseCount++
+					goto afterLose
+				}
+			}
+		}
+	} else { // 玩家赢 玩家拿到好牌
+	afterWin:
+		if randWinCount < sysSet.RANDOM_PERCENTAGE_AFTER_WIN {
+			//
+			des := RandNum(0, 100)
+			if float64(des)/100 < sysSet.RANDOM_PERCENTAGE_AFTER_WIN { // 在随机
+				isLetRobotGetGoodCard = isRobotGetGodCard()
+				if isLetRobotGetGoodCard {
+					randWinCount++
+					goto afterWin
+				}
+			}
+		} else { //否
+			// 盈余池判断
+			isLetRobotGetGoodCard = robotGetCardResultBySurplusPool()
+		}
+
+	}
+
+	return isLetRobotGetGoodCard
 }

@@ -27,12 +27,17 @@ var (
 	COEFFICIENT_TO_TOTAL_PLAYER         float64 = 0   // 0    玩家总数所剩的系数（0那个值)
 	FINAL_PERCENTAGE                    float64 = 0.5 // 50%  最后百分比（50%那个值）
 	DATA_CORRECTION                     float64 = 0   // 异常数据修正
+
+	RANDOM_PERCENTAGE_AFTER_WIN  float64 = 0
+	RANDOM_COUNT_AFTER_WIN       float64 = 0
+	RANDOM_PERCENTAGE_AFTER_LOSE float64 = 0
+	RANDOM_COUNT_AFTER_LOSE      float64 = 0
 )
 
 func InitSurplusConf(percentageToTotalWin,
 	playerLoseRateAfterSurplusPool,
 	coefficientToTotalPlayer,
-	finalPercentage ,dataCorrection float64) {
+	finalPercentage, dataCorrection float64) {
 
 	PERCENTAGE_TO_TOTAL_WIN = percentageToTotalWin
 	PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL = playerLoseRateAfterSurplusPool

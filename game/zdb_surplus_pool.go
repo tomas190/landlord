@@ -35,6 +35,12 @@ type SurplusPoolOne struct {
 	SurplusPool                    float64 `json:"surplus_pool" bson:"surplus_pool"`
 	PlayerTotalLoseWin             float64 `json:"player_total_lose_win" bson:"player_total_lose_win"`
 	DataCorrection                 float64 `json:"data_correction" form:"data_correction"`
+
+	RandomPercentageAfterWin  float64 `json:"random_percentage_after_win"`
+	RandomCountAfterWin       float64 `json:"random_count_after_win"`
+	RandomPercentageAfterLose float64 `json:"random_percentage_after_lose"`
+	RandomCountAfterLose      float64 `json:"random_count_after_lose"`
+
 }
 
 // 初始化盈余池数据
@@ -51,6 +57,11 @@ func UptSurplusPoolOne() {
 	spo.FinalPercentage = sysSet.FINAL_PERCENTAGE
 	spo.PlayerLoseRateAfterSurplusPool = sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL
 	spo.DataCorrection = sysSet.DATA_CORRECTION
+
+	spo.RandomPercentageAfterWin = sysSet.RANDOM_PERCENTAGE_AFTER_WIN
+	spo.RandomCountAfterWin = sysSet.RANDOM_COUNT_AFTER_WIN
+	spo.RandomPercentageAfterLose = sysSet.RANDOM_PERCENTAGE_AFTER_LOSE
+	spo.RandomCountAfterLose = sysSet.RANDOM_COUNT_AFTER_LOSE
 	//if sp.CurrentSurplus == sp.PlayerAllLoss-sp.PlayerAllWin {
 		var p PlayerRecode
 		playersCount := p.CountPlayers()
@@ -62,7 +73,15 @@ func UptSurplusPoolOne() {
 	//}
 	//spo.SurplusPool = sp.CurrentSurplus
 	spo.PlayerTotalLoseWin = sp.PlayerAllLoss - sp.PlayerAllWin
-	//logger.Debug("更新后的盈余池:",spo)
+	logger.Debug("当前参数配置:", sysSet.PERCENTAGE_TO_TOTAL_WIN)
+	logger.Debug("当前参数配置:", sysSet.COEFFICIENT_TO_TOTAL_PLAYER)
+	logger.Debug("当前参数配置:", sysSet.FINAL_PERCENTAGE)
+	logger.Debug("当前参数配置:", sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL)
+	logger.Debug("当前参数配置:", sysSet.RANDOM_PERCENTAGE_AFTER_WIN)
+	logger.Debug("当前参数配置:", sysSet.RANDOM_COUNT_AFTER_WIN)
+	logger.Debug("当前参数配置:", sysSet.RANDOM_PERCENTAGE_AFTER_LOSE)
+	logger.Debug("当前参数配置:", sysSet.RANDOM_COUNT_AFTER_LOSE)
+	logger.Debug("盈余池更新后数据:", spo)
 	spo.EmptyData()
 	spo.insertSurplusPoolOne()
 }
@@ -108,7 +127,11 @@ func (s *SurplusPoolOne) GetLastSurplusOne() (*SurplusPoolOne, error) {
 func UptSurplusConf(percentageToTotalWin,
 	playerLoseRateAfterSurplusPool,
 	coefficientToTotalPlayer,
-	finalPercentage ,dataCorrection float64) {
+	finalPercentage ,dataCorrection ,
+	randomPercentageAfterWin,
+	randomCountAfterWin,
+	randomPercentageAfterLose,
+	randomCountAfterLose float64) {
 	if percentageToTotalWin != -1 {
 		sysSet.PERCENTAGE_TO_TOTAL_WIN = percentageToTotalWin
 	}
@@ -125,5 +148,9 @@ func UptSurplusConf(percentageToTotalWin,
 
 	sysSet.DATA_CORRECTION = dataCorrection
 
+	sysSet.RANDOM_PERCENTAGE_AFTER_WIN = randomPercentageAfterWin
+	sysSet.RANDOM_COUNT_AFTER_WIN = randomCountAfterWin
+	sysSet.RANDOM_PERCENTAGE_AFTER_LOSE = randomPercentageAfterLose
+	sysSet.RANDOM_COUNT_AFTER_LOSE = randomCountAfterLose
 	UptSurplusPoolOne()
 }
