@@ -73,15 +73,15 @@ func UptSurplusPoolOne() {
 	//}
 	//spo.SurplusPool = sp.CurrentSurplus
 	spo.PlayerTotalLoseWin = sp.PlayerAllLoss - sp.PlayerAllWin
-	logger.Debug("当前参数配置:", sysSet.PERCENTAGE_TO_TOTAL_WIN)
-	logger.Debug("当前参数配置:", sysSet.COEFFICIENT_TO_TOTAL_PLAYER)
-	logger.Debug("当前参数配置:", sysSet.FINAL_PERCENTAGE)
-	logger.Debug("当前参数配置:", sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL)
-	logger.Debug("当前参数配置:", sysSet.RANDOM_PERCENTAGE_AFTER_WIN)
-	logger.Debug("当前参数配置:", sysSet.RANDOM_COUNT_AFTER_WIN)
-	logger.Debug("当前参数配置:", sysSet.RANDOM_PERCENTAGE_AFTER_LOSE)
-	logger.Debug("当前参数配置:", sysSet.RANDOM_COUNT_AFTER_LOSE)
-	logger.Debug("盈余池更新后数据:", spo)
+	//logger.Debug("当前参数配置:", sysSet.PERCENTAGE_TO_TOTAL_WIN)
+	//logger.Debug("当前参数配置:", sysSet.COEFFICIENT_TO_TOTAL_PLAYER)
+	//logger.Debug("当前参数配置:", sysSet.FINAL_PERCENTAGE)
+	//logger.Debug("当前参数配置:", sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL)
+	//logger.Debug("当前参数配置:", sysSet.RANDOM_PERCENTAGE_AFTER_WIN)
+	//logger.Debug("当前参数配置:", sysSet.RANDOM_COUNT_AFTER_WIN)
+	//logger.Debug("当前参数配置:", sysSet.RANDOM_PERCENTAGE_AFTER_LOSE)
+	//logger.Debug("当前参数配置:", sysSet.RANDOM_COUNT_AFTER_LOSE)
+	//logger.Debug("盈余池更新后数据:", spo)
 	spo.EmptyData()
 	spo.insertSurplusPoolOne()
 }
