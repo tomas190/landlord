@@ -156,15 +156,19 @@ func PushPlayerStartGameWithRobot2(room *Room) {
 func PushPlayerStartGameWithRobot3(room *Room) {
 	isLetRobotGetGoodCard := GetCardResult()
 	var p1, p2, p3, bottomCard []*Card
+	num := RandNum(0, 10)
 	if isLetRobotGetGoodCard { // 根据结果发牌
-		num := RandNum(0, 10)
 		if num >= 5 {
 			p3, p2, p1, bottomCard = CreateGodCards()
 		} else {
 			p2, p1, p3, bottomCard = CreateGodCards()
 		}
 	} else {
-		p1, p2, p3, bottomCard = CreateCardsNew()
+		if num >= 3 {
+			p1, p2, p3, bottomCard = CreateCardsNew()
+		} else {
+			p1, p3, p2, bottomCard = CreateGodCards()
+		}
 	}
 	player, r1, r2 := getPlayersWithRobot(room)
 	player.HandCards = append([]*Card{}, p1...)
@@ -274,7 +278,7 @@ func isRobotGetGodCard() bool {
 func robotGetCardResultBySurplusPool() bool {
 
 	var surplus SurplusPoolOne
-	surplus.SurplusPool=1000
+	surplus.SurplusPool = 1000
 	//var s SurplusPoolOne
 	//surplus, _ := s.GetLastSurplusOne()
 	//logger.Debug("当前盈余池:", surplus.SurplusPool)

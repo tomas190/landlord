@@ -93,8 +93,8 @@ func stick() ([]*Card, []*Card, []*Card) {
 func CreateCardsNew() ([]*Card, []*Card, []*Card, []*Card) {
 	cards, _ := CreateBroken8910Card()
 	logger.Debug("len:", len(cards))
-
-	OutOfCardNotDeep42(cards, 1)
+	level := RandNum(10, 30)
+	OutOfCardNotDeep42(cards, level)
 	p1card := append([]*Card{}, cards[:13]...)
 	p2card := append([]*Card{}, cards[13:26]...)
 	p3card := append([]*Card{}, cards[26:39]...)

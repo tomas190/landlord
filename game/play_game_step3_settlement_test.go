@@ -173,7 +173,7 @@ func SettlementT(room *Room, winPlayer *Player) {
 			sPush.Settlement = append(sPush.Settlement, fs2)
 
 			landShowWinLossGold := fmt.Sprintf("-%.2f", fp1S+fp2S)
-			ls := getSelfSettlement(room, landPlayer, -1, landShowWinLossGold, (fp1S + fp2S) < settlementGold*2)
+			ls := getSelfSettlement(room, landPlayer, -1, landShowWinLossGold, (fp1S+fp2S) < settlementGold*2)
 			sPush.Settlement = append(sPush.Settlement, ls)
 		}
 
@@ -199,5 +199,18 @@ func SettlementT(room *Room, winPlayer *Player) {
 	//logger.Debug(fmt.Println(sPush))
 	//bytes, _ := proto.Marshal(&sPush)
 	//MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.PushSettlement, bytes))
+
+}
+
+func TestCreateCardsNew1(t *testing.T) {
+	i, i2, i3, bc := CreateCardsNew()
+	SortCard(i)
+	SortCard(i2)
+	SortCard(i3)
+
+	PrintCard(i)
+	PrintCard(i2)
+	PrintCard(i3)
+	PrintCard(bc)
 
 }
