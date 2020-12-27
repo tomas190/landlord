@@ -6,6 +6,7 @@ import (
 	"github.com/wonderivan/logger"
 	"landlord/mconst/cardConst"
 	"landlord/mconst/roomType"
+	"landlord/mconst/sysSet"
 	"testing"
 )
 
@@ -358,87 +359,87 @@ func TestAddHighFieldWaitUser(t *testing.T) {
 
 func TestChangeArrPlayerToRoomPlayerProtoKs(t *testing.T) {
 	//landlosrStrCard := `[
-    //                        {
-    //                            "value": 13,
-    //                            "suit": 3
-    //                        },
-    //                        {
-    //                            "value": 12,
-    //                            "suit": 4
-    //                        },
-    //                        {
-    //                            "value": 12,
-    //                            "suit": 1
-    //                        },
-    //                        {
-    //                            "value": 11,
-    //                            "suit": 4
-    //                        },
-    //                        {
-    //                            "value": 10,
-    //                            "suit": 2
-    //                        },
-    //                        {
-    //                            "value": 9,
-    //                            "suit": 3
-    //                        },
-    //                        {
-    //                            "value": 8,
-    //                            "suit": 4
-    //                        },
-    //                        {
-    //                            "value": 8,
-    //                            "suit": 3
-    //                        },
-    //                        {
-    //                            "value": 6,
-    //                            "suit": 3
-    //                        },
-    //                        {
-    //                            "value": 6,
-    //                            "suit": 1
-    //                        },
-    //                        {
-    //                            "value": 5,
-    //                            "suit": 3
-    //                        },
-    //                        {
-    //                            "value": 4,
-    //                            "suit": 4
-    //                        },
-    //                        {
-    //                            "value": 4,
-    //                            "suit": 3
-    //                        },
-    //                        {
-    //                            "value": 4,
-    //                            "suit": 2
-    //                        },
-    //                        {
-    //                            "value": 3,
-    //                            "suit": 4
-    //                        },
-    //                        {
-    //                            "value": 3,
-    //                            "suit": 3
-    //                        },
-    //                        {
-    //                            "value": 2,
-    //                            "suit": 1
-    //                        },
-    //                        {
-    //                            "value": 1,
-    //                            "suit": 4
-    //                        },
-    //                        {
-    //                            "value": 1,
-    //                            "suit": 2
-    //                        },
-    //                        {
-    //                            "value": 1,
-    //                            "suit": 1
-    //                        }
-    //                    ]`
+	//                        {
+	//                            "value": 13,
+	//                            "suit": 3
+	//                        },
+	//                        {
+	//                            "value": 12,
+	//                            "suit": 4
+	//                        },
+	//                        {
+	//                            "value": 12,
+	//                            "suit": 1
+	//                        },
+	//                        {
+	//                            "value": 11,
+	//                            "suit": 4
+	//                        },
+	//                        {
+	//                            "value": 10,
+	//                            "suit": 2
+	//                        },
+	//                        {
+	//                            "value": 9,
+	//                            "suit": 3
+	//                        },
+	//                        {
+	//                            "value": 8,
+	//                            "suit": 4
+	//                        },
+	//                        {
+	//                            "value": 8,
+	//                            "suit": 3
+	//                        },
+	//                        {
+	//                            "value": 6,
+	//                            "suit": 3
+	//                        },
+	//                        {
+	//                            "value": 6,
+	//                            "suit": 1
+	//                        },
+	//                        {
+	//                            "value": 5,
+	//                            "suit": 3
+	//                        },
+	//                        {
+	//                            "value": 4,
+	//                            "suit": 4
+	//                        },
+	//                        {
+	//                            "value": 4,
+	//                            "suit": 3
+	//                        },
+	//                        {
+	//                            "value": 4,
+	//                            "suit": 2
+	//                        },
+	//                        {
+	//                            "value": 3,
+	//                            "suit": 4
+	//                        },
+	//                        {
+	//                            "value": 3,
+	//                            "suit": 3
+	//                        },
+	//                        {
+	//                            "value": 2,
+	//                            "suit": 1
+	//                        },
+	//                        {
+	//                            "value": 1,
+	//                            "suit": 4
+	//                        },
+	//                        {
+	//                            "value": 1,
+	//                            "suit": 2
+	//                        },
+	//                        {
+	//                            "value": 1,
+	//                            "suit": 1
+	//                        }
+	//                    ]`
 	f1StrCard := `[
                             {
                                 "value": 11,
@@ -510,63 +511,63 @@ func TestChangeArrPlayerToRoomPlayerProtoKs(t *testing.T) {
                             }
                         ]`
 	/*f1StrCard := `[
-                            {
-                                "value": 11,
-                                "suit": 2
-                            },
-                          
-                            {
-                                "value": 13,
-                                "suit": 2
-                            },
-                            {
-                                "value": 13,
-                                "suit": 1
-                            },
-                        
-                            {
-                                "value": 14,
-                                "suit": 5
-                            },
-                            {
-                                "value": 11,
-                                "suit": 1
-                            },
-                        
-                            {
-                                "value": 5,
-                                "suit": 1
-                            },
-                            {
-                                "value": 13,
-                                "suit": 4
-                            },
-                          
-                            {
-                                "value": 5,
-                                "suit": 2
-                            },
-                            {
-                                "value": 15,
-                                "suit": 5
-                            },
-                            {
-                                "value": 8,
-                                "suit": 1
-                            },
-                            {
-                                "value": 8,
-                                "suit": 2
-                            },
-                            {
-                                "value": 7,
-                                "suit": 1
-                            },
-                            {
-                                "value": 7,
-                                "suit": 2
-                            }
-                        ]`*/
+	    {
+	        "value": 11,
+	        "suit": 2
+	    },
+
+	    {
+	        "value": 13,
+	        "suit": 2
+	    },
+	    {
+	        "value": 13,
+	        "suit": 1
+	    },
+
+	    {
+	        "value": 14,
+	        "suit": 5
+	    },
+	    {
+	        "value": 11,
+	        "suit": 1
+	    },
+
+	    {
+	        "value": 5,
+	        "suit": 1
+	    },
+	    {
+	        "value": 13,
+	        "suit": 4
+	    },
+
+	    {
+	        "value": 5,
+	        "suit": 2
+	    },
+	    {
+	        "value": 15,
+	        "suit": 5
+	    },
+	    {
+	        "value": 8,
+	        "suit": 1
+	    },
+	    {
+	        "value": 8,
+	        "suit": 2
+	    },
+	    {
+	        "value": 7,
+	        "suit": 1
+	    },
+	    {
+	        "value": 7,
+	        "suit": 2
+	    }
+	]`*/
 
 	//var landCard []*Card
 	var f1Card []*Card
@@ -605,7 +606,7 @@ func TestChangeArrPlayerToRoomPlayerProtoKs(t *testing.T) {
 	}
 
 	logger.Debug("炸弹")
-	rcb:= gc.Bomb
+	rcb := gc.Bomb
 	for i := 0; i < len(rcb); i++ {
 		fmt.Print("weight:", rcb[i].Wight, "  ")
 		PrintCard(rcb[i].Card)
@@ -773,7 +774,7 @@ func TestF1Follow(t *testing.T) {
                                 "suit": 2
                             }
                         ]`
-	playerStrCard:=`[
+	playerStrCard := `[
                             {
                                 "value": 12,
                                 "suit": 2
@@ -846,7 +847,7 @@ func TestF1Follow(t *testing.T) {
 
 	var landCard []*Card
 	var f1cards []*Card
-	var playerCards[]*Card
+	var playerCards []*Card
 
 	_ = json.Unmarshal([]byte(landlosrStrCard), &landCard)
 	_ = json.Unmarshal([]byte(f1StrCard), &f1cards)
@@ -881,7 +882,12 @@ func TestF1Follow(t *testing.T) {
 }
 
 func TestGetCardResult(t *testing.T) {
-	for i:=0;i<1000 ;i++  {
+	sysSet.RANDOM_PERCENTAGE_AFTER_WIN = 0
+	sysSet.RANDOM_COUNT_AFTER_WIN = 0
+	sysSet.RANDOM_PERCENTAGE_AFTER_LOSE = 2
+	sysSet.RANDOM_COUNT_AFTER_LOSE = 2
+
+	//for i := 0; i < 1000; i++ {
 		fmt.Println(GetCardResult())
-	}
+	//}
 }
