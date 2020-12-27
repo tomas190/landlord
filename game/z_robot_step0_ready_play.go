@@ -55,51 +55,6 @@ import (
 
 // 1.给玩家和机器人发牌
 func PushPlayerStartGameWithRobot2(room *Room) {
-	//cards := CreateBrokenCard()
-	//p1 := append([]*Card{}, cards[:17]...)
-	//p2 := append([]*Card{}, cards[17:34]...)
-	//p3 := append([]*Card{}, cards[34:51]...)
-	//bottomCard := append([]*Card{}, cards[51:]...)
-	//p1,p2,p3,bottomCard := CreateCardsNew()
-
-	//p3 := []*Card{
-	//	{5, 1}, {5, 1}, {5, 1},{5, 1},
-	//	{6, 1}, {6, 1},// {6, 1},
-	//	{7, 1}, //{7, 2}, {7, 3},
-	//	{8, 1}, {8, 1}, //{8, 1}, //{8, 1},
-	//
-	//	{11, 1},
-	//	{12, 1}, {12, 1},{12, 1},
-	//	{13, 2}, {13, 2},
-	//	{15, 2}, {14, 2},
-	//}
-	//
-	//p2 := []*Card{
-	//	{5, 1}, {5, 1}, {5, 1},{5, 1},
-	//	{6, 1}, {6, 1},// {6, 1},
-	//	{7, 1}, //{7, 2}, {7, 3},
-	//	{8, 1}, {8, 1}, //{8, 1}, //{8, 1},
-	//
-	//	{11, 1},
-	//	{12, 1}, {12, 1},{12, 1},
-	//	{13, 2}, {13, 2},
-	//	{15, 2}, {14, 2},
-	//	//{15, 2},
-	//}
-	//p1 := []*Card{
-	//	{5, 1}, {5, 1}, {5, 1},{5, 1},
-	//	{6, 1}, {6, 1},// {6, 1},
-	//	{7, 1}, //{7, 2}, {7, 3},
-	//	{8, 1}, {8, 1}, //{8, 1}, //{8, 1},
-	//
-	//	{11, 1},
-	//	{12, 1}, {12, 1},{12, 1},
-	//	{13, 2}, {13, 2},
-	//	{15, 2}, {14, 2},
-	//}
-	//bottomCard := []*Card{
-	//	{12, 2}, {11, 2}, {8, 2},
-	//}
 
 	var p1, p2, p3, bottomCard []*Card
 	var s SurplusPoolOne
@@ -131,6 +86,8 @@ func PushPlayerStartGameWithRobot2(room *Room) {
 	push.Cards = ChangeCardToProto(player.HandCards)
 	bytes, _ := proto.Marshal(&push)
 	PlayerSendMsg(player, PkgMsg(msgIdConst.PushStartGame, bytes))
+
+	logger.Debug("已经推送发牌消息")
 
 	r1.HandCards = append([]*Card{}, p2...)
 	r2.HandCards = append([]*Card{}, p3...)

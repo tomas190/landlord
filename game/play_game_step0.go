@@ -14,6 +14,7 @@ import (
 
 func PlayGame(room *Room) {
 
+	logger.Debug("========  玩家匹配玩家 ========")
 	// 1. 玩家进入房间如果有玩家正待等待则与之开始游戏
 	PushPlayerEnterRoom(room)
 	DelaySomeTime(1)

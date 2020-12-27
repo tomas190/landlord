@@ -190,6 +190,16 @@ func OnSentMessageBinary(session *melody.Session, bytes []byte) {
 		fmt.Println("msgId.PushCallLandlord")
 		game.PrintMsg("PushCallLandlord:", resp)
 		fmt.Println()
+	case msgIdConst.PushStartGame:
+		resp := &mproto.PushStartGame{}
+		err := proto.Unmarshal(bytes[2:], resp)
+		if err != nil {
+			logger.Debug("打印服务器发送给客户端消息失败:", err.Error())
+			return
+		}
+		fmt.Println("msgId.PushStartGame")
+		game.PrintMsg("PushStartGame:", resp)
+		fmt.Println()
 	case msgIdConst.PushOutCard:
 		resp := &mproto.PushOutCard{}
 		err := proto.Unmarshal(bytes[2:], resp)

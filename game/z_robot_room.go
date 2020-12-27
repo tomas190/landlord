@@ -33,9 +33,7 @@ import (
 // 匹配机器人并创建房间
 //func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, room *Room) {
 func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int32) {
-	/*
-		todo 是否宰羊模式
-	*/
+	logger.Debug("========  玩家匹配机器人 ========")
 
 	var p Player
 	p.PlayerInfo = &playerInfo
@@ -67,7 +65,7 @@ func PlayWithRobot(session *melody.Session, playerInfo PlayerInfo, roomType int3
 
 // 开始和机器人玩游戏
 func PlayGameWithRobot(room *Room) {
-
+	logger.Debug("和机器人玩游戏")
 	// 1. 玩家进入房间如果有玩家正待等待则与之开始游戏
 	PushPlayerEnterRoom(room)
 	DelaySomeTime(1)
