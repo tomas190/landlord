@@ -46,7 +46,7 @@ func InitConfig() {
 	initMongoDb()
 	initRoomClassify()
 
-	initSurplusConf()
+
 	//cornMatch()
 }
 
@@ -128,6 +128,9 @@ func initMongoDb() {
 	globalSession.SetMode(mgo.Monotonic, true)
 	logger.Info("连接mongo数据库成功 address:", Server.MongoDBAddr)
 	InitSurplusPool()
+
+	initSurplusConf()
+
 	UptSurplusPoolOne()
 
 	// 同步盈余池 每隔两秒执行
