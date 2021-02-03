@@ -16,6 +16,14 @@ func dealServerLogin(data *simplejson.Json) {
 		panic("服务器登录中心服失败！")
 		return
 	}
+
+	bytes, _ := json.Marshal(data)
+	logger.Debug("serverLoginResp:",string(bytes))
+	// 设置各平台税收
+	pTaxPercent := data.Get("msg").Get("globals")
+	SetPlatformTaxPercent(pTaxPercent)
+	// 设置各平台税收
+
 	logger.Debug("登录中心服成功")
 
 }
@@ -36,6 +44,7 @@ func dealUserLogin(data *simplejson.Json) {
 	logger.Debug(" 用户名称->", userInfo.Get("game_nick").MustString())
 	logger.Debug(" 用户头像->", userInfo.Get("game_img").MustString())
 	logger.Debug(" 用户金币->", userAccount.Get("balance").MustFloat64())
+	logger.Debug(" 用户pkgId->", userAccount.Get("package_id").MustInt())
 
 	var userLogin UserLoginCallBack
 	var user PlayerInfo
@@ -43,6 +52,7 @@ func dealUserLogin(data *simplejson.Json) {
 	user.Name = userInfo.Get("game_nick").MustString()
 	user.HeadImg = userInfo.Get("game_img").MustString()
 	user.Gold = userAccount.Get("balance").MustFloat64()
+	user.PlayerPkgId = userAccount.Get("package_id").MustInt()
 	userLogin.Player = user
 	userLogin.LoginStatus = true
 	callChan := GetUserLoginCallChan(user.PlayerId)

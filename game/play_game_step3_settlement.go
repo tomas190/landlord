@@ -74,7 +74,8 @@ func Settlement(room *Room, winPlayer *Player) {
 			sPush.Settlement = append(sPush.Settlement, ss)
 		}
 
-		landRealWinGoldPay := landRealWinGold * (1 - Server.GameTaxRate)                             // 地主实际赢钱 税后
+		//landRealWinGoldPay := landRealWinGold * (1 - Server.GameTaxRate)                             // 地主实际赢钱 税后
+		landRealWinGoldPay := landRealWinGold * (1 - GetPlayerPlatformTaxPercent(winPlayer.PlayerInfo.PlayerId))                             // 地主实际赢钱 税后
 		syncWinGold(landPlayer, landRealWinGold, landRealWinGoldPay, roundId, *room.RoomClass, true) // 同步金币 到中心服务 session
 
 		showWinLossGold := fmt.Sprintf("%.2f", landRealWinGoldPay)
@@ -114,8 +115,10 @@ func Settlement(room *Room, winPlayer *Player) {
 
 			landRealLoss = f1RealWin + f2RealWin
 
-			f1RealWinPay = f1RealWin * (1 - Server.GameTaxRate)
-			f2RealWinPay = f2RealWin * (1 - Server.GameTaxRate)
+			//f1RealWinPay = f1RealWin * (1 - Server.GameTaxRate)
+			//f1RealWinPay = f1RealWin * (1 - Server.GameTaxRate)
+			f2RealWinPay = f2RealWin * (1 -  GetPlayerPlatformTaxPercent(fp1.PlayerInfo.PlayerId))
+			f2RealWinPay = f2RealWin * (1 -  GetPlayerPlatformTaxPercent(fp2.PlayerInfo.PlayerId))
 
 			syncWinGold(fp1, f1RealWin, f1RealWinPay, roundId, *room.RoomClass,false)
 			syncWinGold(fp2, f2RealWin, f2RealWinPay, roundId, *room.RoomClass,false)
@@ -139,10 +142,10 @@ func Settlement(room *Room, winPlayer *Player) {
 
 		} else {
 			// 正常结算
-			fp1WinGoldPay := fp1S * (1 - Server.GameTaxRate)
+			fp1WinGoldPay := fp1S * (1 -  GetPlayerPlatformTaxPercent(fp1.PlayerInfo.PlayerId))
 			syncWinGold(fp1, fp1S, fp1WinGoldPay, roundId, *room.RoomClass,false)
 
-			fp2WinGoldPay := fp2S * (1 - Server.GameTaxRate)
+			fp2WinGoldPay := fp2S * (1 -  GetPlayerPlatformTaxPercent(fp2.PlayerInfo.PlayerId))
 			syncWinGold(fp2, fp2S, fp2WinGoldPay, roundId, *room.RoomClass,false)
 
 			syncLossGold(landPlayer, fp1S+fp2S, roundId, *room.RoomClass,true)

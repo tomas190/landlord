@@ -27,7 +27,7 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	/*==== 参数验证 =====*/
 
 	//playerInfo, err := userLoginVerify(req.UserId, req.UserPassword)
-	playerInfo, err := userLoginVerify(req.UserId, req.UserPassword, req.Token)
+	playerInfo, playerPkgId,err := userLoginVerify(req.UserId, req.UserPassword, req.Token)
 	if err != nil {
 		game.SendErrMsg(session, msgIdConst.ReqLogin, err.Error())
 		return
@@ -54,6 +54,7 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	game.SetSessionIsLogin(session)
 	game.SetSessionPassword(session, req.UserPassword)
 	game.SaveAgent(playerInfo.PlayerId, session)
+	session.Set("playerTax", game.GetPlatformTaxPercent(playerPkgId))
 
 	// 记录用户登录
 	var playerRecode game.PlayerRecode
@@ -68,7 +69,7 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 }
 
 // 向中心服发送登录验证请求
-func userLoginVerify(userId, password, token string) (*mproto.PlayerInfo, error) {
+func userLoginVerify(userId, password, token string) (*mproto.PlayerInfo, int, error) {
 
 	//var pi mproto.PlayerInfo
 	//pi.PlayerId = userId
@@ -92,12 +93,12 @@ func userLoginVerify(userId, password, token string) (*mproto.PlayerInfo, error)
 		ui.PlayerImg = userInfo.Player.HeadImg
 		ui.PlayerName = userInfo.Player.Name
 		ui.Gold = userInfo.Player.Gold
-		return &ui, nil
+		return &ui, userInfo.Player.PlayerPkgId, nil
 
 	case <-time.After(time.Second * 2):
 		//game.SendLogToCenter("ERR", "handler/handler.go", "96", "用户登录超时 中心服无返回!")
 		logger.Error("登录超时 中心服无返回!")
-		return nil, errors.New("登录超时")
+		return nil, 0, errors.New("登录超时")
 	}
 
 }

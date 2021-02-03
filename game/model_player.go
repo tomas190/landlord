@@ -26,10 +26,11 @@ type Player struct {
 }
 
 type PlayerInfo struct {
-	PlayerId string
-	Name     string
-	HeadImg  string
-	Gold     float64
+	PlayerId    string
+	Name        string
+	HeadImg     string
+	Gold        float64
+	PlayerPkgId int
 }
 
 // 玩家动作
