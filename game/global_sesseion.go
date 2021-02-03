@@ -94,6 +94,11 @@ func GetSessionPassword(session *melody.Session) string {
 func GetPlayerPlatformTaxPercent(playerId string) float64 {
 	agent := GetAgent(playerId)
 	value, exists := agent.Get("playerTax")
+	if agent==nil {
+		// 如果不存在则是机器人 返回默认值
+		return Server.GameTaxRate
+	}
+
 	if !exists {
 		// 如果不存在返回默认值
 		logger.Error("玩家税收比不存在:", playerId)
