@@ -92,15 +92,14 @@ func ChangePlayerToRecoverPlayer(mPlayers map[string]*Player, rPlayerId string) 
 	return resp
 }
 
-
 // ==================== proto to struct ====================
 
 func ChangePlayerP2S(item mproto.PlayerInfo) PlayerInfo {
 
 	return PlayerInfo{
-		item.PlayerId,
-		item.PlayerName,
-		item.PlayerImg,
-		item.Gold,
+		PlayerId: item.PlayerId,
+		Name:     item.PlayerName,
+		HeadImg:  item.PlayerImg,
+		Gold:     item.Gold,
 	}
 }
