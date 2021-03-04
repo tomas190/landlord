@@ -63,7 +63,7 @@ func getWaitTimeCallLandlord() time.Duration {
 		logger.Debug("============ 3叫抢地主阶段决策等待时间 ============ ", delayTime)
 		return time.Duration(delayTime)
 	}
-	delayTime := RandNum(10, 20)
+	delayTime := RandNum(10, 15)
 	logger.Debug("============ 4叫抢地主阶段决策等待时间 ============ ", delayTime)
 	return time.Duration(delayTime)
 }

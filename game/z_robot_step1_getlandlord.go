@@ -44,6 +44,8 @@ func RobotGetLandlordAction(room *Room, robot, nextPlayer, lastPlayer *Player) {
 			NotGetLandlordAction(room, robot, nextPlayer, lastPlayer)
 		}
 	} else {
+		// 异常不抢处理
 		logger.Error("房间状态错误 !!!incredible")
+		NotGetLandlordAction(room, robot, nextPlayer, lastPlayer)
 	}
 }
