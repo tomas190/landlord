@@ -169,5 +169,5 @@ func GetAndRemoveCard(cards []*Card, removeCardValue int32) (*Card, []*Card) {
 }
 
 func getTwoPercentage() bool {
-
+	return false
 }
