@@ -46,7 +46,7 @@ func UserLogin(playerId, password, token string) {
 
 //UserLogoutCenter 用户登出
 func UserLogoutCenter(userId string, password string) {
-	DelaySomeTime(1)
+	//DelaySomeTime(1)
 	pId, err := strconv.Atoi(userId)
 	if err!=nil {
 		logger.Debug("非法用户id:",userId)
