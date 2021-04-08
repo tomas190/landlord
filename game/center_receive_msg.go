@@ -122,11 +122,15 @@ func checkLoginOut(stByte []byte) {
 	logger.Debug("玩家id:", id)
 
 	session := GetAgent(id)
+	if session == nil {
+		logger.Error("获取session异常")
+		return
+	}
 
 	isClose := GetSessionCloseTag(session)
 
 	if isClose {
-		logger.Debug("玩家已经断线：",id)
+		logger.Debug("玩家已经断线：", id)
 		ClearClosePlayer(session)
 	}
 	logger.Debug("玩家没有离线:", id)
