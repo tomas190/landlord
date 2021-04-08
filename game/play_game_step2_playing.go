@@ -246,6 +246,8 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 
 		//// 移除房间
 		clearRoomAndPlayer(room)
+		//RemoveRoom(room.RoomId)
+
 		//
 		//if isSpring {
 		//	DelaySomeTime(1)
@@ -443,9 +445,9 @@ func clearRoomAndPlayer(room *Room) {
 	players := room.Players
 	for _, player := range players {
 		if !player.IsRobot {
-			if player.IsCloseSession { // 如果玩家已经断线 登出中心服
-				ClearClosePlayer(player.Session)
-			}
+			//if player.IsCloseSession { // 如果玩家已经断线 登出中心服
+			//	ClearClosePlayer(player.Session)
+			//}
 			//else {
 			// 置空玩家的roomId
 			//SetSessionRoomId(player.Session, "")

@@ -106,3 +106,17 @@ func GetPlayerPlatformTaxPercent(playerId string) float64 {
 	}
 	return value.(float64)
 }
+
+func SetSessionCloseTag(session *melody.Session, isClose bool) {
+	session.Set("isClose", isClose)
+}
+
+//
+func GetSessionCloseTag(session *melody.Session) bool {
+	value, exists := session.Get("isClose")
+	if !exists {
+		logger.Debug("!!!没有获取到用户的密码")
+		return false
+	}
+	return value.(bool)
+}

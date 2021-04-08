@@ -18,7 +18,7 @@ func dealServerLogin(data *simplejson.Json) {
 	}
 
 	bytes, _ := json.Marshal(data)
-	logger.Debug("serverLoginResp:",string(bytes))
+	logger.Debug("serverLoginResp:", string(bytes))
 	// 设置各平台税收
 	pTaxPercent := data.Get("msg").Get("globals")
 	SetPlatformTaxPercent(pTaxPercent)
@@ -65,7 +65,6 @@ func dealUserLogin(data *simplejson.Json) {
 
 }
 
-
 func dealWinSocer(data *simplejson.Json) {
 
 	code := data.Get("code").MustInt()
@@ -80,6 +79,7 @@ func dealWinSocer(data *simplejson.Json) {
 	//playerId := data.Get("msg").Get("id").MustInt()
 	//reducePlayerMsgNum(strconv.Itoa(playerId))
 	fmt.Println("赢钱成功返回:", string(bytes))
+	checkLoginOut(bytes)
 }
 
 func dealLossSocer(data *simplejson.Json) {
@@ -97,6 +97,7 @@ func dealLossSocer(data *simplejson.Json) {
 	//playerId := data.Get("msg").Get("id").MustInt()
 	//reducePlayerMsgNum(strconv.Itoa(playerId))
 	fmt.Println("输钱成功返回:", string(bytes))
+	checkLoginOut(bytes)
 }
 
 func dealUserLoginOutCenter(json *simplejson.Json) {
@@ -106,4 +107,28 @@ func dealUserLoginOutCenter(json *simplejson.Json) {
 		logger.Debug("用户登出失败！")
 		logger.Debug("dealLoginOut！", json)
 	}
+}
+
+func checkLoginOut(stByte []byte) {
+	s, err := simplejson.NewJson(stByte)
+	if err != nil {
+		logger.Error("检查异常:", err.Error())
+		logger.Error("检查异常:", string(stByte))
+		return
+	}
+
+	idInt := s.Get("data").Get("info").Get("id").MustInt()
+	id := strconv.Itoa(idInt)
+	logger.Debug("玩家id:", id)
+
+	session := GetAgent(id)
+
+	isClose := GetSessionCloseTag(session)
+
+	if isClose {
+		logger.Debug("玩家已经断线：",id)
+		ClearClosePlayer(session)
+	}
+	logger.Debug("玩家没有离线:", id)
+
 }

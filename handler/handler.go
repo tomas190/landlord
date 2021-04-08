@@ -299,6 +299,7 @@ func dealCloseConn(session *melody.Session) {
 			if p.PlayerInfo.PlayerId == info.PlayerId {
 				p.IsExitRoom = true
 				p.IsCloseSession = true
+				game.SetSessionCloseTag(session,true)
 			}
 		}
 	}
