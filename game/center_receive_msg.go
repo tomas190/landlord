@@ -117,7 +117,7 @@ func checkLoginOut(stByte []byte) {
 		return
 	}
 
-	idInt := s.Get("data").Get("info").Get("id").MustInt()
+	idInt := s.Get("msg").Get("id").MustInt()
 	id := strconv.Itoa(idInt)
 	logger.Debug("玩家id:", id)
 
