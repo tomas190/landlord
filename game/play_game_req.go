@@ -154,6 +154,8 @@ func RespEnterRoomCheck(session *melody.Session, roomType int32) {
 
 // 抢地主操作
 func ReqGetLandlordDo(session *melody.Session, data []byte) {
+	mu.Lock()
+	defer mu.Unlock()
 	logger.Debug("=== ReqGetLandlordDo ===")
 	req := &mproto.ReqGetLandlordDo{}
 	err := proto.Unmarshal(data, req)
@@ -187,12 +189,20 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 		return
 	}
 
+	if !actionPlayer.IsCanDo {
+		SendErrMsg(session, msgIdConst.ReqOutCardDo, "当前不该你操作!")
+		return
+	}
 
 	nextPosition := getNextPosition(actionPlayer.PlayerPosition)
 	nextPlayer := getPlayerByPosition(room, nextPosition)
 
 	lastPosition := getLastPosition(actionPlayer.PlayerPosition)
 	lastPlayer := getPlayerByPosition(room, lastPosition)
+
+	// 防止同一时刻多次提叫抢地主请求
+	setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
+	// 防止同一时刻多次提叫抢地主请求
 
 	switch req.Action {
 	case playerAction.CallLandlord: // 叫地主动作

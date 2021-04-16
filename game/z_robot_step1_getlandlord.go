@@ -44,8 +44,13 @@ func RobotGetLandlordAction(room *Room, robot, nextPlayer, lastPlayer *Player) {
 			NotGetLandlordAction(room, robot, nextPlayer, lastPlayer)
 		}
 	} else {
-		// 异常不抢处理
-		logger.Error("房间状态错误 !!!incredible")
-		NotGetLandlordAction(room, robot, nextPlayer, lastPlayer)
+		// 异常叫抢地主操作
+		// 如果正在玩 说明多余的机器人叫抢地主操作
+		if step != roomStatus.Playing {
+			// 异常不抢处理
+			logger.Error("房间状态错误 !!!incredible",step)
+			NotGetLandlordAction(room, robot, nextPlayer, lastPlayer)
+		}
+
 	}
 }

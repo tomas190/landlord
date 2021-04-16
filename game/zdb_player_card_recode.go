@@ -52,6 +52,7 @@ func (p *PlayCardRecode) AddPlayCardRecode() {
 
 	if p.IsExistRoundId() {
 		logger.Error("牌局异常重复roundId:", p.RoundId)
+		logger.Error("牌局异常重复roomId:", p.RoomId)
 	}
 
 	err := c.Insert(p)

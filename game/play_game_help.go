@@ -113,6 +113,7 @@ func getPlayerClass(room *Room) (*Player, *Player, *Player) {
 
 	if len(fPlayers) != 2 || fPlayers == nil {
 		logger.Error("分类玩家失败: !!!incredible")
+		logger.Error(len(fPlayers), landPlayer == nil)
 		return nil, nil, nil
 	}
 	return landPlayer, fPlayers[0], fPlayers[1]
