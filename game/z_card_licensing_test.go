@@ -5,6 +5,7 @@ import (
 )
 
 func TestGetGoodCards(t *testing.T) {
+	//test push code
 
 	cs := CreateBrokenCard()
 
