@@ -12,6 +12,7 @@ import (
 	"landlord/mconst/roomType"
 	"landlord/msg/mproto"
 	"sync"
+	"time"
 )
 
 // 進入房間
@@ -190,7 +191,15 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 	}
 
 	if !actionPlayer.IsCanDo {
-		SendErrMsg(session, msgIdConst.ReqOutCardDo, "当前不该你操作!")
+		logger.Debug("当前不该你操作!",time.Now().Format("2006-01-02 15:04:05"))
+		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "当前不该你操作!")
+		return
+	}
+
+	if room.Status == roomStatus.Playing{
+		logger.Debug("异常请求",time.Now().Format("2006-01-02 15:04:05"))
+		logger.Debug(room.Status,req.Action)
+		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "异常请求!")
 		return
 	}
 
