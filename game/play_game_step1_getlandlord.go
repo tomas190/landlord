@@ -113,7 +113,8 @@ func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player,
 	} else {
 		// 如果下一个玩家不叫或者不抢  上一个玩家叫了地主 则该上一个玩家抢地主
 		if nextPlayer.LastAction < playerAction.NoAction && lastPlayer.LastAction == playerAction.CallLandlord {
-			setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
+			//setCurrentPlayer(room, nextPlayer.PlayerInfo.PlayerId)
+			setCurrentPlayer(room, lastPlayer.PlayerInfo.PlayerId)
 			pushCallLandlordHelp(room, actionPlayer, lastPlayer, playerAction.GetLandlord)
 			CallLandlord(room, lastPlayer.PlayerInfo.PlayerId)
 		} else { // 则让下一个玩家抢地主
