@@ -117,7 +117,7 @@ func Settlement(room *Room, winPlayer *Player) {
 
 			//f1RealWinPay = f1RealWin * (1 - Server.GameTaxRate)
 			//f1RealWinPay = f1RealWin * (1 - Server.GameTaxRate)
-			f2RealWinPay = f2RealWin * (1 -  GetPlayerPlatformTaxPercent(fp1.PlayerInfo.PlayerId))
+			f1RealWinPay = f1RealWin * (1 -  GetPlayerPlatformTaxPercent(fp1.PlayerInfo.PlayerId))
 			f2RealWinPay = f2RealWin * (1 -  GetPlayerPlatformTaxPercent(fp2.PlayerInfo.PlayerId))
 
 			syncWinGold(fp1, f1RealWin, f1RealWinPay, roundId, *room.RoomClass,false)
