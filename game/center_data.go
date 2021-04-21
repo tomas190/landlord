@@ -18,7 +18,7 @@ type ToCenterMessage struct {
 //ServerLogin 服务器登录
 type ServerLoginReq struct {
 	Host   string `json:"host"`    // 主机
-	Port   int `json:"port"`    // 端口
+	Port   int    `json:"port"`    // 端口
 	GameId string `json:"game_id"` // 游戏Id
 	// Token  string `json:"token"`
 	DevName string `json:"dev_name"`
@@ -28,7 +28,7 @@ type ServerLoginReq struct {
 //UserScoreSync 同步分值数据
 type UserScoreSync struct {
 	//ID         string  `json:"id"`
-	ID         int  `json:"id"`
+	ID         int     `json:"id"`
 	CreateTime int64   `json:"create_time"`
 	PayReason  string  `json:"pay_reason"`
 	Money      float64 `json:"money"`
@@ -37,6 +37,7 @@ type UserScoreSync struct {
 	Order      string  `json:"order"` //唯一ID,方便之后查询
 	GameId     string  `json:"game_id"`
 	RoundId    string  `json:"round_id"` //唯一ID，识别多人是否在同一局游戏
+	BetMoney   float64 `json:"bet_money"`
 }
 
 //UserChangeScore 用户分值改变
@@ -55,7 +56,7 @@ type UserAuth struct {
 //UserReq 用户请求，用登录登出
 type UserReqPassword struct {
 	//ID       string `json:"id"`
-	Id      int    `json:"id"`
+	Id       int    `json:"id"`
 	GameId   string `json:"game_id"`
 	PassWord string `json:"password"`
 	DevName  string `json:"dev_name"`
@@ -75,7 +76,7 @@ type UserReqToken struct {
 //UserReq 用户请求，用登录登出
 type UserReq struct {
 	//ID       string `json:"id"`
-	ID         int  `json:"id"`
+	ID       int    `json:"id"`
 	GameId   string `json:"game_id"`
 	Password string `json:"password"`
 	Token    string `json:"token"`
@@ -93,7 +94,7 @@ type Notice struct {
 	DevName string `json:"dev_name"`
 	DevKey  string `json:"dev_key"`
 	//ID      string `json:"id"`
-	ID      int `json:"id"`
+	ID      int    `json:"id"`
 	GameId  string `json:"game_id"`
 	Type    int    `json:"type"`
 	Message string `json:"message"`

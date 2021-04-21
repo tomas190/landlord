@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
+	"math"
 	"strconv"
 	"time"
 )
@@ -149,6 +150,7 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
 	userLose.Info.PayReason = "对局"
 	//userLose.Info.PreMoney = 0
 	userLose.Info.RoundId = roundId
+	userLose.Info.BetMoney = math.Abs(lossMoney)
 	baseData.Data = userLose
 
 	WriteMsgToCenter(baseData)
