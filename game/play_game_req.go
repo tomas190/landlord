@@ -13,7 +13,7 @@ import (
 	"landlord/msg/mproto"
 	"sync"
 	"time"
-)
+)git 
 
 // 進入房間
 func ReqEnterRoom(session *melody.Session, data []byte) {
@@ -191,14 +191,14 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 	}
 
 	if !actionPlayer.IsCanDo {
-		logger.Debug("当前不该你操作!",time.Now().Format("2006-01-02 15:04:05"))
+		logger.Debug("当前不该你操作!", time.Now().Format("2006-01-02 15:04:05"))
 		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "当前不该你操作!")
 		return
 	}
 
-	if room.Status == roomStatus.Playing{
-		logger.Debug("异常请求",time.Now().Format("2006-01-02 15:04:05"))
-		logger.Debug(room.Status,req.Action)
+	if room.Status == roomStatus.Playing {
+		logger.Debug("异常请求", time.Now().Format("2006-01-02 15:04:05"))
+		logger.Debug(room.Status, req.Action)
 		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "异常请求!")
 		return
 	}
@@ -483,7 +483,7 @@ func RespGameHosting(room *Room, ghType, position int32, PlayerId string) {
 	resp.PlayerId = PlayerId
 	resp.Position = position
 	bytes, _ := proto.Marshal(&resp) // 广播给房间的人
-	PrintMsg("resp发送托管",resp)
+	PrintMsg("resp发送托管", resp)
 	MapPlayersSendMsg(room.Players, PkgMsg(msgIdConst.RespGameHosting, bytes))
 }
 
@@ -578,6 +578,12 @@ func verifyMustOutCard(actionPlayer *Player, cards []*Card, cardType int32) erro
 
 // 跟牌出牌检测
 func verifyFollowOutCard(room *Room, actionPlayer *Player, cards []*Card) error {
+
+	exist := checkCardsIsExist(actionPlayer.HandCards, cards)
+	if !exist {
+		return errors.New("你手中没有这样的牌")
+	}
+
 	// 检测是否打过上家
 	can := CanBeat(room.EffectiveCard, cards)
 	if !can {
