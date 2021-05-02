@@ -154,6 +154,68 @@ func PushPlayerStartGameWithRobot3(room *Room) {
 	CallLandlord(room, actionPlayerId)
 }
 
+
+// 1.给玩家和机器人发牌
+// 盈余控制
+func PushPlayerStartGameWithRobotLast(room *Room) {
+
+	var p1, p2, p3, bottomCard []*Card
+	var s SurplusPoolOne
+	surplus, _ := s.GetLastSurplusOne()
+	logger.Debug("当前盈余池:", surplus.SurplusPool)
+	sp := GetRobotWinPercentage(surplus.SurplusPool)
+	isRobotMustWin := RobotWinOrLoseByRobotWinPercentage(sp)
+
+	if isRobotMustWin {
+		logger.Debug("盈余池小于0 发好牌")
+		num := RandNum(0, 10)
+		if num >= 5 {
+			p3, p2, p1, bottomCard = MustWinCard()
+		} else {
+			p2, p1, p3, bottomCard = MustWinCard()
+		}
+	} else {
+		//// 2020年2月24日15:39:27 如果是体验场 玩家都会有好牌
+		//if room.RoomClass.RoomType == roomType.ExperienceField {
+		//	logger.Debug("体验场都发好牌...")
+		//	level := RandNum(35, 42)
+		//	p1, p2, p3, bottomCard = CreateGoodCard(level)
+		//} else { // 反之则正常发牌
+		p1, p2, p3, bottomCard = CreateCardsNew()
+		//}
+	}
+
+	player, r1, r2 := getPlayersWithRobot(room)
+	// todo 玩家发牌策略
+	player.HandCards = append([]*Card{}, p1...)
+	var push mproto.PushStartGame
+	push.Cards = ChangeCardToProto(player.HandCards)
+	bytes, _ := proto.Marshal(&push)
+	PlayerSendMsg(player, PkgMsg(msgIdConst.PushStartGame, bytes))
+
+	logger.Debug("已经推送发牌消息")
+
+	r1.HandCards = append([]*Card{}, p2...)
+	r2.HandCards = append([]*Card{}, p3...)
+	room.BottomCards = append([]*Card{}, bottomCard...)
+
+	logger.Debug("底牌:")
+	PrintCard(room.BottomCards)
+
+	PrintCard(bottomCard)
+	room.Status = roomStatus.CallLandlord
+
+	// 组
+	CountRobotCardValue(r1, r2)
+
+	// 随机叫地主写在发牌里面 是因为三个玩家如果都不叫 则可以直接调用 PushPlayerStartGameWithRobot 重新开始发牌逻辑
+	DelaySomeTime(4)
+	// 3.随机叫地主
+	actionPlayerId := pushFirstCallLandlord(room)
+	CallLandlord(room, actionPlayerId)
+}
+
+
 // 计算机器人手牌分数
 func CountRobotCardValue(r1, r2 *Player) {
 	v1 := CountCardValue(r1.HandCards)

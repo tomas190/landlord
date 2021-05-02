@@ -28,20 +28,30 @@ var (
 	FINAL_PERCENTAGE                    float64 = 0.5 // 50%  最后百分比（50%那个值）
 	DATA_CORRECTION                     float64 = 0   // 异常数据修正
 
-	RANDOM_PERCENTAGE_AFTER_WIN  float64 = 0
+	RANDOM_PERCENTAGE_AFTER_WIN  float64 = 0.5     // 盈余池为正的机器人胜率 默认50%胜率
 	RANDOM_COUNT_AFTER_WIN       float64 = 0
-	RANDOM_PERCENTAGE_AFTER_LOSE float64 = 0
+	RANDOM_PERCENTAGE_AFTER_LOSE float64 = 1	 // 盈余池为负的机器人胜率 默认百分百胜率
 	RANDOM_COUNT_AFTER_LOSE      float64 = 0
 )
 
 func InitSurplusConf(percentageToTotalWin,
 	playerLoseRateAfterSurplusPool,
 	coefficientToTotalPlayer,
-	finalPercentage, dataCorrection float64) {
+	finalPercentage,
+	dataCorrection ,
+	randomPercentageAfterWin,
+	randomCountAfterWin,
+	randomPercentageAfterLose,
+	randomCountAfterLose float64) {
 
 	PERCENTAGE_TO_TOTAL_WIN = percentageToTotalWin
 	PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL = playerLoseRateAfterSurplusPool
 	COEFFICIENT_TO_TOTAL_PLAYER = coefficientToTotalPlayer
 	FINAL_PERCENTAGE = finalPercentage
 	DATA_CORRECTION = dataCorrection
+
+	RANDOM_PERCENTAGE_AFTER_WIN   = randomPercentageAfterWin
+	RANDOM_COUNT_AFTER_WIN        = randomCountAfterWin
+	RANDOM_PERCENTAGE_AFTER_LOSE  = randomPercentageAfterLose
+	RANDOM_COUNT_AFTER_LOSE       = randomCountAfterLose
 }

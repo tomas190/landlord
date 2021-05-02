@@ -54,6 +54,8 @@ func TestG(t *testing.T) {
 		{14, 1},
 		{15, 2},
 	}
+
+	p1, _, _, _ = MustWinCardType3()
 	logger.Debug("手牌")
 	hands := p1
 	SortCardSL(hands)
