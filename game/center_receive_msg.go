@@ -44,7 +44,7 @@ func dealUserLogin(data *simplejson.Json) {
 	logger.Debug(" 用户名称->", userInfo.Get("game_nick").MustString())
 	logger.Debug(" 用户头像->", userInfo.Get("game_img").MustString())
 	logger.Debug(" 用户金币->", userAccount.Get("balance").MustFloat64())
-	logger.Debug(" 用户pkgId->", userAccount.Get("package_id").MustInt())
+	logger.Debug(" 用户pkgId->", userInfo.Get("package_id").MustInt())
 
 	var userLogin UserLoginCallBack
 	var user PlayerInfo
@@ -52,7 +52,7 @@ func dealUserLogin(data *simplejson.Json) {
 	user.Name = userInfo.Get("game_nick").MustString()
 	user.HeadImg = userInfo.Get("game_img").MustString()
 	user.Gold = userAccount.Get("balance").MustFloat64()
-	user.PlayerPkgId = userAccount.Get("package_id").MustInt()
+	user.PlayerPkgId = userInfo.Get("package_id").MustInt()
 	userLogin.Player = user
 	userLogin.LoginStatus = true
 	callChan := GetUserLoginCallChan(user.PlayerId)
