@@ -50,7 +50,9 @@ func MustWinCard() ([]*Card, []*Card, []*Card, []*Card) {
 	case 4:
 		return MustWinCardType4()
 	case 5:
-		return MustWinCardType4()
+		return MustWinCardType5()
+	case 6:
+		return MustWinCardType6()
 	default:
 		return MustWinCardType1()
 	}
@@ -126,7 +128,7 @@ func MustWinCardType2() ([]*Card, []*Card, []*Card, []*Card) {
 // 必赢好牌类型 3
 // @return
 // 1 :好牌 2:随机牌 3:随机牌 4:底牌
-// 三连飞机
+// 3大 三连飞机
 func MustWinCardType3() ([]*Card, []*Card, []*Card, []*Card) {
 
 	rCard := CreateBrokenCard()
@@ -158,7 +160,7 @@ func MustWinCardType3() ([]*Card, []*Card, []*Card, []*Card) {
 // 必赢好牌类型 4
 // @return
 // 1 :好牌 2:随机牌 3:随机牌 4:底牌
-// 两炸 加1连飞机
+// 3大 两炸 加1连飞机
 func MustWinCardType4() ([]*Card, []*Card, []*Card, []*Card) {
 
 	rCard := CreateBrokenCard()
@@ -221,6 +223,72 @@ func MustWinCardType5() ([]*Card, []*Card, []*Card, []*Card) {
 	return winCard, p1, p2, bottom
 
 }
+
+// 必赢好牌类型 6
+// @return
+// 1 :好牌 2:随机牌 3:随机牌 4:底牌
+// 4大  + 一炸
+func MustWinCardType6() ([]*Card, []*Card, []*Card, []*Card) {
+
+	rCard := CreateBrokenCard()
+
+	var winCard []*Card
+
+	fourC, remainCard := GetFourBigCard(rCard)
+
+	bomb, remainCard := GetBombInCards(remainCard)
+	//bomb2, remainCard := GetBombInCards(remainCard)
+
+	winCard = append(winCard, fourC...) // 4
+	//winCard = append(winCard, bomb...)      //
+	winCard = append(winCard, bomb...) // 4 8
+
+
+	// 补9张牌
+	buCard := remainCard[:9]
+	winCard = append(winCard, buCard...)
+
+	p1 := append([]*Card{}, remainCard[9:26]...)
+	p2 := append([]*Card{}, remainCard[26:43]...)
+
+	bottom := append([]*Card{}, remainCard[43:]...)
+	return winCard, p1, p2, bottom
+
+}
+
+
+// 必赢好牌类型 7
+// @return
+// 1 :好牌 2:随机牌 3:随机牌 4:底牌
+// 5大  + 一炸
+func MustWinCardType7() ([]*Card, []*Card, []*Card, []*Card) {
+
+	rCard := CreateBrokenCard()
+
+	var winCard []*Card
+
+	fourC, remainCard := GetFiveBigCard(rCard)
+
+	bomb, remainCard := GetBombInCards(remainCard)
+	//bomb2, remainCard := GetBombInCards(remainCard)
+
+	winCard = append(winCard, fourC...) // 5
+	//winCard = append(winCard, bomb...)      //
+	winCard = append(winCard, bomb...) // 4 9
+
+
+	// 补8张牌
+	buCard := remainCard[:8]
+	winCard = append(winCard, buCard...)
+
+	p1 := append([]*Card{}, remainCard[8:25]...)
+	p2 := append([]*Card{}, remainCard[25:42]...)
+
+	bottom := append([]*Card{}, remainCard[42:]...)
+	return winCard, p1, p2, bottom
+
+}
+
 /*  =============   好牌类型  =============*/
 
 /*========= help func ===========*/
@@ -402,6 +470,158 @@ func Get4AirplaneInCards(c []*Card) ([]*Card, []*Card) {
 	return nil, c
 }
 
+
+
+// 从牌中获取一个随机3连对
+func Get3PairedInCards(c []*Card) ([]*Card, []*Card) {
+	item := getHasMoreNumsCard(c, 2)
+	var result []*Card
+	if len(item) >= 3 {
+		randNum := RandNum(0, len(item)-3)
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum] {
+				result = append(result, c[i])
+			}
+			if len(result) == 2 {
+				break
+			}
+		}
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum+1] {
+				result = append(result, c[i])
+			}
+			if len(result) == 4 {
+				break
+			}
+		}
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum+2] {
+				result = append(result, c[i])
+			}
+			if len(result) == 6 {
+				break
+			}
+		}
+
+		remainCards := removeCards(c, result)
+		return result, remainCards
+	}
+	return nil, c
+}
+
+
+// 从牌中获取一个随机3连对
+func Get4PairedInCards(c []*Card) ([]*Card, []*Card) {
+	item := getHasMoreNumsCard(c, 2)
+	var result []*Card
+	if len(item) >= 4 {
+		randNum := RandNum(0, len(item)-4)
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum] {
+				result = append(result, c[i])
+			}
+			if len(result) == 2 {
+				break
+			}
+		}
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum+1] {
+				result = append(result, c[i])
+			}
+			if len(result) == 4 {
+				break
+			}
+		}
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum+2] {
+				result = append(result, c[i])
+			}
+			if len(result) == 6 {
+				break
+			}
+		}
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum+3] {
+				result = append(result, c[i])
+			}
+			if len(result) == 8 {
+				break
+			}
+		}
+
+		remainCards := removeCards(c, result)
+		return result, remainCards
+	}
+	return nil, c
+}
+
+// 从牌中获取一个随机3连对
+func Get5PairedInCards(c []*Card) ([]*Card, []*Card) {
+	item := getHasMoreNumsCard(c, 2)
+	var result []*Card
+	if len(item) >= 5 {
+		randNum := RandNum(0, len(item)-5)
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum] {
+				result = append(result, c[i])
+			}
+			if len(result) == 2 {
+				break
+			}
+		}
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum+1] {
+				result = append(result, c[i])
+			}
+			if len(result) == 4 {
+				break
+			}
+		}
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum+2] {
+				result = append(result, c[i])
+			}
+			if len(result) == 6 {
+				break
+			}
+		}
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum+3] {
+				result = append(result, c[i])
+			}
+			if len(result) == 8 {
+				break
+			}
+		}
+
+		for i := 0; i < len(c); i++ {
+			if int(c[i].Value) == item[randNum+4] {
+				result = append(result, c[i])
+			}
+			if len(result) == 10 {
+				break
+			}
+		}
+
+
+		remainCards := removeCards(c, result)
+		return result, remainCards
+	}
+	return nil, c
+}
+
+
 // 随机取大鬼 小鬼 或者2 共计三张
 func GetThreeBigCard(c []*Card) ([]*Card, []*Card) {
 	var result []*Card
@@ -412,6 +632,44 @@ func GetThreeBigCard(c []*Card) ([]*Card, []*Card) {
 			result = append(result, c[i])
 		}
 		if len(result) >= 3 {
+			break
+		}
+	}
+
+	remainCards := removeCards(c, result)
+	return result, remainCards
+
+}
+
+// 随机取大鬼 小鬼 或者2 共计4张
+func GetFourBigCard(c []*Card) ([]*Card, []*Card) {
+	var result []*Card
+	for i := 0; i < len(c); i++ {
+		if c[i].Value == cardConst.CARD_RANK_RED_JOKER ||
+			c[i].Value == cardConst.CARD_RANK_BLACK_JOKER ||
+			c[i].Value == cardConst.CARD_RANK_TWO {
+			result = append(result, c[i])
+		}
+		if len(result) >= 4 {
+			break
+		}
+	}
+
+	remainCards := removeCards(c, result)
+	return result, remainCards
+
+}
+
+// 随机取大鬼 小鬼 或者2 共计5张
+func GetFiveBigCard(c []*Card) ([]*Card, []*Card) {
+	var result []*Card
+	for i := 0; i < len(c); i++ {
+		if c[i].Value == cardConst.CARD_RANK_RED_JOKER ||
+			c[i].Value == cardConst.CARD_RANK_BLACK_JOKER ||
+			c[i].Value == cardConst.CARD_RANK_TWO {
+			result = append(result, c[i])
+		}
+		if len(result) >= 5 {
 			break
 		}
 	}

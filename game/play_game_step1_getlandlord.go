@@ -160,9 +160,9 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 			if truePlayerNum == 3 {
 				PushPlayerStartGame(room)
 			} else {
-				//PushPlayerStartGameWithRobot3(room)
+				PushPlayerStartGameWithRobot3(room)
 				//PushPlayerStartGameWithRobot2(room)
-				PushPlayerStartGameWithRobotLast(room)
+				//PushPlayerStartGameWithRobotLast(room)
 			}
 
 			//if Server.UseRobot {

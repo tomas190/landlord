@@ -85,6 +85,35 @@ func CountCardValue(cards []*Card) float32 {
 	return value
 }
 
+func CountCardValue2(cards []*Card) float32 {
+	var value float32
+
+	for i := 0; i < len(cards); i++ {
+		if cards[i].Value == cardConst.CARD_RANK_TWO {
+			value += 1.75
+		} else if cards[i].Value == cardConst.CARD_RANK_BLACK_JOKER {
+			value += 2.5
+		} else if cards[i].Value == cardConst.CARD_RANK_RED_JOKER {
+			value += 3
+		}
+	}
+
+	reCards, _ := FindAllBomb(cards)
+	for i := 0; i < len(reCards); i++ {
+		if reCards[i].Wight == cardConst.CARD_RANK_TWO {
+			value += 5
+		} else {
+			value += 4
+		}
+	}
+
+	_, b, _ := hasRacket(cards)
+	if b {
+		value += 6
+	}
+	return value
+}
+
 // 根据组牌牌型计算分值 todo 很大的优化空间
 func countCardTypeValue(card *ReCard, cardType int) float64 {
 

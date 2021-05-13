@@ -116,9 +116,9 @@ func PushPlayerStartGameWithRobot3(room *Room) {
 	num := RandNum(0, 10)
 	if isLetRobotGetGoodCard { // 根据结果发牌
 		if num >= 5 {
-			p3, p2, p1, bottomCard = CreateGodCards()
+			p3, p2, p1, bottomCard = MustWinCard()
 		} else {
-			p2, p1, p3, bottomCard = CreateGodCards()
+			p2, p1, p3, bottomCard = MustWinCard()
 		}
 	} else {
 		if num >= 3 {
@@ -218,10 +218,10 @@ func PushPlayerStartGameWithRobotLast(room *Room) {
 
 // 计算机器人手牌分数
 func CountRobotCardValue(r1, r2 *Player) {
-	v1 := CountCardValue(r1.HandCards)
+	v1 := CountCardValue2(r1.HandCards)
 	r1.HandsValue = v1
 
-	v2 := CountCardValue(r2.HandCards)
+	v2 := CountCardValue2(r2.HandCards)
 	r2.HandsValue = v2
 
 	// 将牌分组

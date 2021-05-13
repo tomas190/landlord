@@ -24,7 +24,7 @@ func GetPlatformTaxPercent(pkgId int) float64 {
 	allTax := globalsTaxPercent.platformTaxPercent
 	globalsTaxPercent.mu.Unlock()
 
-	var tax int
+	var tax float64
 	for i := 0; ; i++ {
 		index := allTax.GetIndex(i)
 		if index.Interface() == nil {
@@ -32,7 +32,7 @@ func GetPlatformTaxPercent(pkgId int) float64 {
 		}
 
 		if index.Get("package_id").MustInt() == pkgId {
-			tax = index.Get("platform_tax_percent").MustInt()
+			tax = index.Get("platform_tax_percent").MustFloat64()
 			break
 		}
 	}
@@ -42,5 +42,5 @@ func GetPlatformTaxPercent(pkgId int) float64 {
 		return 0.05
 	}
 
-	return float64(tax) * 0.01
+	return tax * 0.01
 }

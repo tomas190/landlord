@@ -47,7 +47,7 @@ func TestGetAndRemoveCard(t *testing.T) {
 	//PrintCard(rCard)
 	for i := 0; i < 100; i++ {
 		rCard := CreateBrokenCard()
-		result, remainCards := GetThreeBigCard(rCard)
+		result, remainCards := Get5PairedInCards(rCard)
 
 		logger.Debug(len(result))
 		logger.Debug(len(remainCards))
@@ -61,7 +61,7 @@ func TestGetAndRemoveCard(t *testing.T) {
 }
 
 func TestMustWinCardType1(t *testing.T) {
-	goodCard, p1, p2, bottom := MustWinCardType4()
+	goodCard, p1, p2, bottom := MustWinCardType7()
 
 	fmt.Println(len(goodCard))
 	fmt.Println(len(p1))
@@ -87,6 +87,13 @@ func TestMustWinCardType1(t *testing.T) {
 	fmt.Println(len(rC))
 	SortCard(rC)
 	PrintCard1(rC)
+
+	value2 := CountCardValue2(goodCard)
+	fmt.Println("好牌分数:",value2)
+}
+
+func TestCountCardValue2(t *testing.T) {
+
 
 }
 
