@@ -53,6 +53,8 @@ func MustWinCard() ([]*Card, []*Card, []*Card, []*Card) {
 		return MustWinCardType5()
 	case 6:
 		return MustWinCardType6()
+	case 7:
+		return MustWinCardType7()
 	default:
 		return MustWinCardType1()
 	}

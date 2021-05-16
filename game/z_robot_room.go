@@ -71,8 +71,8 @@ func PlayGameWithRobot(room *Room) {
 	DelaySomeTime(1)
 
 	// 2.给玩家发牌
-	PushPlayerStartGameWithRobot2(room)
-	//PushPlayerStartGameWithRobot3(room)
+	//PushPlayerStartGameWithRobot2(room)
+	PushPlayerStartGameWithRobot3(room)
 	//PushPlayerStartGameWithRobotLast(room)
 	// ..．流程控制到这里结束　发牌  抢地主  玩牌 直接由 PushPlayerStartGame 开始 且循环
 
