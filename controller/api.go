@@ -48,7 +48,8 @@ func kickAll(room *game.Room,msg string,loginOut bool) {
 				game.SetSessionRoomId(v.Session, "")
 				game.SendErrMsg(v.Session, msgIdConst.ErrMsg, msg)
 				if loginOut {
-					game.UserLogoutCenter(v.PlayerInfo.PlayerId, game.GetSessionPassword(v.Session))
+					//game.UserLogoutCenter(v.PlayerInfo.PlayerId, game.GetSessionPassword(v.Session))
+					game.UserLogoutCenterAfterUnlockMoney(v.PlayerInfo.PlayerId, v.PlayerInfo.Gold)
 				}
 			}
 		}

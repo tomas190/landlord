@@ -126,6 +126,8 @@ func onReceiveCenterMsg(messType int, msgFromCenter []byte) {
 		dealLossSocer(data)
 	case msgUserLogout:
 		dealUserLoginOutCenter(data)
+	case msgUserUnLockScore:
+		dealUserUnlockScore(data)
 	default:
 		logger.Error("Receive a message but don't identify~")
 		logger.Error(string(msgFromCenter))

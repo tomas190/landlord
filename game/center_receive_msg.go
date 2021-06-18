@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bitly/go-simplejson"
+	"github.com/google/uuid"
 	"github.com/wonderivan/logger"
 	"strconv"
 )
@@ -62,6 +63,7 @@ func dealUserLogin(data *simplejson.Json) {
 			callChan <- &userLogin
 		}()
 	}
+	UserLockMoney(user.PlayerId, user.Gold, uuid.New().String(), "user login lock all money")
 
 }
 
@@ -135,4 +137,39 @@ func checkLoginOut(stByte []byte) {
 	}
 	logger.Debug("玩家没有离线:", id)
 
+}
+
+
+// 解锁用户金币信息
+// 当收到这条消息返回的时候 需要登出中心服 只有退出的时候才会解锁玩家的金币
+func dealUserUnlockScore(data *simplejson.Json) {
+	code := data.Get("code").MustInt()
+
+	if code != 200 {
+		//SendLogToCenter("ERR", "game/center_receive_msg.go", "76", "同步中心服输钱失败:"+ObjToString(data))
+		logger.Debug("dealLossSoc！", data)
+		logger.Debug("解锁用户信息失败!")
+		return
+	}
+
+	bytes, _ := json.Marshal(data)
+	playerId := data.Get("msg").Get("id").MustInt()
+	fmt.Println("解锁金币成功:", string(bytes))
+	//
+
+	agent := GetAgent(strconv.Itoa(playerId))
+	if agent == nil {
+		logger.Error("获取玩家session异常:", playerId)
+		return
+	}
+
+	info, err := GetSessionPlayerInfo(agent)
+	if err != nil {
+		logger.Error("获取玩家信息异常:", playerId)
+		logger.Error("err:", err.Error())
+		return
+	}
+
+	password := GetSessionPassword(agent)
+	UserLogoutCenter(info.PlayerId, password)
 }

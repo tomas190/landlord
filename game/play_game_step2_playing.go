@@ -465,9 +465,10 @@ func ClearClosePlayer(session *melody.Session) {
 		logger.Debug("无用户session信息:", err.Error())
 		return
 	}
-	password := GetSessionPassword(session)
+	//password := GetSessionPassword(session)
 	// 登出中心服
-	UserLogoutCenter(playerInfo.PlayerId, password)
+	//UserLogoutCenter(playerInfo.PlayerId, password)
+	UserLogoutCenterAfterUnlockMoney(playerInfo.PlayerId, playerInfo.Gold)
 	RemoveAgent(playerInfo.PlayerId)
 	RemoveWaitUser(playerInfo.PlayerId)
 }

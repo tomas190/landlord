@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
 	"math"
@@ -90,7 +91,7 @@ func UserLogoutCenter(userId string, password string) {
 }
 
 //UserSyncWinScore 同步赢分
-func UserSyncWinScore(playerId string, winMoney float64, roundId string) {
+func UserSyncWinScore(playerId string, winMoney float64, roundId string,payMoney float64) {
 	pId, err := strconv.Atoi(playerId)
 	if err!=nil {
 		logger.Debug("非法用户id:",playerId)
@@ -121,6 +122,9 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId string) {
 	PrintMsg("sendCenterMsg:", baseData)
 
 	WriteMsgToCenter(baseData)
+
+	// 赢的钱加锁
+	UserLockMoney(playerId,payMoney,roundId,"user win money lock")
 }
 
 //UserSyncWinScore 同步输分
@@ -143,7 +147,7 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
 	userLose.Info.CreateTime = timeUnix
 	userLose.Info.GameId = Server.GameId
 	userLose.Info.ID = pId
-	//userLose.Info.LockMoney = 0
+	userLose.Info.LockMoney = math.Abs(lossMoney)
 	userLose.Info.Money = lossMoney
 	//userLose.Info.Order = orderId
 	userLose.Info.Order = bson.NewObjectId().Hex()
@@ -228,4 +232,73 @@ func reducePlayerMsgNum(playerId string) {
 		logger.Error("不正常的操作流程")
 		// agent.Set("msgNum", 1)
 	}
+}
+
+
+// UserLockMoney 锁住用户金币
+func UserLockMoney(playerId string, lockMoney float64, roundId string, lockReason string) {
+	pId, err := strconv.Atoi(playerId)
+	if err != nil {
+		logger.Debug("非法用户id:", playerId)
+	}
+	logger.Debug("<-------- Lock score -------->")
+
+	timeUnix := time.Now().Unix()
+
+	baseData := &ToCenterMessage{}
+	baseData.Event = msgUserLockScore
+	userLock := &UserChangeScore{}
+	// userLock.Auth.Token = TokenOfCenter
+	userLock.Auth.DevName = Server.DevName
+	userLock.Auth.DevKey = Server.DevKey
+	userLock.Info.CreateTime = timeUnix
+	userLock.Info.GameId = Server.GameId
+	userLock.Info.ID = pId
+	userLock.Info.LockMoney = lockMoney
+	//userLock.Info.Money =
+	//userLock.Info.Order = orderId
+	userLock.Info.Order = bson.NewObjectId().Hex()
+	userLock.Info.PayReason = lockReason
+	//userLock.Info.PreMoney = 0
+	userLock.Info.RoundId = roundId
+	//userLock.Info.BetMoney = math.Abs(lossMoney)
+	baseData.Data = userLock
+
+	WriteMsgToCenter(baseData)
+}
+
+// UserUnLockMoney 解锁用户金币
+func UserUnLockMoney(playerId string, lockMoney float64, roundId string, lockReason string) {
+	pId, err := strconv.Atoi(playerId)
+	if err != nil {
+		logger.Debug("非法用户id:", playerId)
+	}
+	logger.Debug("<-------- Unlock score -------->")
+
+	timeUnix := time.Now().Unix()
+
+	baseData := &ToCenterMessage{}
+	baseData.Event = msgUserUnLockScore
+	userUnlock := &UserChangeScore{}
+	// userUnlock.Auth.Token = TokenOfCenter
+	userUnlock.Auth.DevName = Server.DevName
+	userUnlock.Auth.DevKey = Server.DevKey
+	userUnlock.Info.CreateTime = timeUnix
+	userUnlock.Info.GameId = Server.GameId
+	userUnlock.Info.ID = pId
+	userUnlock.Info.LockMoney = lockMoney
+	//userUnlock.Info.Money =
+	//userUnlock.Info.Order = orderId
+	userUnlock.Info.Order = bson.NewObjectId().Hex()
+	userUnlock.Info.PayReason = lockReason
+	//userUnlock.Info.PreMoney = 0
+	userUnlock.Info.RoundId = roundId
+	//userUnlock.Info.BetMoney = math.Abs(lossMoney)
+	baseData.Data = userUnlock
+
+	WriteMsgToCenter(baseData)
+}
+
+func UserLogoutCenterAfterUnlockMoney(playerId string, money float64) {
+	UserUnLockMoney(playerId, money, uuid.New().String(), "user login out unlock money")
 }

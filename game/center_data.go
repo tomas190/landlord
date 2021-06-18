@@ -7,6 +7,8 @@ const (
 	msgUserWinScore      string = "/GameServer/GameUser/winSettlement"
 	msgUserLoseScore     string = "/GameServer/GameUser/loseSettlement"
 	msgWinMoreThanNotice string = "/GameServer/Notice/notice" // 赢钱超过发送通知
+	msgUserLockScore     string = "/GameServer/GameUser/lockSettlement"
+	msgUserUnLockScore   string = "/GameServer/GameUser/UnlockSettlement"
 )
 
 // 基本消息结构
