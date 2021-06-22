@@ -11,6 +11,8 @@ var userLoginChan struct {
 
 func StartCenter() {
 
+	opMap.opMap = make(map[string]string, 16)
+
 	userLoginChan.chanMap = make(map[string]chan *UserLoginCallBack, 1000)
 	//	go changeToken()
 	DelaySomeTime(1)

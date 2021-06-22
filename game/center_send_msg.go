@@ -17,8 +17,8 @@ func UserLogin(playerId, password, token string) {
 	baseData.Event = msgUserLogin
 
 	pId, err := strconv.Atoi(playerId)
-	if err!=nil {
-		logger.Debug("非法用户id:",playerId)
+	if err != nil {
+		logger.Debug("非法用户id:", playerId)
 	}
 
 	// 要改成判断token
@@ -50,8 +50,8 @@ func UserLogin(playerId, password, token string) {
 func UserLogoutCenter(userId string, password string) {
 	//DelaySomeTime(1)
 	pId, err := strconv.Atoi(userId)
-	if err!=nil {
-		logger.Debug("非法用户id:",userId)
+	if err != nil {
+		logger.Debug("非法用户id:", userId)
 	}
 	logger.Debug("<-------- UserLogoutCenter  -------->")
 	base := &ToCenterMessage{}
@@ -91,10 +91,10 @@ func UserLogoutCenter(userId string, password string) {
 }
 
 //UserSyncWinScore 同步赢分
-func UserSyncWinScore(playerId string, winMoney float64, roundId string,payMoney float64) {
+func UserSyncWinScore(playerId string, winMoney float64, roundId string, payMoney float64) {
 	pId, err := strconv.Atoi(playerId)
-	if err!=nil {
-		logger.Debug("非法用户id:",playerId)
+	if err != nil {
+		logger.Debug("非法用户id:", playerId)
 	}
 	//	addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	logger.Debug("<-------- 发送赢钱指令 -------->")
@@ -124,15 +124,15 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId string,payMoney
 	WriteMsgToCenter(baseData)
 
 	// 赢的钱加锁
-	UserLockMoney(playerId,payMoney,roundId,"user win money lock")
+	UserLockMoney(playerId, payMoney, roundId, "user win money lock")
 }
 
 //UserSyncWinScore 同步输分
 func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
 	// addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	pId, err := strconv.Atoi(playerId)
-	if err!=nil {
-		logger.Debug("非法用户id:",playerId)
+	if err != nil {
+		logger.Debug("非法用户id:", playerId)
 	}
 	logger.Debug("<-------- GenLoseOrder -------->")
 
@@ -163,8 +163,8 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
 func NoticeWinMoreThan(playerId, playerName string, winGold float64) {
 	logger.Debug("<-------- NoticeWinMoreThan  -------->")
 	pId, err := strconv.Atoi(playerId)
-	if err!=nil {
-		logger.Debug("非法用户id:",playerId)
+	if err != nil {
+		logger.Debug("非法用户id:", playerId)
 	}
 	//style := `<size=20><color=YELLOW>恭喜!</color><color=orange>888888888</color><color=YELLOW>在</color></><color=WHITE><b><size=25>龙虎斗</color></b></><color=YELLOW><size=20>中一把赢了</color></><color=YELLOW><b><size=35>8888.88</color></b></><color=YELLOW><size=20>金币！</color></>`
 
@@ -234,7 +234,6 @@ func reducePlayerMsgNum(playerId string) {
 	}
 }
 
-
 // UserLockMoney 锁住用户金币
 func UserLockMoney(playerId string, lockMoney float64, roundId string, lockReason string) {
 	pId, err := strconv.Atoi(playerId)
@@ -257,7 +256,8 @@ func UserLockMoney(playerId string, lockMoney float64, roundId string, lockReaso
 	userLock.Info.LockMoney = lockMoney
 	//userLock.Info.Money =
 	//userLock.Info.Order = orderId
-	userLock.Info.Order = bson.NewObjectId().Hex()
+	order := bson.NewObjectId().Hex()
+	userLock.Info.Order = order
 	userLock.Info.PayReason = lockReason
 	//userLock.Info.PreMoney = 0
 	userLock.Info.RoundId = roundId
@@ -265,6 +265,7 @@ func UserLockMoney(playerId string, lockMoney float64, roundId string, lockReaso
 	baseData.Data = userLock
 
 	WriteMsgToCenter(baseData)
+	opMap.Set(order, playerId)
 }
 
 // UserUnLockMoney 解锁用户金币

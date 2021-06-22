@@ -146,9 +146,9 @@ func dealUserUnlockScore(data *simplejson.Json) {
 	code := data.Get("code").MustInt()
 
 	if code != 200 {
-		//SendLogToCenter("ERR", "game/center_receive_msg.go", "76", "同步中心服输钱失败:"+ObjToString(data))
-		logger.Debug("dealLossSoc！", data)
-		logger.Debug("解锁用户信息失败!")
+
+		// 解锁金币失败处理
+		errorDealUnlockFail(data)
 		return
 	}
 
@@ -172,4 +172,38 @@ func dealUserUnlockScore(data *simplejson.Json) {
 
 	password := GetSessionPassword(agent)
 	UserLogoutCenter(info.PlayerId, password)
+}
+
+
+func errorDealUnlockFail(data *simplejson.Json) {
+	// 打印错误信息
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		logger.Error("marshal err:" + err.Error())
+		return
+	}
+	logger.Debug("unlock fail resp:" + string(bytes))
+
+	arr := data.Get("msg").Get("data").MustArray()
+	order := data.Get("msg").Get("order").MustString()
+	if len(arr) == 3 {
+		if arr[0].(string) == "game account lock balance is not enough" {
+			userCurrentGold, err := arr[1].(json.Number).Float64()
+			if err != nil {
+				logger.Debug("err:", err.Error())
+				return
+			}
+
+			// 根据返回的order获取对应的玩家id
+			playerId := opMap.Get(order)
+
+			agent := GetAgent(playerId)
+			if agent == nil {
+				logger.Error("获取玩家session异常:", playerId)
+				return
+			}
+			UserUnLockMoney(playerId, userCurrentGold, uuid.New().String(), "user unlock fail lock again")
+		}
+	}
+
 }
