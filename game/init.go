@@ -40,6 +40,8 @@ var Server struct {
 var globalSession *mgo.Session
 var roomClassify *mproto.PushRoomClassify
 
+var ForbiddenFlag bool // 维护更新flag
+
 func InitConfig() {
 	initLogger()
 	initServerConf()

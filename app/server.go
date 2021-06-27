@@ -102,4 +102,5 @@ func mController(r *gin.Engine) {
 	r.POST("/api/uptSurplusConf", controller.UptSurplusConf)
 
 	r.GET("/api/getPlayInfo", controller.GetPlayInfo)
+	r.POST("/api/UptServer", controller.UptServer)
 }

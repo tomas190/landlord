@@ -147,7 +147,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 	/* 2020年4月28日11:47:17 玩家连续扣钱两次*/
 	getRoom := GetRoom(room.RoomId)
 	if getRoom == nil || len(actionPlayer.HandCards) <= 0 {
-		logger.Debug("!!!incredible",len(actionPlayer.HandCards))
+		logger.Debug("!!!incredible", len(actionPlayer.HandCards))
 		return
 	}
 	/* 2020年4月28日11:47:17 玩家连续扣钱两次*/
@@ -243,7 +243,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 		//
 		// 结算
 		Settlement(room, actionPlayer)
-
+		go KickUser(room.Players)
 		//// 移除房间
 		clearRoomAndPlayer(room)
 		//RemoveRoom(room.RoomId)
@@ -507,4 +507,45 @@ func OutCardCheck(outCard []*Card, cardType int32) ([]*Card, int32) {
 	return FindMustBeOutCards(outCard)
 
 	//return outCard, cardType
+}
+
+// 踢出在房间中的玩家
+func KickUser(players map[string]*Player) {
+	if !ForbiddenFlag {
+		return
+	}
+
+	for _, v := range players {
+		session := v.Session
+		if session != nil {
+			var push mproto.CloseConn
+			push.Msg = "更新维护,请稍后进入!"
+			bytes, _ := proto.Marshal(&push)
+			msg := PkgMsg(msgIdConst.CloseConn, bytes)
+			_ = session.CloseWithMsg(msg)
+		}
+
+	}
+}
+
+// 踢出不在房间中的玩家
+func KickHallUser() {
+	if !ForbiddenFlag {
+		return
+	}
+
+	globalLoginAgents.rwMutex.Lock()
+	defer globalLoginAgents.rwMutex.Unlock()
+
+	for k, session := range globalLoginAgents.sessionMaps {
+		_, b := IsPlayerInRoom(k)
+		if !b {
+			var push mproto.CloseConn
+			push.Msg = "更新维护,请稍后进入!"
+			bytes, _ := proto.Marshal(&push)
+			msg := PkgMsg(msgIdConst.CloseConn, bytes)
+			_ = session.CloseWithMsg(msg)
+		}
+	}
+
 }

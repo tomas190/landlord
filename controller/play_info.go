@@ -125,3 +125,12 @@ func Decimal2(value float64) float64 {
 	value, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", value), 64)
 	return value
 }
+
+
+// UptServer 设置变量踢出玩家 禁止继续游戏
+func UptServer(c *gin.Context) {
+	game.ForbiddenFlag = true
+
+	go game.KickHallUser()
+	c.JSON(httpCode, gin.H{"code": SuccCode, "msg": "ok"})
+}
