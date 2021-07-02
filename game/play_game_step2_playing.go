@@ -469,7 +469,7 @@ func ClearClosePlayer(session *melody.Session) {
 	// 登出中心服
 	//UserLogoutCenter(playerInfo.PlayerId, password)
 	UserLogoutCenterAfterUnlockMoney(playerInfo.PlayerId, playerInfo.Gold)
-	RemoveAgent(playerInfo.PlayerId)
+	// RemoveAgent(playerInfo.PlayerId)
 	RemoveWaitUser(playerInfo.PlayerId)
 }
 
