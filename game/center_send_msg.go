@@ -265,7 +265,7 @@ func UserLockMoney(playerId string, lockMoney float64, roundId string, lockReaso
 	baseData.Data = userLock
 
 	WriteMsgToCenter(baseData)
-	opMap.Set(order, playerId)
+	//opMap.Set(order, playerId)
 }
 
 // UserUnLockMoney 解锁用户金币
@@ -290,13 +290,16 @@ func UserUnLockMoney(playerId string, lockMoney float64, roundId string, lockRea
 	userUnlock.Info.LockMoney = lockMoney
 	//userUnlock.Info.Money =
 	//userUnlock.Info.Order = orderId
-	userUnlock.Info.Order = bson.NewObjectId().Hex()
+	order := bson.NewObjectId().Hex()
+	userUnlock.Info.Order = order
 	userUnlock.Info.PayReason = lockReason
 	//userUnlock.Info.PreMoney = 0
 	userUnlock.Info.RoundId = roundId
 	//userUnlock.Info.BetMoney = math.Abs(lossMoney)
 	baseData.Data = userUnlock
 
+	// 保存order 和 player 的kv
+	opMap.Set(order, playerId)
 	WriteMsgToCenter(baseData)
 }
 

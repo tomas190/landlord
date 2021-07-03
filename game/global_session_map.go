@@ -80,3 +80,30 @@ func GetConnLen() int {
 //		UserLogoutCenter(playerId,GetSessionPassword(s))
 //	}
 //}
+
+// 获取agent
+// globalAgents
+// @param userGold   : playerGold
+func GetAgentByUserGold(userGold float64)(string, *melody.Session) {
+	globalLoginAgents.rwMutex.Lock()
+	defer globalLoginAgents.rwMutex.Unlock()
+	var count int // 保证只有一位玩家  如果多个则返回nil
+	var result *melody.Session
+	var playerId string
+	for pid, session := range globalLoginAgents.sessionMaps {
+		value, exists := session.Get("playerInfo")
+		if exists {
+			p := value.(*PlayerInfo)
+			if p.Gold == userGold {
+				count++
+				result = session
+				playerId = pid
+			}
+		}
+	}
+	if count == 1 {
+		return playerId, result
+	}
+
+	return "", nil
+}

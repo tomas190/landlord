@@ -139,7 +139,6 @@ func checkLoginOut(stByte []byte) {
 
 }
 
-
 // 解锁用户金币信息
 // 当收到这条消息返回的时候 需要登出中心服 只有退出的时候才会解锁玩家的金币
 func dealUserUnlockScore(data *simplejson.Json) {
@@ -174,7 +173,6 @@ func dealUserUnlockScore(data *simplejson.Json) {
 	UserLogoutCenter(info.PlayerId, password)
 }
 
-
 func errorDealUnlockFail(data *simplejson.Json) {
 	// 打印错误信息
 	bytes, err := json.Marshal(data)
@@ -190,20 +188,27 @@ func errorDealUnlockFail(data *simplejson.Json) {
 		if arr[0].(string) == "game account lock balance is not enough" {
 			userCurrentGold, err := arr[1].(json.Number).Float64()
 			if err != nil {
-				logger.Debug("err:", err.Error())
+				logger.Debug("获取当前金币异常 err:", err.Error())
 				return
 			}
-
 			// 根据返回的order获取对应的玩家id
 			playerId := opMap.Get(order)
-
 			agent := GetAgent(playerId)
 			if agent == nil {
 				logger.Error("获取玩家session异常:", playerId)
-				return
+				if order == "" || playerId == "" {
+					logger.Error("通过金币获取玩家session:", userCurrentGold)
+					// 根据玩家当前金币 获取玩家ID
+					playerId, agent = GetAgentByUserGold(userCurrentGold)
+					if agent == nil {
+						logger.Error("通过金币获取玩家session err:", userCurrentGold)
+						return
+					} else {
+						logger.Info("通过金币获取玩家session success:", playerId, userCurrentGold)
+					}
+				}
 			}
 			UserUnLockMoney(playerId, userCurrentGold, uuid.New().String(), "user unlock fail lock again")
 		}
 	}
-
 }
