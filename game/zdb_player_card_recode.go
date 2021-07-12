@@ -34,9 +34,10 @@ type RoomPlayer struct {
 
 type SettlementInfo struct {
 	//Order         string
-	PlayerId   string //玩家Id
-	PlayerName string //玩家名
-	IsLandlord int32  //是否地主
+	PlayerPkgId int    // 玩家所属包
+	PlayerId    string //玩家Id
+	PlayerName  string //玩家名
+	IsLandlord  int32  //是否地主
 	//IsRobot       bool    // 是否机器人
 	Multiple      int32   //倍数信息
 	WinLossGold   string  // 结算金币
@@ -123,6 +124,7 @@ func DBUptRecode(room *Room, s mproto.PushSettlement) {
 	for i := 0; i < len(s.Settlement); i++ {
 		sti := s.Settlement[i]
 		var st SettlementInfo
+		st.PlayerPkgId = room.Players[sti.PlayerId].PlayerInfo.PlayerPkgId
 		st.IsLandlord = sti.IsLandlord
 		st.RemainCards = append([]*Card{}, ChangeProtoToCard(sti.RemainCards)...)
 		st.CurrentGold = sti.CurrentGold
@@ -145,7 +147,7 @@ func DBUptRecode(room *Room, s mproto.PushSettlement) {
 
 func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int,
 	selector bson.M, sortBy string,
-	r int,pId string) ([]PlayCardRecode, int, int, error) {
+	r int, pId string) ([]PlayCardRecode, int, int, error) {
 	session, c := GetDBConn(Server.MongoDBName, playCardRecodeName)
 	defer session.Close()
 
@@ -164,7 +166,7 @@ func (p *PlayCardRecode) GetPlayCardRecodeList(skip, limit int,
 			"winorfail": 1}}
 		winCount, err = c.Find(winSelector).Count()
 		if err != nil {
-			logger.Debug("err:",err.Error())
+			logger.Debug("err:", err.Error())
 			return nil, 0, 0, err
 		}
 	}
@@ -197,8 +199,6 @@ func getPlayerIds(room *Room) string {
 	}
 	return ids
 }
-
-
 
 // 根据查询条件获取玩家玩牌信息
 func (p *PlayCardRecode) GetPlayInfoList(selector bson.M, ) ([]PlayCardRecode, error) {
