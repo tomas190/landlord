@@ -2,12 +2,13 @@ package game
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/wonderivan/logger"
-	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/roomType"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/wonderivan/logger"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type Room struct {
@@ -102,11 +103,11 @@ func GetRoomClassifyBottomEnterPoint(rType int32) float64 {
 	switch rType {
 	case roomType.ExperienceField:
 		//return 0.6
-		return 5
+		return 8
 	case roomType.LowField:
-		return 10
-	case roomType.MidField:
 		return 20
+	case roomType.MidField:
+		return 50
 	case roomType.HighField:
 		return 100
 	}

@@ -1,9 +1,10 @@
 package game
 
 import (
+	"landlord/mconst/sysSet"
+
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
-	"landlord/mconst/sysSet"
 )
 
 /*
@@ -40,7 +41,6 @@ type SurplusPoolOne struct {
 	RandomCountAfterWin       float64 `json:"random_count_after_win"`
 	RandomPercentageAfterLose float64 `json:"random_percentage_after_lose"`
 	RandomCountAfterLose      float64 `json:"random_count_after_lose"`
-
 }
 
 // 初始化盈余池数据
@@ -63,13 +63,13 @@ func UptSurplusPoolOne() {
 	spo.RandomPercentageAfterLose = sysSet.RANDOM_PERCENTAGE_AFTER_LOSE
 	spo.RandomCountAfterLose = sysSet.RANDOM_COUNT_AFTER_LOSE
 	//if sp.CurrentSurplus == sp.PlayerAllLoss-sp.PlayerAllWin {
-		var p PlayerRecode
-		playersCount := p.CountPlayers()
-		spo.SurplusPool = (sp.PlayerAllLoss -
-			sp.PlayerAllWin*sysSet.PERCENTAGE_TO_TOTAL_WIN -
-			float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER+
-			sysSet.DATA_CORRECTION) *
-			sysSet.FINAL_PERCENTAGE
+	var p PlayerRecode
+	playersCount := p.CountPlayers()
+	spo.SurplusPool = (sp.PlayerAllLoss -
+		sp.PlayerAllWin*sysSet.PERCENTAGE_TO_TOTAL_WIN -
+		float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER +
+		sysSet.DATA_CORRECTION) *
+		sysSet.FINAL_PERCENTAGE
 	//}
 	//spo.SurplusPool = sp.CurrentSurplus
 	spo.PlayerTotalLoseWin = sp.PlayerAllLoss - sp.PlayerAllWin
@@ -119,7 +119,7 @@ func (s *SurplusPoolOne) GetLastSurplusOne() (*SurplusPoolOne, error) {
 	if err != nil {
 		//SendLogToCenter("ERR", "game/zdb_surplus_new.go", "62", "获取盈余池失败:"+err.Error())
 		logger.Error("获取盈余池失败:", err.Error())
-		return &surplus, err
+		return &surplus, nil
 	}
 	return &surplus, nil
 }
@@ -127,7 +127,7 @@ func (s *SurplusPoolOne) GetLastSurplusOne() (*SurplusPoolOne, error) {
 func UptSurplusConf(percentageToTotalWin,
 	playerLoseRateAfterSurplusPool,
 	coefficientToTotalPlayer,
-	finalPercentage ,dataCorrection ,
+	finalPercentage, dataCorrection,
 	randomPercentageAfterWin,
 	randomCountAfterWin,
 	randomPercentageAfterLose,

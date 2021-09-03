@@ -1,9 +1,10 @@
 package game
 
-import "C"
+// import "C"
 import (
-	"github.com/wonderivan/logger"
 	"landlord/mconst/cardConst"
+
+	"github.com/wonderivan/logger"
 )
 
 // 机器人出牌
@@ -35,8 +36,8 @@ func robotOutCard(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Pla
 
 /*
 	农民玩家首出
-   F1 ->F2 ->landlord
-   ALL
+	F1 ->F2 ->landlord
+	ALL
 */
 func farmerRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
 
@@ -50,7 +51,6 @@ func farmerRobotOutCardMustDo(room *Room, robot *Player, nextPlayer *Player, las
 		NewRobotFarmerMustDoF2(room, robot, nextPlayer, lastPlayer)
 	}
 }
-
 
 /*s 地主出牌策略 还有很大的优化空间*/
 // 一 地主机器人首出牌策虐
@@ -253,15 +253,13 @@ func landlordRobotFallowCard(room *Room, robot *Player, nextPlayer *Player, last
 
 }
 
-
-
 // 农民下家是农名出手牌策略
 /*
 	0.自己能否一首走完
 	1.判断下家农民是否报单或者报双 如果是 则先出天炸 然后 最小对子或者最小单牌出牌
 
 */
-func farmerRobotOutCardMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player, ) {
+func farmerRobotOutCardMustDoF1(room *Room, robot *Player, nextPlayer *Player, lastPlayer *Player) {
 	logger.Debug("农民玩家一号首出")
 	completeGroups := completeGroupCard(robot.GroupCard)
 	completeReCards := changeGroupToReCard(completeGroups)
@@ -575,7 +573,7 @@ func farmerRobotFallowCardF1(room *Room, robot *Player, nextPlayer *Player, last
 			}
 		} else { // 如果跟友方玩家的牌
 			lcCards, lcType, b := checkLandlordHasLast(lastPlayer) // 判断地主是否最后一首
-			if b && lcType == cardConst.CARD_PATTERN_SINGLE { // 同时地主玩家报单的情况下
+			if b && lcType == cardConst.CARD_PATTERN_SINGLE {      // 同时地主玩家报单的情况下
 				logger.Debug("!农民玩家F1跟牌 跟下家 地主报单 ", eType)
 				comGroup := completeGroupCard(robot.GroupCard)
 				canotBeatNum := checkHowManyBeatSingle(comGroup.Single, lcCards)
@@ -701,7 +699,7 @@ func farmerRobotFallowCardF2(room *Room, robot *Player, nextPlayer *Player, last
 			}
 		} else { // 如果跟友方玩家的牌
 			lcCards, lcType, b := checkLandlordHasLast(lastPlayer) // 判断地主是否最后一首
-			if b && lcType == cardConst.CARD_PATTERN_SINGLE { // 同时地主玩家报单的情况下
+			if b && lcType == cardConst.CARD_PATTERN_SINGLE {      // 同时地主玩家报单的情况下
 				logger.Debug("!农民玩家F2跟牌 跟下家 地主报单 ", eType)
 				comGroup := completeGroupCard(robot.GroupCard)
 				canotBeatNum := checkHowManyBeatSingle(comGroup.Single, lcCards)
@@ -743,4 +741,3 @@ func farmerRobotFallowCardF2(room *Room, robot *Player, nextPlayer *Player, last
 	NotOutCardsAction(room, robot, lastPlayer, nextPlayer)
 
 }
-
