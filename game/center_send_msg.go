@@ -2,12 +2,13 @@ package game
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/wonderivan/logger"
-	"gopkg.in/mgo.v2/bson"
 	"math"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/wonderivan/logger"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func UserLogin(playerId, password, token string) {
@@ -41,9 +42,9 @@ func UserLogin(playerId, password, token string) {
 	WriteMsgToCenter(baseData)
 
 	//加入待处理map，等待处理
-	//c4c.waitUser[userId] = &UserCallback{}
-	//c4c.waitUser[userId].Data.ID = userId
-	//c4c.waitUser[userId].Callback = callback
+	// c4c.waitUser[userId] = &UserCallback{}
+	// c4c.waitUser[userId].Data.ID = userId
+	// c4c.waitUser[userId].Callback = callback
 }
 
 //UserLogoutCenter 用户登出
@@ -124,11 +125,16 @@ func UserSyncWinScore(playerId string, winMoney float64, roundId string, payMone
 	WriteMsgToCenter(baseData)
 
 	// 赢的钱加锁
-	UserLockMoney(playerId, payMoney, roundId, "user win money lock")
+	order := bson.NewObjectId().Hex()
+	OrderIDToOrderInfo.Store(order, OrderInfo{
+		PlayerId: playerId,
+		Event:    "user win money lock",
+	})
+	UserLockMoney(playerId, payMoney, roundId, "user win money lock", order)
 }
 
 //UserSyncWinScore 同步输分
-func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
+func UserSyncLoseScore(playerId string, lossMoney float64, roundId string, order string) {
 	// addPlayerMsgNum(playerId) // 增加消息值   // 收到中心服务的时候减少值
 	pId, err := strconv.Atoi(playerId)
 	if err != nil {
@@ -150,7 +156,7 @@ func UserSyncLoseScore(playerId string, lossMoney float64, roundId string) {
 	userLose.Info.LockMoney = math.Abs(lossMoney)
 	userLose.Info.Money = lossMoney
 	//userLose.Info.Order = orderId
-	userLose.Info.Order = bson.NewObjectId().Hex()
+	userLose.Info.Order = order
 	userLose.Info.PayReason = "对局"
 	//userLose.Info.PreMoney = 0
 	userLose.Info.RoundId = roundId
@@ -235,7 +241,7 @@ func reducePlayerMsgNum(playerId string) {
 }
 
 // UserLockMoney 锁住用户金币
-func UserLockMoney(playerId string, lockMoney float64, roundId string, lockReason string) {
+func UserLockMoney(playerId string, lockMoney float64, roundId string, lockReason string, order string) {
 	pId, err := strconv.Atoi(playerId)
 	if err != nil {
 		logger.Debug("非法用户id:", playerId)
@@ -256,7 +262,7 @@ func UserLockMoney(playerId string, lockMoney float64, roundId string, lockReaso
 	userLock.Info.LockMoney = lockMoney
 	//userLock.Info.Money =
 	//userLock.Info.Order = orderId
-	order := bson.NewObjectId().Hex()
+	// order := bson.NewObjectId().Hex()
 	userLock.Info.Order = order
 	userLock.Info.PayReason = lockReason
 	//userLock.Info.PreMoney = 0

@@ -2,11 +2,12 @@ package game
 
 import (
 	"encoding/json"
+	"strconv"
+	"time"
+
 	"github.com/bitly/go-simplejson"
 	"github.com/gorilla/websocket"
 	"github.com/wonderivan/logger"
-	"strconv"
-	"time"
 )
 
 var centerServerConn *websocket.Conn
@@ -92,7 +93,7 @@ func loginCenterServer() {
 
 func WriteMsgToCenter(data interface{}) {
 	bytes, _ := json.Marshal(data)
-	logger.Debug(string(bytes))
+	logger.Debug("WriteMsgToCenter :", string(bytes))
 	err := centerServerConn.WriteMessage(websocket.TextMessage, bytes)
 	if err != nil {
 		logger.Error("write msg err:", err.Error())
@@ -101,6 +102,7 @@ func WriteMsgToCenter(data interface{}) {
 }
 
 func onReceiveCenterMsg(messType int, msgFromCenter []byte) {
+	logger.Debug("onReceiveCenterMsg:", string(msgFromCenter))
 	if messType != websocket.TextMessage {
 		return
 	}
@@ -112,7 +114,7 @@ func onReceiveCenterMsg(messType int, msgFromCenter []byte) {
 		return
 	}
 
-	event := msgJson.Get("event", ).MustString()
+	event := msgJson.Get("event").MustString()
 	data := msgJson.Get("data")
 
 	switch event {
@@ -126,6 +128,8 @@ func onReceiveCenterMsg(messType int, msgFromCenter []byte) {
 		dealLossSocer(data)
 	case msgUserLogout:
 		dealUserLoginOutCenter(data)
+	case msgUserLockScore:
+		dealUserLockScore(data)
 	case msgUserUnLockScore:
 		dealUserUnlockScore(data)
 	default:

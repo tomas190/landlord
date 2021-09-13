@@ -2,10 +2,13 @@ package game
 
 import (
 	"fmt"
+	"landlord/mconst/msgIdConst"
 	"landlord/mconst/roomType"
+	"landlord/msg/mproto"
 	"sync"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
 	"github.com/wonderivan/logger"
 	"gopkg.in/mgo.v2/bson"
@@ -127,4 +130,31 @@ func SetRoomNum(r *Room) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.OutNum = o + 1
+}
+
+func kickRoomByUserID(playerId string) {
+	agent := GetAgent(playerId)
+
+	room, b := IsPlayerInRoom(playerId)
+	if b && room != nil {
+		RemoveRoom(room.RoomId)
+		if agent != nil {
+			for _, v := range room.Players {
+				if v != nil {
+					if !v.IsRobot {
+						SetSessionRoomId(v.Session, "")
+						SendErrMsg(v.Session, msgIdConst.ErrMsg, "系统已将你踢出,请重新登录游戏.")
+						// UserLogoutCenterAfterUnlockMoney(v.PlayerInfo.PlayerId, v.PlayerInfo.Gold)
+					}
+				}
+			}
+		}
+	}
+	if agent != nil {
+		var push mproto.CloseConn
+		push.Msg = "更新维护,请稍后进入!"
+		bytes, _ := proto.Marshal(&push)
+		msg := PkgMsg(msgIdConst.CloseConn, bytes)
+		agent.CloseWithMsg(msg)
+	}
 }

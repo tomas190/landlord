@@ -2,14 +2,15 @@ package handler
 
 import (
 	"errors"
-	"github.com/golang/protobuf/proto"
-	"github.com/wonderivan/logger"
-	"gopkg.in/olahol/melody.v1"
 	"landlord/game"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/userSessionStatus"
 	"landlord/msg/mproto"
 	"time"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/wonderivan/logger"
+	"gopkg.in/olahol/melody.v1"
 )
 
 // 登录请求
@@ -27,14 +28,14 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	/*==== 参数验证 =====*/
 
 	//playerInfo, err := userLoginVerify(req.UserId, req.UserPassword)
-	playerInfo, playerPkgId,err := userLoginVerify(req.UserId, req.UserPassword, req.Token)
+	playerInfo, playerPkgId, err := userLoginVerify(req.UserId, req.UserPassword, req.Token)
 	if err != nil {
 		game.SendErrMsg(session, msgIdConst.ReqLogin, err.Error())
 		return
 	}
 
 	// 转换成 proto 对象
-	//protoPlayerInfo := game.ChangePlayerInfoToProto(playerInfo)
+	// protoPlayerInfo := game.ChangePlayerInfoToProto(playerInfo)
 	// 重复登录 挤下线机制 (如果该账号已经登录 则断开连接并清楚map)
 	userRepeatLogin(m, session, playerInfo)
 
@@ -134,7 +135,7 @@ func syncSessionInfo(oldSession, session *melody.Session, info *mproto.PlayerInf
 			player.Session = session
 			logger.Debug("=============================== 已经恢复连线==============================")
 			player.IsCloseSession = false
-			game.SetSessionCloseTag(session,false)
+			game.SetSessionCloseTag(session, false)
 		}
 		game.SetSessionRoomId(session, roomId)
 	}

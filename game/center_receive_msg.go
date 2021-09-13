@@ -3,10 +3,13 @@ package game
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/bitly/go-simplejson"
 	"github.com/google/uuid"
 	"github.com/wonderivan/logger"
-	"strconv"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func dealServerLogin(data *simplejson.Json) {
@@ -45,6 +48,7 @@ func dealUserLogin(data *simplejson.Json) {
 	logger.Debug(" 用户名称->", userInfo.Get("game_nick").MustString())
 	logger.Debug(" 用户头像->", userInfo.Get("game_img").MustString())
 	logger.Debug(" 用户金币->", userAccount.Get("balance").MustFloat64())
+	logger.Debug(" 用户已鎖金币->", userAccount.Get("lock_balance").MustFloat64())
 	logger.Debug(" 用户pkgId->", userInfo.Get("package_id").MustInt())
 
 	var userLogin UserLoginCallBack
@@ -63,7 +67,24 @@ func dealUserLogin(data *simplejson.Json) {
 			callChan <- &userLogin
 		}()
 	}
-	UserLockMoney(user.PlayerId, user.Gold, uuid.New().String(), "user login lock all money")
+
+	lockGold := userAccount.Get("lock_balance").MustFloat64()
+	needLock := user.Gold - lockGold
+	msg := "user login lock all money"
+	if lockGold > 0 {
+		msg = "user login lock more money"
+	}
+	if needLock > 0 {
+		order := bson.NewObjectId().Hex()
+		OrderIDToOrderInfo.Store(order, OrderInfo{
+			PlayerId: user.PlayerId,
+			Event:    msg,
+		})
+		UserLockMoney(user.PlayerId, needLock, uuid.New().String(), msg, order)
+	} else {
+		logger.Debug("Login but user %v never need lock money", user.PlayerId)
+	}
+	// UserLockMoney(user.PlayerId, user.Gold, uuid.New().String(), "user login lock all money", order)
 
 }
 
@@ -89,10 +110,20 @@ func dealLossSocer(data *simplejson.Json) {
 	code := data.Get("code").MustInt()
 
 	if code != 200 {
+		errorDealLossSocer(data)
 		//SendLogToCenter("ERR", "game/center_receive_msg.go", "76", "同步中心服输钱失败:"+ObjToString(data))
 		logger.Debug("dealLossSoc！", data)
 		logger.Debug("同步中心服输钱错误!")
 		return
+	}
+
+	// 刪除成功的输钱訂單
+	order := data.Get("msg").Get("order").MustString()
+	_, ok := OrderIDToOrderInfo.Load(order)
+	if ok {
+		OrderIDToOrderInfo.Delete(order)
+	} else {
+		logger.Debug("未找到符合的輸錢訂單 order=%v", order)
 	}
 
 	bytes, _ := json.Marshal(data)
@@ -139,6 +170,28 @@ func checkLoginOut(stByte []byte) {
 
 }
 
+// 上锁用户金币信息
+// 当收到这条消息返回的时候 需要登出中心服 只有退出的时候才会解锁玩家的金币
+func dealUserLockScore(data *simplejson.Json) {
+
+	code := data.Get("code").MustInt()
+	if code != 200 {
+
+		// 上锁金币失败处理
+		errorDealLockFail(data)
+		return
+	}
+
+	// 刪除成功的上鎖訂單
+	order := data.Get("msg").Get("order").MustString()
+	_, ok := OrderIDToOrderInfo.Load(order)
+	if ok {
+		OrderIDToOrderInfo.Delete(order)
+	} else {
+		logger.Debug("未找到符合的上鎖訂單 order=%v", order)
+	}
+}
+
 // 解锁用户金币信息
 // 当收到这条消息返回的时候 需要登出中心服 只有退出的时候才会解锁玩家的金币
 func dealUserUnlockScore(data *simplejson.Json) {
@@ -171,6 +224,22 @@ func dealUserUnlockScore(data *simplejson.Json) {
 
 	password := GetSessionPassword(agent)
 	UserLogoutCenter(info.PlayerId, password)
+}
+
+func errorDealLockFail(data *simplejson.Json) {
+
+	// 刪除成功的上鎖訂單
+	var msg string
+	order := data.Get("msg").Get("order").MustString()
+	orderInfo, ok := OrderIDToOrderInfo.Load(order)
+	if ok {
+		msg = fmt.Sprintf("鬥地主 中心服返回错误\n玩家 :%v\n事件 :%v\n錯誤訊息 :%v\n时间 : %v", orderInfo.(OrderInfo).PlayerId, orderInfo.(OrderInfo).Event, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
+		kickRoomByUserID(orderInfo.(OrderInfo).PlayerId)
+		OrderIDToOrderInfo.Delete(order)
+	} else {
+		msg = fmt.Sprintf("鬥地主 中心服返回错误\n未找到符合的orderID %v\n訊息：%v\n时间 : %v", order, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
+	}
+	HttpPostToTelegram(msg)
 }
 
 func errorDealUnlockFail(data *simplejson.Json) {
@@ -211,4 +280,19 @@ func errorDealUnlockFail(data *simplejson.Json) {
 			UserUnLockMoney(playerId, userCurrentGold, uuid.New().String(), "user unlock fail lock again")
 		}
 	}
+}
+
+func errorDealLossSocer(data *simplejson.Json) {
+	var msg string
+
+	order := data.Get("msg").Get("order").MustString()
+	orderInfo, ok := OrderIDToOrderInfo.Load(order)
+	if ok {
+		msg = fmt.Sprintf("鬥地主 中心服返回错误\n玩家 :%v\n事件 :%v\n錯誤訊息 :%v\n时间 : %v", orderInfo.(OrderInfo).PlayerId, orderInfo.(OrderInfo).Event, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
+		kickRoomByUserID(orderInfo.(OrderInfo).PlayerId)
+		OrderIDToOrderInfo.Delete(order)
+	} else {
+		msg = fmt.Sprintf("鬥地主 中心服返回错误\n未找到符合的orderID %v\n訊息：%v\n时间 : %v", order, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
+	}
+	HttpPostToTelegram(msg)
 }

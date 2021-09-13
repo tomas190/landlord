@@ -2,9 +2,10 @@ package controller
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"landlord/game"
 	"landlord/mconst/msgIdConst"
+
+	"github.com/gin-gonic/gin"
 )
 
 // 当玩家卡死在房间 异常时 提出玩家到房间
@@ -27,9 +28,9 @@ func KickRoomPlayer(c *gin.Context) {
 			game.SetSessionRoomId(agent, "")
 			if loginOut == "yes" {
 				//game.SendErrMsg(agent, msgIdConst.ErrMsg, "系统已将你踢出房间,请重新登录游戏")
-				kickAll(room,"系统已将你踢出房间,请重新登录游戏.",true)
+				kickAll(room, "系统已将你踢出房间,请重新登录游戏.", true)
 			} else {
-				kickAll(room,"系统已将你踢出房间,请重新进入房间",false)
+				kickAll(room, "系统已将你踢出房间,请重新进入房间", false)
 				//game.SendErrMsg(agent, msgIdConst.ErrMsg, "系统已将你踢出房间,请重新进入房间")
 			}
 		}
@@ -40,7 +41,7 @@ func KickRoomPlayer(c *gin.Context) {
 	return
 }
 
-func kickAll(room *game.Room,msg string,loginOut bool) {
+func kickAll(room *game.Room, msg string, loginOut bool) {
 	players := room.Players
 	for _, v := range players {
 		if v != nil {
