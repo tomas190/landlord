@@ -1,12 +1,12 @@
 package game
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/wonderivan/logger"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/roomStatus"
-	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/wonderivan/logger"
 )
 
 // 1.给玩家和机器人发牌
@@ -154,7 +154,6 @@ func PushPlayerStartGameWithRobot3(room *Room) {
 	CallLandlord(room, actionPlayerId)
 }
 
-
 // 1.给玩家和机器人发牌
 // 盈余控制
 func PushPlayerStartGameWithRobotLast(room *Room) {
@@ -214,7 +213,6 @@ func PushPlayerStartGameWithRobotLast(room *Room) {
 	actionPlayerId := pushFirstCallLandlord(room)
 	CallLandlord(room, actionPlayerId)
 }
-
 
 // 计算机器人手牌分数
 func CountRobotCardValue(r1, r2 *Player) {
@@ -321,9 +319,9 @@ func GetCardResult() bool {
 	// 机器人拿到好牌(玩家拿到坏牌)
 	if isLetRobotGetGoodCard { // 玩家输
 	afterLose:
-		if randLoseCount < sysSet.RANDOM_COUNT_AFTER_LOSE {
+		if randLoseCount < 0 {
 			des := RandNum(0, 100)
-			if float64(des)/100 < sysSet.RANDOM_PERCENTAGE_AFTER_LOSE {
+			if float64(des)/100 < 0 {
 				isLetRobotGetGoodCard = isRobotGetGodCard()
 				if !isLetRobotGetGoodCard { //如果 玩家好牌 盈余池判断
 					isLetRobotGetGoodCard = robotGetCardResultBySurplusPool()
@@ -335,19 +333,19 @@ func GetCardResult() bool {
 		}
 	} else { // 玩家赢 玩家拿到好牌
 	afterWin:
-		if randWinCount < sysSet.RANDOM_PERCENTAGE_AFTER_WIN {
+		if randWinCount < 3 {
 			//
 			des := RandNum(0, 100)
-			if float64(des)/100 < sysSet.RANDOM_PERCENTAGE_AFTER_WIN { // 在随机
+			if float64(des)/100 < 0.75 { // 在随机
 				isLetRobotGetGoodCard = isRobotGetGodCard()
 				if isLetRobotGetGoodCard {
 					randWinCount++
 					goto afterWin
 				}
 			}
-		} else { //否
+			// } else { //否
 			// 盈余池判断
-			isLetRobotGetGoodCard = robotGetCardResultBySurplusPool()
+			// isLetRobotGetGoodCard = robotGetCardResultBySurplusPool()
 		}
 
 	}

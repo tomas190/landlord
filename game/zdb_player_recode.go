@@ -20,8 +20,8 @@ func (p *PlayerRecode) AddPlayerIfNotExist() error {
 	} else {
 		err := c.Insert(p)
 		if err == nil {
-			var s SurplusPool
-			s.InsertSurplusNewUser()
+			// var s SurplusPool
+			// s.InsertSurplusNewUser()
 		}
 
 		return err

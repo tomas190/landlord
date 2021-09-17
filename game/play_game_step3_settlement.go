@@ -202,7 +202,7 @@ func syncWinGold(player *Player, gold, goldPay float64, roundId string, roomType
 			surplus.RoomType = roomType
 			surplus.CurrentPlayerWin = gold
 			logger.Debug("=========== 同步盈余池玩家赢钱 ==========", gold)
-			surplus.InsertSurplus(true)
+			// surplus.InsertSurplus(true)
 		}()
 
 		err := SetSessionGold(player.Session, goldPay) // 同步到session
@@ -243,7 +243,7 @@ func syncLossGold(player *Player, gold float64, roundId string, roomType RoomCla
 			surplus.RoomType = roomType
 			surplus.CurrentPlayerLoss = gold
 			logger.Debug("=========== 同步盈余池玩家输钱 ==========", gold)
-			surplus.InsertSurplus(false)
+			// surplus.InsertSurplus(false)
 		}()
 
 		err := SetSessionGold(player.Session, -gold) // 同步到session

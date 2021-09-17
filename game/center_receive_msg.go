@@ -233,11 +233,11 @@ func errorDealLockFail(data *simplejson.Json) {
 	order := data.Get("msg").Get("order").MustString()
 	orderInfo, ok := OrderIDToOrderInfo.Load(order)
 	if ok {
-		msg = fmt.Sprintf("鬥地主 中心服返回错误\n玩家 :%v\n事件 :%v\n錯誤訊息 :%v\n时间 : %v", orderInfo.(OrderInfo).PlayerId, orderInfo.(OrderInfo).Event, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
+		msg = fmt.Sprintf("鬥地主2 中心服返回错误\n玩家 :%v\n事件 :%v\n錯誤訊息 :%v\n时间 : %v", orderInfo.(OrderInfo).PlayerId, orderInfo.(OrderInfo).Event, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
 		kickRoomByUserID(orderInfo.(OrderInfo).PlayerId)
 		OrderIDToOrderInfo.Delete(order)
 	} else {
-		msg = fmt.Sprintf("鬥地主 中心服返回错误\n未找到符合的orderID %v\n訊息：%v\n时间 : %v", order, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
+		msg = fmt.Sprintf("鬥地主2 中心服返回错误\n未找到符合的orderID %v\n訊息：%v\n时间 : %v", order, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
 	}
 	HttpPostToTelegram(msg)
 }
@@ -288,11 +288,11 @@ func errorDealLossSocer(data *simplejson.Json) {
 	order := data.Get("msg").Get("order").MustString()
 	orderInfo, ok := OrderIDToOrderInfo.Load(order)
 	if ok {
-		msg = fmt.Sprintf("鬥地主 中心服返回错误\n玩家 :%v\n事件 :%v\n錯誤訊息 :%v\n时间 : %v", orderInfo.(OrderInfo).PlayerId, orderInfo.(OrderInfo).Event, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
+		msg = fmt.Sprintf("鬥地主2 中心服返回错误\n玩家 :%v\n事件 :%v\n錯誤訊息 :%v\n时间 : %v", orderInfo.(OrderInfo).PlayerId, orderInfo.(OrderInfo).Event, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
 		kickRoomByUserID(orderInfo.(OrderInfo).PlayerId)
 		OrderIDToOrderInfo.Delete(order)
 	} else {
-		msg = fmt.Sprintf("鬥地主 中心服返回错误\n未找到符合的orderID %v\n訊息：%v\n时间 : %v", order, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
+		msg = fmt.Sprintf("鬥地主2 中心服返回错误\n未找到符合的orderID %v\n訊息：%v\n时间 : %v", order, data.Get("msg"), time.Now().Format("2006-01-02 15:04:05"))
 	}
 	HttpPostToTelegram(msg)
 }
