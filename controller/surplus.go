@@ -1,10 +1,11 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/wonderivan/logger"
 	"landlord/game"
 	"landlord/mconst/sysSet"
+
+	"github.com/gin-gonic/gin"
+	"github.com/wonderivan/logger"
 )
 
 func GetSurplusOne(c *gin.Context) {
@@ -51,7 +52,7 @@ func UptSurplusConf(c *gin.Context) {
 	}
 
 	// 注意传0 的参数  和没传的参数  默认为0的时候 不要修改
-	logger.Debug("req:", req)
+	logger.Debug("UptSurplusConf req:", req)
 	percentageToTotalWin := c.DefaultPostForm("percentage_to_total_win", "-1")
 	coefficientToTotalPlayer := c.DefaultPostForm("coefficient_to_total_player", "-1")
 	finalPercentage := c.DefaultPostForm("final_percentage", "-1")
@@ -62,7 +63,6 @@ func UptSurplusConf(c *gin.Context) {
 	randomCountAfterWin := c.DefaultPostForm("random_count_after_win", "null")             // 这个字段比较特殊可以传0
 	randomPercentageAfterLose := c.DefaultPostForm("random_percentage_after_lose", "null") // 这个字段比较特殊可以传0
 	randomCountAfterLose := c.DefaultPostForm("random_count_after_lose", "null")           // 这个字段比较特殊可以传0
-
 
 	var paramsNum int
 	if percentageToTotalWin == "-1" {
@@ -108,7 +108,6 @@ func UptSurplusConf(c *gin.Context) {
 		req.RandomCountAfterLose = sysSet.RANDOM_COUNT_AFTER_LOSE
 	}
 
-
 	// 如果都没传参数 返回当前配置
 	//if paramsNum == 5 {
 	if paramsNum == 9 {
@@ -129,7 +128,7 @@ func UptSurplusConf(c *gin.Context) {
 	game.UptSurplusConf(req.PercentageToTotalWin,
 		req.PlayerLoseRateAfterSurplusPool,
 		req.CoefficientToTotalPlayer,
-		req.FinalPercentage,req.DataCorrection,
+		req.FinalPercentage, req.DataCorrection,
 		req.RandomPercentageAfterWin,
 		req.RandomCountAfterWin,
 		req.RandomPercentageAfterLose,

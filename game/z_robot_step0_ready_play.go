@@ -3,6 +3,7 @@ package game
 import (
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/roomStatus"
+	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
 
 	"github.com/golang/protobuf/proto"
@@ -55,7 +56,6 @@ import (
 
 // 1.给玩家和机器人发牌
 func PushPlayerStartGameWithRobot2(room *Room) {
-
 	var p1, p2, p3, bottomCard []*Card
 	var s SurplusPoolOne
 	surplus, _ := s.GetLastSurplusOne()
@@ -284,10 +284,11 @@ func getGodCardIndex() []int {
 // 随机获取机器人是否获得好牌
 func isRobotGetGodCard() bool {
 	des := RandNum(0, 10)
-	if des%2 == 0 {
-		return true
-	}
-	return false
+	return des%2 == 0
+	// if des%2 == 0 {
+	// 	return true
+	// }
+	// return false
 }
 
 // 通过盈余池获取牌
@@ -302,11 +303,13 @@ func robotGetCardResultBySurplusPool() bool {
 	if surplus.SurplusPool <= 0 {
 		return true
 	} else if surplus.SurplusPool <= 500 {
-		if RandNum(0, 100) > 70 {
-			return true
-		} else {
-			return false
-		}
+		// if RandNum(0, 100) > 70 {
+		// 	return true
+		// } else {
+		// 	return false
+		// }
+		// return RandNum(0, 100) > 70
+		return RandNum(0, 100) > int(sysSet.PLAYER_LOSE_RATE_AFTER_SURPLUS_POOL*100)
 	}
 	return false
 }
@@ -315,40 +318,49 @@ func GetCardResult() bool {
 	isLetRobotGetGoodCard := isRobotGetGodCard() // 是否让机器人获得好牌
 	var randWinCount, randLoseCount float64
 
+	local_RCAW := float64(3)    // sysSet.RANDOM_COUNT_AFTER_WIN
+	local_RPAW := float64(0.75) // sysSet.RANDOM_PERCENTAGE_AFTER_WIN
+	local_RCAL := float64(0)    // sysSet.RANDOM_COUNT_AFTER_LOSE
+	local_RPAL := float64(0)    // sysSet.RANDOM_PERCENTAGE_AFTER_LOSE
+
 	// ===========
 	// 机器人拿到好牌(玩家拿到坏牌)
 	if isLetRobotGetGoodCard { // 玩家输
 	afterLose:
-		if randLoseCount < 0 {
+		if randLoseCount < local_RCAL {
 			des := RandNum(0, 100)
-			if float64(des)/100 < 0 {
+			if float64(des)/100 < local_RPAL {
 				isLetRobotGetGoodCard = isRobotGetGodCard()
-				if !isLetRobotGetGoodCard { //如果 玩家好牌 盈余池判断
-					isLetRobotGetGoodCard = robotGetCardResultBySurplusPool()
-				} else { // 如果玩家坏牌
-					randLoseCount++
+				randLoseCount++
+				if isLetRobotGetGoodCard {
 					goto afterLose
-				}
+				} // else { //如果 玩家好牌 盈余池判断
+				// 	isLetRobotGetGoodCard = robotGetCardResultBySurplusPool()
+				// }
 			}
 		}
 	} else { // 玩家赢 玩家拿到好牌
 	afterWin:
-		if randWinCount < 3 {
+		if randWinCount < local_RCAW {
 			//
 			des := RandNum(0, 100)
-			if float64(des)/100 < 0.75 { // 在随机
+			if float64(des)/100 < local_RPAW { // 在随机
 				isLetRobotGetGoodCard = isRobotGetGodCard()
-				if isLetRobotGetGoodCard {
-					randWinCount++
+				randWinCount++
+				if !isLetRobotGetGoodCard {
 					goto afterWin
 				}
-			}
+			} // else {
+			// 	// 盈余池判断
+			// 	isLetRobotGetGoodCard = robotGetCardResultBySurplusPool()
+			// }
 			// } else { //否
 			// 盈余池判断
 			// isLetRobotGetGoodCard = robotGetCardResultBySurplusPool()
 		}
 
 	}
-
+	// logger.Debug("GetCardResult(): 四參數 %v,  %v,  %v,  %v", sysSet.RANDOM_COUNT_AFTER_WIN, sysSet.RANDOM_PERCENTAGE_AFTER_WIN, sysSet.RANDOM_COUNT_AFTER_LOSE, sysSet.RANDOM_PERCENTAGE_AFTER_LOSE)
+	// logger.Debug("GetCardResult(): 結果:%v, 贏重骰次數:%v, 輸重骰次數:%v", isLetRobotGetGoodCard, randWinCount, randLoseCount)
 	return isLetRobotGetGoodCard
 }

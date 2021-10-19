@@ -1,8 +1,6 @@
 package game
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/wonderivan/logger"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/playerAction"
 	"landlord/mconst/roomStatus"
@@ -10,6 +8,9 @@ import (
 	"landlord/msg/mproto"
 	"runtime"
 	"time"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/wonderivan/logger"
 )
 
 /*
@@ -84,10 +85,10 @@ func CallLandlord(room *Room, playerId string) {
 /* ==========================================  四大 action ===========================================*/
 
 // 叫地主
-func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
+func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player) {
 	//playerId := actionPlayer.PlayerInfo.PlayerId
 	// room.MultiAll = room.MultiAll * 2 叫地主不加倍
-	room.OutNum=room.OutNum+1
+	room.OutNum = room.OutNum + 1
 	actionPlayer.LastAction = playerAction.CallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 叫地主的动作...")
 	room.Status = roomStatus.GetLandlord
@@ -101,8 +102,8 @@ func CallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 }
 
 // 抢地主
-func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, ) {
-	room.OutNum=room.OutNum+1
+func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
+	room.OutNum = room.OutNum + 1
 	room.MultiAll = room.MultiAll * 2
 	room.MultiGetLandlord = room.MultiGetLandlord * 2
 	lastAction := actionPlayer.LastAction
@@ -127,8 +128,8 @@ func GetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player,
 }
 
 // 不叫
-func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
-	room.OutNum=room.OutNum+1
+func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player) {
+	room.OutNum = room.OutNum + 1
 	actionPlayer.LastAction = playerAction.NotCallLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 不叫...")
 	if nextPlayer.LastAction == playerAction.NotCallLandlord { // 如果下一个玩家已经做了不叫的动作 重新发牌
@@ -160,8 +161,8 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 			if truePlayerNum == 3 {
 				PushPlayerStartGame(room)
 			} else {
-				//PushPlayerStartGameWithRobot3(room)
-				PushPlayerStartGameWithRobot2(room)
+				PushPlayerStartGameWithRobot3(room)
+				// PushPlayerStartGameWithRobot2(room)
 				//PushPlayerStartGameWithRobotLast(room)
 			}
 
@@ -181,8 +182,8 @@ func NotCallLandlordAction(room *Room, actionPlayer, nextPlayer *Player, ) {
 }
 
 // 不抢
-func NotGetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player, ) {
-	room.OutNum=room.OutNum+1
+func NotGetLandlordAction(room *Room, actionPlayer, nextPlayer, lastPlayer *Player) {
+	room.OutNum = room.OutNum + 1
 	actionPlayer.LastAction = playerAction.NotGetLandlord
 	logger.Debug(actionPlayer.PlayerInfo.PlayerId, "做了一次 不抢...")
 	if lastPlayer.LastAction < playerAction.NoAction { // 如果上一个玩家已经做了不抢的动作  那么下一个玩家就是地主

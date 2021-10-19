@@ -36,7 +36,7 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 	}
 
 	if playerInfo.IsOnClear {
-		SendErrMsg(session, msgIdConst.ReqEnterRoom, "玩家已登出")
+		SendErrMsg(session, msgIdConst.CloseConn, "玩家连线已失效")
 		logger.Debug("%s ReqEnterRoom IsOnClear", playerInfo.PlayerId)
 		return
 	}
@@ -130,7 +130,7 @@ func ReqEnterRoomCheck(session *melody.Session, data []byte) {
 	}
 
 	if playerInfo.IsOnClear {
-		SendErrMsg(session, msgIdConst.ReqEnterRoom, "玩家已登出")
+		SendErrMsg(session, msgIdConst.CloseConn, "玩家连线已失效")
 		logger.Debug("%s ReqEnterRoomCheck IsOnClear", playerInfo.PlayerId)
 		return
 	}
@@ -186,7 +186,7 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 	}
 
 	if info.IsOnClear {
-		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "玩家已登出")
+		SendErrMsg(session, msgIdConst.CloseConn, "玩家连线已失效")
 		logger.Debug("%s ReqGetLandlordDo IsOnClear", info.PlayerId)
 		return
 	}
@@ -275,7 +275,7 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 	}
 
 	if info.IsOnClear {
-		SendErrMsg(session, msgIdConst.ReqOutCardDo, "玩家已登出")
+		SendErrMsg(session, msgIdConst.CloseConn, "玩家连线已失效")
 		logger.Debug("%s ReqOutCardDo IsOnClear", info.PlayerId)
 		return
 	}
@@ -363,7 +363,7 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 	}
 
 	if info.IsOnClear {
-		SendErrMsg(session, msgIdConst.ReqExitRoom, "玩家已登出")
+		SendErrMsg(session, msgIdConst.CloseConn, "玩家连线已失效")
 		logger.Debug("%s ReqExitRoom IsOnClear", info.PlayerId)
 		return
 	}
@@ -442,7 +442,7 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 	}
 
 	if info.IsOnClear {
-		SendErrMsg(session, msgIdConst.ReqGameHosting, "玩家已登出")
+		SendErrMsg(session, msgIdConst.CloseConn, "玩家连线已失效")
 		logger.Debug("%s ReqGameHosting IsOnClear", info.PlayerId)
 		return
 	}
@@ -542,7 +542,7 @@ func ReqSendMsg(session *melody.Session, data []byte) {
 	}
 
 	if info.IsOnClear {
-		SendErrMsg(session, msgIdConst.ReqSendMsg, "玩家已登出")
+		SendErrMsg(session, msgIdConst.CloseConn, "玩家连线已失效")
 		logger.Debug("%s ReqSendMsg IsOnClear", info.PlayerId)
 		return
 	}

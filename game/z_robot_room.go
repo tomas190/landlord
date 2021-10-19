@@ -1,9 +1,10 @@
 package game
 
 import (
+	"time"
+
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
-	"time"
 )
 
 //type WaitRoomChan struct {
@@ -71,14 +72,12 @@ func PlayGameWithRobot(room *Room) {
 	DelaySomeTime(1)
 
 	// 2.给玩家发牌
-	PushPlayerStartGameWithRobot2(room)
-	//PushPlayerStartGameWithRobot3(room)
+	// PushPlayerStartGameWithRobot2(room)
+	PushPlayerStartGameWithRobot3(room)
 	//PushPlayerStartGameWithRobotLast(room)
 	// ..．流程控制到这里结束　发牌  抢地主  玩牌 直接由 PushPlayerStartGame 开始 且循环
 
 }
-
-
 
 // 用这种多线程会有很多问题
 func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, destiny time.Duration) {
@@ -89,7 +88,7 @@ func fakerIntoRoom(room *Room, playerInfo PlayerInfo, session *melody.Session, d
 			p.PlayerInfo = &playerInfo
 			p.Session = session
 			p.PlayerPosition = 1
-		//	p.ActionChan = make(chan PlayerActionChan)
+			//	p.ActionChan = make(chan PlayerActionChan)
 			room.Players[p.PlayerInfo.PlayerId] = &p
 
 			// 第一个进入的机器人
