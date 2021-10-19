@@ -31,6 +31,7 @@ type PlayerInfo struct {
 	HeadImg     string
 	Gold        float64
 	PlayerPkgId int
+	IsOnClear   bool
 }
 
 // 玩家动作

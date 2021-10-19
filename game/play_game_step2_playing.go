@@ -1,9 +1,6 @@
 package game
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/wonderivan/logger"
-	"gopkg.in/olahol/melody.v1"
 	"landlord/mconst/cardConst"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/playerAction"
@@ -12,6 +9,10 @@ import (
 	"landlord/msg/mproto"
 	"runtime"
 	"time"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/wonderivan/logger"
+	"gopkg.in/olahol/melody.v1"
 )
 
 /*
@@ -162,7 +163,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 			// 当前牌是否大过上家 打不过就不出
 			logger.Debug("机器人跟牌检测...")
 			eCard := room.EffectiveCard
-			can := CanBeat(eCard, cards, )
+			can := CanBeat(eCard, cards)
 			if !can {
 				logger.Debug("检测不通过...重新跟牌")
 				logger.Debug("上手牌:", room.EffectiveCard)
@@ -270,7 +271,7 @@ func OutCardsAction(room *Room, actionPlayer, nextPlayer *Player, cards []*Card,
 }
 
 // 不出逻辑
-func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player, ) {
+func NotOutCardsAction(room *Room, actionPlayer, lastPlayer, nextPlayer *Player) {
 	SetRoomNum(room)
 	actionPlayer.LastAction = playerAction.NotOutCardAction
 	if lastPlayer.LastAction == playerAction.NotOutCardAction { // 如果上一个玩家不出 则又下一个玩家重新出牌
@@ -468,6 +469,7 @@ func ClearClosePlayer(session *melody.Session) {
 	//password := GetSessionPassword(session)
 	// 登出中心服
 	//UserLogoutCenter(playerInfo.PlayerId, password)
+	playerInfo.IsOnClear = true
 	UserLogoutCenterAfterUnlockMoney(playerInfo.PlayerId, playerInfo.Gold)
 	// RemoveAgent(playerInfo.PlayerId)
 	RemoveWaitUser(playerInfo.PlayerId)

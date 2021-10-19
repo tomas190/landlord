@@ -2,9 +2,6 @@ package game
 
 import (
 	"errors"
-	"github.com/golang/protobuf/proto"
-	"github.com/wonderivan/logger"
-	"gopkg.in/olahol/melody.v1"
 	"landlord/mconst/cardConst"
 	"landlord/mconst/msgIdConst"
 	"landlord/mconst/playerAction"
@@ -13,6 +10,10 @@ import (
 	"landlord/msg/mproto"
 	"sync"
 	"time"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/wonderivan/logger"
+	"gopkg.in/olahol/melody.v1"
 )
 
 // 進入房間
@@ -31,6 +32,12 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 	playerInfo, err := GetSessionPlayerInfo(session)
 	if err != nil {
 		SendErrMsg(session, msgIdConst.ReqEnterRoom, "无用户信息")
+		return
+	}
+
+	if playerInfo.IsOnClear {
+		SendErrMsg(session, msgIdConst.ReqEnterRoom, "玩家已登出")
+		logger.Debug("%s ReqEnterRoom IsOnClear", playerInfo.PlayerId)
 		return
 	}
 
@@ -122,6 +129,12 @@ func ReqEnterRoomCheck(session *melody.Session, data []byte) {
 		return
 	}
 
+	if playerInfo.IsOnClear {
+		SendErrMsg(session, msgIdConst.ReqEnterRoom, "玩家已登出")
+		logger.Debug("%s ReqEnterRoomCheck IsOnClear", playerInfo.PlayerId)
+		return
+	}
+
 	if playerInfo.Gold < GetRoomClassifyBottomEnterPoint(req.RoomType) {
 		SendErrMsg(session, msgIdConst.ReqEnterRoom, "金币不足!")
 		return
@@ -169,6 +182,12 @@ func ReqGetLandlordDo(session *melody.Session, data []byte) {
 	if err != nil {
 		logger.Error("ReqDoAction:此session无用户信息", info)
 		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "无用户信息:"+err.Error())
+		return
+	}
+
+	if info.IsOnClear {
+		SendErrMsg(session, msgIdConst.ReqGetLandlordDo, "玩家已登出")
+		logger.Debug("%s ReqGetLandlordDo IsOnClear", info.PlayerId)
 		return
 	}
 
@@ -255,6 +274,12 @@ func ReqOutCardDo(session *melody.Session, data []byte) {
 		return
 	}
 
+	if info.IsOnClear {
+		SendErrMsg(session, msgIdConst.ReqOutCardDo, "玩家已登出")
+		logger.Debug("%s ReqOutCardDo IsOnClear", info.PlayerId)
+		return
+	}
+
 	PrintMsg("ReqOutCardDo:"+info.PlayerId, req)
 	/*==== 参数验证 =====*/
 
@@ -337,6 +362,12 @@ func ReqExitRoom(session *melody.Session, data []byte) {
 		return
 	}
 
+	if info.IsOnClear {
+		SendErrMsg(session, msgIdConst.ReqExitRoom, "玩家已登出")
+		logger.Debug("%s ReqExitRoom IsOnClear", info.PlayerId)
+		return
+	}
+
 	PrintMsg("ReqExitRoom:"+info.PlayerId, req)
 	/*==== 参数验证 =====*/
 
@@ -407,6 +438,12 @@ func ReqGameHosting(session *melody.Session, data []byte) {
 	if err != nil {
 		logger.Error("ReqGameHosting:此session无用户信息", info)
 		SendErrMsg(session, msgIdConst.ReqGameHosting, "无用户信息:"+err.Error())
+		return
+	}
+
+	if info.IsOnClear {
+		SendErrMsg(session, msgIdConst.ReqGameHosting, "玩家已登出")
+		logger.Debug("%s ReqGameHosting IsOnClear", info.PlayerId)
 		return
 	}
 
@@ -501,6 +538,12 @@ func ReqSendMsg(session *melody.Session, data []byte) {
 	if err != nil {
 		logger.Error("ReqSendMsg:此session无用户信息", info)
 		SendErrMsg(session, msgIdConst.ReqSendMsg, "无用户信息:"+err.Error())
+		return
+	}
+
+	if info.IsOnClear {
+		SendErrMsg(session, msgIdConst.ReqSendMsg, "玩家已登出")
+		logger.Debug("%s ReqSendMsg IsOnClear", info.PlayerId)
 		return
 	}
 
