@@ -2,14 +2,15 @@ package controller
 
 import (
 	"errors"
-	"github.com/bitly/go-simplejson"
-	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2/bson"
 	"landlord/game"
 	"landlord/mconst/roomType"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/bitly/go-simplejson"
+	"github.com/gin-gonic/gin"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type GameDataReq struct {
@@ -95,14 +96,14 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	endTime := req.EndTime
 	page := req.Page
 	limit := req.Limit
-	roomId:=req.RoomId
+	roomId := req.RoomId
 	if page == 0 {
 		page = 1
 	}
 	skip := limit * (page - 1)
 	//selector["player_id"] = playerId
 
-	if playerId!= "" {
+	if playerId != "" {
 		pattern := ".*" + playerId + ".*"
 		selector["player_ids"] = bson.M{"$regex": bson.RegEx{Pattern: pattern, Options: "im"}}
 	}
@@ -112,7 +113,7 @@ func HelpGetLandlordData(req GameDataReq) (*pageData, int, error) {
 	if roomId != "" {
 		//selector["room_id"] = roomId
 		ri, err := strconv.Atoi(roomId)
-		if err!=nil {
+		if err != nil {
 			return nil, 0, errors.New("room_id不正确")
 		}
 		selector["room_type"] = int32(ri)
@@ -210,8 +211,8 @@ func FormatTime(timeUnix int64, layout string) string {
 
 func Version(c *gin.Context) {
 	c.JSON(httpCode, NewResp(SuccCode,
-		"version 2021418",
-		"2021年4月18日19:33:50"))
+		"version 20211020",
+		"2021年10月20日"))
 }
 
 func GetLog(c *gin.Context) {

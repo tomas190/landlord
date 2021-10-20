@@ -1,17 +1,22 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/wonderivan/logger"
-	"gopkg.in/olahol/melody.v1"
+	"fmt"
 	"landlord/controller"
 	"landlord/game"
 	"landlord/handler"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/wonderivan/logger"
+	"gopkg.in/olahol/melody.v1"
 )
 
 // Init server with mode
 // @mode gin framework mode
 func StartServer(mode, wsPath string) {
+	game.HttpPostToTelegram(fmt.Sprintf("鬥地主 游戏服务器启动成功\n时间 : %v\n版本号 : %v", time.Now().Format("2006-01-02 15:04:05"), game.VersionCode))
+
 	gin.SetMode(mode)
 	r := gin.New()
 	m := melody.New()
