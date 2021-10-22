@@ -1,9 +1,11 @@
 package game
 
 import (
+	"strconv"
+	"sync"
+
 	"github.com/wonderivan/logger"
 	"gopkg.in/olahol/melody.v1"
-	"sync"
 )
 
 // 存放登录的用户 key userid
@@ -84,7 +86,7 @@ func GetConnLen() int {
 // 获取agent
 // globalAgents
 // @param userGold   : playerGold
-func GetAgentByUserGold(userGold float64)(string, *melody.Session) {
+func GetAgentByUserGold(userGold float64) (string, *melody.Session) {
 	globalLoginAgents.rwMutex.Lock()
 	defer globalLoginAgents.rwMutex.Unlock()
 	var count int // 保证只有一位玩家  如果多个则返回nil
@@ -106,4 +108,28 @@ func GetAgentByUserGold(userGold float64)(string, *melody.Session) {
 	}
 
 	return "", nil
+}
+
+// 取得所有在線玩家
+func GetAllOnlineUser() map[int][]int64 {
+
+	globalLoginAgents.rwMutex.RLock()
+	defer globalLoginAgents.rwMutex.RUnlock()
+
+	list := make(map[int][]int64)
+	for _, session := range globalLoginAgents.sessionMaps {
+		p, err := GetSessionPlayerInfo(session)
+		if err != nil {
+			logger.Debug("无用户session信息:", err.Error())
+		} else {
+			userID, errUID := strconv.ParseInt(p.PlayerId, 10, 64)
+			if errUID != nil {
+			} else {
+				// logger.Debug("GetAllOnlineUser userID= %v, PlayerPkgId = %v", userID, p.PlayerPkgId)
+				list[p.PlayerPkgId] = append(list[p.PlayerPkgId], userID)
+			}
+		}
+	}
+	return list
+
 }

@@ -50,7 +50,7 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 	game.PushRoomClassify(session)
 
 	// 保存用户信息到session 并添加登录成功tag
-	p := game.ChangePlayerP2S(*playerInfo)
+	p := game.ChangePlayerP2S(*playerInfo, playerPkgId)
 	game.SetSessionPlayerInfo(session, &p)
 	game.SetSessionIsLogin(session)
 	game.SetSessionPassword(session, req.UserPassword)

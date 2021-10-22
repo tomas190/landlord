@@ -4,8 +4,10 @@ import (
 	"errors"
 	"landlord/game"
 	"landlord/mconst/msgIdConst"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wonderivan/logger"
 )
 
 // 当玩家卡死在房间 异常时 提出玩家到房间
@@ -71,4 +73,45 @@ func verifyKickRoomPlayer(token, playerId, isLoginOut string) error {
 		return errors.New("验证失败02")
 	}
 	return nil
+}
+
+type UserDataByPackageID struct {
+	PackageID int     `json:"packageID"`
+	UserData  []int64 `json:"userData"`
+}
+
+// 取得在線玩家(分渠道)
+func GetOnlineTotal(c *gin.Context) {
+
+	packageIDS := c.DefaultQuery("package_id", "")
+	packageID, errP := strconv.ParseInt(packageIDS, 10, 64)
+	if packageIDS != "" && errP != nil {
+		c.JSON(httpCode, NewResp(ErrCode, "参数错误：package_id为非整数", nil))
+		return
+	}
+	// logger.Debug("packageIDS=%v, packageID%v", packageIDS, packageID)
+
+	data := make(map[string]interface{})
+	list := game.GetAllOnlineUser()
+
+	data["game_id"] = game.Server.GameId
+	data["game_name"] = "鬥地主2"
+	tmplist := make([]UserDataByPackageID, 0)
+	var tmp UserDataByPackageID
+	if packageIDS != "" && errP == nil {
+		if len(list[int(packageID)]) > 0 {
+			tmp.PackageID = int(packageID)
+			tmp.UserData = list[int(packageID)]
+			tmplist = append(tmplist, tmp)
+		}
+	} else {
+		for i, v := range list {
+			tmp.PackageID = i
+			tmp.UserData = v
+			tmplist = append(tmplist, tmp)
+		}
+	}
+	data["game_data"] = tmplist
+	c.JSON(httpCode, NewResp(SuccCode, "ok", data))
+	logger.Debug("getOnlineUserList request success")
 }

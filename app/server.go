@@ -15,7 +15,7 @@ import (
 // Init server with mode
 // @mode gin framework mode
 func StartServer(mode, wsPath string) {
-	game.HttpPostToTelegram(fmt.Sprintf("鬥地主 游戏服务器启动成功\n时间 : %v\n版本号 : %v", time.Now().Format("2006-01-02 15:04:05"), game.VersionCode))
+	game.HttpPostToTelegram(fmt.Sprintf("鬥地主2 游戏服务器启动成功\n时间 : %v\n版本号 : %v", time.Now().Format("2006-01-02 15:04:05"), game.VersionCode))
 
 	gin.SetMode(mode)
 	r := gin.New()
@@ -110,4 +110,5 @@ func mController(r *gin.Engine) {
 	r.POST("/api/UptServer", controller.UptServer)
 
 	r.GET("/api/getStatementTotal", controller.GetStatementTotal)
+	r.GET("/api/getOnlineTotal", controller.GetOnlineTotal)
 }
