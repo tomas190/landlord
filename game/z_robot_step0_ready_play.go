@@ -318,10 +318,10 @@ func GetCardResult() bool {
 	isLetRobotGetGoodCard := isRobotGetGodCard() // 是否让机器人获得好牌
 	var randWinCount, randLoseCount float64
 
-	local_RCAW := float64(3)   // sysSet.RANDOM_COUNT_AFTER_WIN
-	local_RPAW := float64(0.3) // sysSet.RANDOM_PERCENTAGE_AFTER_WIN
-	local_RCAL := float64(0)   // sysSet.RANDOM_COUNT_AFTER_LOSE
-	local_RPAL := float64(0)   // sysSet.RANDOM_PERCENTAGE_AFTER_LOSE
+	local_RCAW := float64(3)    // sysSet.RANDOM_COUNT_AFTER_WIN
+	local_RPAW := float64(0.38) // sysSet.RANDOM_PERCENTAGE_AFTER_WIN
+	local_RCAL := float64(0)    // sysSet.RANDOM_COUNT_AFTER_LOSE
+	local_RPAL := float64(0)    // sysSet.RANDOM_PERCENTAGE_AFTER_LOSE
 
 	// ===========
 	// 机器人拿到好牌(玩家拿到坏牌)
