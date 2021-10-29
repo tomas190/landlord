@@ -36,7 +36,7 @@ func ConnectCenterWs() {
 func onBreath() {
 	go func() {
 		for {
-			time.Sleep(time.Second * 4)
+			time.Sleep(time.Second * 3)
 			err := centerServerConn.WriteMessage(websocket.TextMessage, []byte(""))
 			if err != nil {
 				logger.Debug("发送心跳失败")
@@ -44,6 +44,7 @@ func onBreath() {
 				ConnectCenterWs()
 				break
 			}
+			logger.Debug("发送心跳")
 		}
 	}()
 
