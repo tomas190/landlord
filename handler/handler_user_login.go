@@ -24,6 +24,19 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 		return
 	}
 
+	// 舊連線若存在請清楚中不允許登入
+	oldSession := game.GetAgent(req.UserId)
+	if oldSession != nil {
+		playerInfo, err := game.GetSessionPlayerInfo(oldSession)
+		if err == nil {
+			if playerInfo.IsOnClear {
+				logger.Debug(req.UserId, "舊連線清除中無法登入")
+				game.SendErrMsg(session, msgIdConst.ReqLogin, "请求数据异常:请重新登入")
+				return
+			}
+		}
+	}
+
 	game.PrintMsg("登录请求参数:", req)
 	/*==== 参数验证 =====*/
 
@@ -127,7 +140,6 @@ func userRepeatLogin(m *melody.Melody, currentSession *melody.Session, playerInf
 func syncSessionInfo(oldSession, session *melody.Session, info *mproto.PlayerInfo) {
 	roomId := game.GetSessionRoomId(oldSession)
 	if roomId != "" {
-
 		room := game.GetRoom(roomId)
 		if player, ok := room.Players[info.PlayerId]; ok {
 			player.PlayerInfo.Name = info.PlayerName

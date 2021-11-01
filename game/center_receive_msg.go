@@ -206,7 +206,7 @@ func dealUserUnlockScore(data *simplejson.Json) {
 
 	bytes, _ := json.Marshal(data)
 	playerId := data.Get("msg").Get("id").MustInt()
-	fmt.Println("解锁金币成功:", string(bytes))
+	logger.Debug("解锁金币成功:", string(bytes))
 	//
 
 	agent := GetAgent(strconv.Itoa(playerId))

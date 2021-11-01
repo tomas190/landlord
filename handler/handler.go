@@ -2,12 +2,13 @@ package handler
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/proto"
-	"github.com/wonderivan/logger"
-	"gopkg.in/olahol/melody.v1"
 	"landlord/game"
 	"landlord/mconst/msgIdConst"
 	"landlord/msg/mproto"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/wonderivan/logger"
+	"gopkg.in/olahol/melody.v1"
 )
 
 // onMessage
@@ -286,7 +287,7 @@ func dealCloseConn(session *melody.Session) {
 		logger.Debug("无用户session信息")
 		return
 	}
-
+	logger.Debug("dealCloseConn: user=", info.PlayerId)
 	game.RemoveWaitUser(info.PlayerId)
 
 	roomId := game.GetSessionRoomId(session)
@@ -294,12 +295,11 @@ func dealCloseConn(session *melody.Session) {
 		game.ClearClosePlayer(session)
 	} else { // 设置清除标记
 		room := game.GetRoom(roomId)
-
 		for _, p := range room.Players {
 			if p.PlayerInfo.PlayerId == info.PlayerId {
 				p.IsExitRoom = true
 				p.IsCloseSession = true
-				game.SetSessionCloseTag(session,true)
+				game.SetSessionCloseTag(session, true)
 			}
 		}
 	}
