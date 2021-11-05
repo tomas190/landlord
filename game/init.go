@@ -2,14 +2,15 @@ package game
 
 import (
 	"encoding/json"
-	"github.com/bitly/go-simplejson"
-	"github.com/wonderivan/logger"
-	"gopkg.in/mgo.v2"
 	"io/ioutil"
 	"landlord/mconst/sysSet"
 	"landlord/msg/mproto"
 	"strings"
 	"time"
+
+	"github.com/bitly/go-simplejson"
+	"github.com/wonderivan/logger"
+	"gopkg.in/mgo.v2"
 )
 
 // 服务器配置
@@ -47,7 +48,6 @@ func InitConfig() {
 	initServerConf()
 	initMongoDb()
 	initRoomClassify()
-
 
 	//cornMatch()
 }
@@ -135,6 +135,9 @@ func initMongoDb() {
 
 	UptSurplusPoolOne()
 
+	// 建立index加速檢索時間
+	createUniqueIndex(playCardRecodeName, []string{"round_id"})
+
 	// 同步盈余池 每隔两秒执行
 	go func() {
 		for true {
@@ -195,4 +198,24 @@ func initSurplusConf() {
 		one.RandomCountAfterWin,
 		one.RandomPercentageAfterLose,
 		one.RandomCountAfterLose)
+}
+
+func createUniqueIndex(cName string, keys []string) {
+	session, c := GetDBConn(Server.MongoDBName, cName)
+	defer session.Close()
+
+	// 設定統計表唯一索引
+	index := mgo.Index{
+		Key:        keys,  // 索引鍵
+		Background: true,  // 不长时间占用写锁
+		Unique:     false, // 唯一索引(在表中會不會有重複資料)
+		DropDups:   true,  // 存在資料後建立, 則自動刪除重複資料
+	}
+
+	err := c.EnsureIndex(index)
+	if err != nil {
+		logger.Debug("mgo建立index錯誤:%v", err)
+	} else {
+		logger.Debug("mgo建立index:%v %v", cName, index)
+	}
 }

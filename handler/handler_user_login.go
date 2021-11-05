@@ -24,7 +24,7 @@ func ReqLogin(m *melody.Melody, session *melody.Session, data []byte) {
 		return
 	}
 
-	// 舊連線若存在請清楚中不允許登入
+	// 舊連線若存在且清除中不允許登入
 	oldSession := game.GetAgent(req.UserId)
 	if oldSession != nil {
 		playerInfo, err := game.GetSessionPlayerInfo(oldSession)
