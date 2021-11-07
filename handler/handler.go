@@ -290,9 +290,25 @@ func dealCloseConn(session *melody.Session) {
 	logger.Debug("dealCloseConn: user=", info.PlayerId)
 	game.RemoveWaitUser(info.PlayerId)
 
+	flag := false
+	room, b := game.IsPlayerInRoom(info.PlayerId)
+	if b && room != nil {
+		logger.Debug("dealCloseConn: user=", info.PlayerId, "is in room ", room.RoomId)
+	} else {
+		game.ClearClosePlayer(session)
+		flag = true
+	}
+
 	roomId := game.GetSessionRoomId(session)
 	if roomId == "" { // 证明用户不在游戏中
-		game.ClearClosePlayer(session)
+		if !flag {
+			oldSession := game.GetAgent(info.PlayerId)
+			if session == oldSession {
+				game.ClearClosePlayer(session)
+			} else {
+				logger.Debug("dealCloseConn user=", info.PlayerId, " session != oldSession")
+			}
+		}
 	} else { // 设置清除标记
 		room := game.GetRoom(roomId)
 		for _, p := range room.Players {
