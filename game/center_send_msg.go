@@ -310,5 +310,23 @@ func UserUnLockMoney(playerId string, lockMoney float64, roundId string, lockRea
 }
 
 func UserLogoutCenterAfterUnlockMoney(playerId string, money float64) {
-	UserUnLockMoney(playerId, money, uuid.New().String(), "user login out unlock money")
+	if money > 0 {
+		UserUnLockMoney(playerId, money, uuid.New().String(), "user login out unlock money")
+	} else {
+		agent := GetAgent(playerId)
+		if agent == nil {
+			logger.Error("获取玩家session异常:", playerId)
+			return
+		}
+
+		info, err := GetSessionPlayerInfo(agent)
+		if err != nil {
+			logger.Error("获取玩家信息异常:", playerId)
+			logger.Error("err:", err.Error())
+			return
+		}
+
+		password := GetSessionPassword(agent)
+		UserLogoutCenter(info.PlayerId, password)
+	}
 }

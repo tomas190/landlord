@@ -11,7 +11,7 @@ import (
 
 var (
 	OrderIDToOrderInfo = sync.Map{} // order 暫存，用於中心服回傳失敗時，發送訊息與登出玩家
-	VersionCode        = "1.0.9 sp"
+	VersionCode        = "1.0.10 sp"
 )
 
 type OrderInfo struct {
