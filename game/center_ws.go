@@ -94,7 +94,7 @@ func loginCenterServer() {
 
 func WriteMsgToCenter(data interface{}) {
 	bytes, _ := json.Marshal(data)
-	logger.Debug("WriteMsgToCenter :", string(bytes))
+	logger.Debug("TO CENTER: :", string(bytes))
 	err := centerServerConn.WriteMessage(websocket.TextMessage, bytes)
 	if err != nil {
 		logger.Error("write msg err:", err.Error())
@@ -103,7 +103,7 @@ func WriteMsgToCenter(data interface{}) {
 }
 
 func onReceiveCenterMsg(messType int, msgFromCenter []byte) {
-	logger.Debug("onReceiveCenterMsg:", string(msgFromCenter))
+	logger.Debug("FROM CENTER :", string(msgFromCenter))
 	if messType != websocket.TextMessage {
 		return
 	}

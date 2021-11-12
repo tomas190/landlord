@@ -51,8 +51,9 @@ func OnDisconnect(m *melody.Melody, session *melody.Session) {
 	//		}
 	//	}
 	//}
+
 	dealCloseConn(session)
-	logger.Info("Handler OnDisconnect :")
+	// logger.Info("Handler OnDisconnect :")
 }
 
 // onErr
@@ -284,10 +285,15 @@ func dealCloseConn(session *melody.Session) {
 
 	info, err := game.GetSessionPlayerInfo(session)
 	if err != nil {
-		logger.Debug("无用户session信息")
+		logger.Debug("dealCloseConn : 无用户session信息", session)
 		return
 	}
 	logger.Debug("dealCloseConn: user=", info.PlayerId)
+	nowSession := game.GetAgent(info.PlayerId)
+	if session != nowSession {
+		logger.Debug("dealCloseConn user=", info.PlayerId, " session != nowSession")
+		return
+	}
 	game.RemoveWaitUser(info.PlayerId)
 
 	flag := false
@@ -302,12 +308,7 @@ func dealCloseConn(session *melody.Session) {
 	roomId := game.GetSessionRoomId(session)
 	if roomId == "" { // 证明用户不在游戏中
 		if !flag {
-			oldSession := game.GetAgent(info.PlayerId)
-			if session == oldSession {
-				game.ClearClosePlayer(session)
-			} else {
-				logger.Debug("dealCloseConn user=", info.PlayerId, " session != oldSession")
-			}
+			game.ClearClosePlayer(session)
 		}
 	} else { // 设置清除标记
 		room := game.GetRoom(roomId)
