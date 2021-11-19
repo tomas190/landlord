@@ -37,7 +37,9 @@ func onBreath() {
 	go func() {
 		for {
 			time.Sleep(time.Second * 3)
+			centerWriteMutex.Lock()
 			err := centerServerConn.WriteMessage(websocket.TextMessage, []byte(""))
+			centerWriteMutex.Unlock()
 			if err != nil {
 				logger.Debug("发送心跳失败")
 				// 尝试重连
@@ -95,6 +97,8 @@ func loginCenterServer() {
 func WriteMsgToCenter(data interface{}) {
 	bytes, _ := json.Marshal(data)
 	logger.Debug("TO CENTER: :", string(bytes))
+	centerWriteMutex.Lock()
+	defer centerWriteMutex.Unlock()
 	err := centerServerConn.WriteMessage(websocket.TextMessage, bytes)
 	if err != nil {
 		logger.Error("write msg err:", err.Error())

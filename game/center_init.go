@@ -9,6 +9,8 @@ var userLoginChan struct {
 	rwMutex sync.RWMutex
 }
 
+var centerWriteMutex sync.Mutex
+
 func StartCenter() {
 
 	opMap.opMap = make(map[string]string, 16)
