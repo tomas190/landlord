@@ -210,9 +210,7 @@ func FormatTime(timeUnix int64, layout string) string {
 }
 
 func Version(c *gin.Context) {
-	c.JSON(httpCode, NewResp(SuccCode,
-		"version 20211020",
-		"2021年10月20日"))
+	c.JSON(httpCode, NewResp(SuccCode, "ok", "Version:"+game.VersionCode))
 }
 
 func GetLog(c *gin.Context) {
