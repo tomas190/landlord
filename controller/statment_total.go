@@ -82,7 +82,7 @@ func GetStatementTotal(c *gin.Context) {
 
 	// 统计pkg数据
 	if req.PackageId != 0 {
-		selector["settlement"] = bson.M{"$elemMatch": bson.M{"PlayerPkgId": req.PackageId}}
+		selector["settlement"] = bson.M{"$elemMatch": bson.M{"playerpkgid": req.PackageId}}
 		resp, err := getDataByPkgId(selector, req.PackageId)
 		if err != nil {
 			c.JSON(httpCode, NewResp(ErrCode, err.Error(), nil))
