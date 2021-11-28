@@ -128,6 +128,7 @@ func PushPlayerStartGameWithRobot3(room *Room) {
 		}
 	}
 	player, r1, r2 := getPlayersWithRobot(room)
+	logger.Debug("%v-與机器人對局配率判定結果-%v", player.PlayerInfo.PlayerId, isLetRobotGetGoodCard)
 	player.HandCards = append([]*Card{}, p1...)
 	var push mproto.PushStartGame
 	push.Cards = ChangeCardToProto(player.HandCards)
@@ -318,10 +319,10 @@ func GetCardResult() bool {
 	isLetRobotGetGoodCard := isRobotGetGodCard() // 是否让机器人获得好牌
 	var randWinCount, randLoseCount float64
 
-	local_RCAW := float64(3)    // sysSet.RANDOM_COUNT_AFTER_WIN
-	local_RPAW := float64(0.38) // sysSet.RANDOM_PERCENTAGE_AFTER_WIN
-	local_RCAL := float64(0)    // sysSet.RANDOM_COUNT_AFTER_LOSE
-	local_RPAL := float64(0)    // sysSet.RANDOM_PERCENTAGE_AFTER_LOSE
+	local_RCAW := float64(4)   // sysSet.RANDOM_COUNT_AFTER_WIN
+	local_RPAW := float64(0.9) // sysSet.RANDOM_PERCENTAGE_AFTER_WIN
+	local_RCAL := float64(0)   // sysSet.RANDOM_COUNT_AFTER_LOSE
+	local_RPAL := float64(0)   // sysSet.RANDOM_PERCENTAGE_AFTER_LOSE
 
 	// ===========
 	// 机器人拿到好牌(玩家拿到坏牌)
@@ -361,6 +362,6 @@ func GetCardResult() bool {
 
 	}
 	// logger.Debug("GetCardResult(): 四參數 %v,  %v,  %v,  %v", sysSet.RANDOM_COUNT_AFTER_WIN, sysSet.RANDOM_PERCENTAGE_AFTER_WIN, sysSet.RANDOM_COUNT_AFTER_LOSE, sysSet.RANDOM_PERCENTAGE_AFTER_LOSE)
-	// logger.Debug("GetCardResult(): 結果:%v, 贏重骰次數:%v, 輸重骰次數:%v", isLetRobotGetGoodCard, randWinCount, randLoseCount)
+	logger.Debug("GetCardResult(): 結果:%v, 贏重骰次數:%v, 輸重骰次數:%v", isLetRobotGetGoodCard, randWinCount, randLoseCount)
 	return isLetRobotGetGoodCard
 }
