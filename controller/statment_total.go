@@ -31,12 +31,12 @@ type StatementTotalReq struct {
  "bet_money"：500 ，
 */
 type StatementTotalResp struct {
-	LoseStatementTotal float64
-	WinStatementTotal  float64
-	GameId             string
-	GameName           string
-	Count              []string
-	BetMoney           float64
+	LoseStatementTotal float64  `json:"lose_statement_total"`
+	WinStatementTotal  float64  `json:"win_statement_total"`
+	GameId             string   `json:"game_id"`
+	GameName           string   `json:"game_name"`
+	Count              []string `json:"count"`
+	BetMoney           float64  `json:"bet_money"`
 }
 
 func GetStatementTotal(c *gin.Context) {
