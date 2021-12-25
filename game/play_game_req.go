@@ -26,7 +26,7 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		return
 	}
 
-	PrintMsg("ReqEnterRoom:", req)
+	// logger.Debug("ReqEnterRoom:%v", req)
 	/*==== 参数验证 =====*/
 
 	playerInfo, err := GetSessionPlayerInfo(session)
@@ -34,6 +34,8 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 		SendErrMsg(session, msgIdConst.ReqEnterRoom, "无用户信息")
 		return
 	}
+
+	logger.Debug("%v ReqEnterRoom:%v", playerInfo.PlayerId, req)
 
 	if playerInfo.IsOnClear {
 		SendErrMsg(session, msgIdConst.CloseConn, "玩家连线已失效")
@@ -112,7 +114,7 @@ func ReqEnterRoom(session *melody.Session, data []byte) {
 } // 進入房間
 
 func ReqEnterRoomCheck(session *melody.Session, data []byte) {
-	logger.Debug("=== ReqEnterRoom ===")
+	logger.Debug("=== ReqEnterRoomCheck ===")
 	req := &mproto.ReqEnterRoom{}
 	err := proto.Unmarshal(data, req)
 	if err != nil {
@@ -120,7 +122,7 @@ func ReqEnterRoomCheck(session *melody.Session, data []byte) {
 		return
 	}
 
-	PrintMsg("ReqEnterRoom:", req)
+	// logger.Debug("ReqEnterRoomCheck:%v", req)
 	/*==== 参数验证 =====*/
 
 	playerInfo, err := GetSessionPlayerInfo(session)
@@ -128,6 +130,8 @@ func ReqEnterRoomCheck(session *melody.Session, data []byte) {
 		SendErrMsg(session, msgIdConst.ReqEnterRoom, "无用户信息")
 		return
 	}
+
+	logger.Debug("%v ReqEnterRoomCheck:%v", playerInfo.PlayerId, req)
 
 	if playerInfo.IsOnClear {
 		SendErrMsg(session, msgIdConst.CloseConn, "玩家连线已失效")

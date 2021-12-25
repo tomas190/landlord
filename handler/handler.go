@@ -105,8 +105,9 @@ func OnMessageBinary(m *melody.Melody, session *melody.Session, bytes []byte) {
 
 	data := bytes[2:]
 
-	fmt.Println("msgId:", msgId)
-	fmt.Println("data:", data)
+	// fmt.Println("msgId:", msgId)
+	// fmt.Println("data:", data)
+	logger.Debug("msgId:%v,data:%v", msgId, data)
 
 	switch msgId {
 	case msgIdConst.Ping: // ping pong  // 0
