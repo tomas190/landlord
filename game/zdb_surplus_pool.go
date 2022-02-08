@@ -153,5 +153,5 @@ func UptSurplusConf(percentageToTotalWin,
 	sysSet.RANDOM_COUNT_AFTER_WIN = randomCountAfterWin
 	sysSet.RANDOM_PERCENTAGE_AFTER_LOSE = randomPercentageAfterLose
 	sysSet.RANDOM_COUNT_AFTER_LOSE = randomCountAfterLose
-	UptSurplusPoolOne()
+	// UptSurplusPoolOne()
 }

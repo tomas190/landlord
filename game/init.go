@@ -133,18 +133,18 @@ func initMongoDb() {
 
 	initSurplusConf()
 
-	UptSurplusPoolOne()
+	// UptSurplusPoolOne()
 
 	// 建立index加速檢索時間
 	createUniqueIndex(playCardRecodeName, []string{"round_id"})
 
 	// 同步盈余池 每隔两秒执行
-	go func() {
-		for true {
-			DelaySomeTime(2)
-			UptSurplusPoolOne()
-		}
-	}()
+	// go func() {
+	// 	for true {
+	// 		DelaySomeTime(2)
+	// 		UptSurplusPoolOne()
+	// 	}
+	// }()
 }
 
 // 初始化房间分类信息

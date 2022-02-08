@@ -2,11 +2,12 @@ package game
 
 import (
 	"fmt"
-	"github.com/wonderivan/logger"
-	"gopkg.in/mgo.v2/bson"
 	"landlord/mconst/sysSet"
 	"sync"
 	"time"
+
+	"github.com/wonderivan/logger"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var dbMu sync.RWMutex
@@ -36,7 +37,7 @@ func (s *SurplusPool) InsertSurplus(isWin bool) {
 	//var item SurplusPool
 	//lastSurplus := item.GetLastSurplus()
 	var lastSurplus SurplusPool
-	_= c.Find(nil).Sort("-_id").One(&lastSurplus)
+	_ = c.Find(nil).Sort("-_id").One(&lastSurplus)
 
 	lastSurplus.RoomType = s.RoomType
 	lastSurplus.CurrentPlayerLoss = s.CurrentPlayerLoss
@@ -44,7 +45,7 @@ func (s *SurplusPool) InsertSurplus(isWin bool) {
 
 	if isWin {
 		lastSurplus.PlayerAllWin += s.CurrentPlayerWin
-	}else {
+	} else {
 		lastSurplus.PlayerAllLoss += s.CurrentPlayerLoss
 	}
 
@@ -59,7 +60,7 @@ func (s *SurplusPool) InsertSurplus(isWin bool) {
 	//surplus := lastSurplus.PlayerAllLoss - lastSurplus.PlayerAllWin*1.03 - float64(playersCount)*6
 	surplus := (lastSurplus.PlayerAllLoss -
 		lastSurplus.PlayerAllWin*sysSet.PERCENTAGE_TO_TOTAL_WIN -
-		float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER+
+		float64(playersCount)*sysSet.COEFFICIENT_TO_TOTAL_PLAYER +
 		sysSet.DATA_CORRECTION) *
 		sysSet.FINAL_PERCENTAGE
 	lastSurplus.CurrentSurplus = surplus
@@ -74,10 +75,10 @@ func (s *SurplusPool) InsertSurplus(isWin bool) {
 		logger.Debug("记录盈余池失败:", err.Error())
 	}
 	logger.Debug("=========== 插入的最新的盈余池数据 =============")
-	fmt.Printf("%+v\n",lastSurplus)
+	fmt.Printf("%+v\n", lastSurplus)
 	dbMu.Unlock()
 	// 同步更新
-	UptSurplusPoolOne()
+	// UptSurplusPoolOne()
 }
 
 // 当有新玩家插入最新盈余
@@ -118,10 +119,10 @@ func (s *SurplusPool) InsertSurplusNewUser() {
 	}
 
 	logger.Debug("=========== 插入的最新的盈余池数据 =============")
-	fmt.Printf("%+v\n",lastSurplus)
+	fmt.Printf("%+v\n", lastSurplus)
 
 	// 同步更新
-	UptSurplusPoolOne()
+	// UptSurplusPoolOne()
 }
 
 // 获取最新盈余
